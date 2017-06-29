@@ -1,0 +1,42 @@
+{
+	"client": "./src/",
+	"server": "./server/",
+	"api": "/api",
+	"data": "/../../data/",
+	"test": "./src/test/",
+	"html": "./src/**/*.html",
+	"htmltemplates": "./src/app/**/*.html",
+	"vendorjs": [
+
+	],
+	"vendorcss": [
+
+	],
+	"sass": [
+		"/src/assets/scss"
+	],
+	"css": [
+
+	],
+	"js": [
+		"./src/app/**/*module*.js",
+		"./src/app/**/*.js",
+		"!./src/app/**/*-spaghetti.js"
+	],
+	"specs": [
+		"./src/test/specs/*.spec.js"
+	],
+	"nodejs": [
+		"./server/**/*.js",
+		"!./server/test/**/*.js"
+	],
+	"fonts": [
+
+	],
+	"images": [
+		"./src/assets/imgs/**/*.*"
+	],
+	"jsons": "./src/assets/jsons/*.json",
+	"report": "./report/",
+	"build": "./build/"
+}
