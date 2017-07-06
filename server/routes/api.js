@@ -5,7 +5,8 @@ var authenticate = auth.authenticateToken;
 
 
 module.exports = function (app, passport, auth) {
-    var users = require(path.join(__dirname, 'users'));
+    var users = require(path.join(__dirname, 'users')),
+        questions = require(path.join(__dirname, 'questions'));
 
     /* REST API */
     /**
@@ -22,7 +23,7 @@ module.exports = function (app, passport, auth) {
     /**
      * Question apis
      */
-
+    app.post('/api/questions', questions.create);
     /**
      * Test apis
      */
