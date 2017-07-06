@@ -18,6 +18,7 @@ module.exports = function (app, passport, auth) {
     app.get('/api/users', users.getAll);
     app.get('/api/users/:id', users.getOne);
     app.get('/api/users/logout', users.logout);
+    app.put('/api/users/:id', users.update);
     /**
      * Question apis
      */

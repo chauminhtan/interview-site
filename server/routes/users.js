@@ -79,5 +79,27 @@ module.exports = {
 				});
 			}
 		});
+	},
+	update: (req, res) => {
+		User.findById(req.params.id, (err, user) => {
+			if (err) {
+				sendErr(res, err);
+			}
+
+			extend(user, req.body);
+
+			if (req.body.password) {
+				/* update password */
+				user.setPassword(req.body.password, (err, result) => {
+					user.save((err) => {
+						sendSuccess(res, null);
+					})
+				})
+			} else {
+				user.save((err) => {
+					sendSuccess(res);
+				})
+			}
+		})
 	}
 }

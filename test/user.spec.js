@@ -8,11 +8,11 @@ var User = require('../server/models/user');
 
 
 chai.use(chaiHttp);
-//Our parent block
+// Our parent block
 describe('Users', () => {
     var token = '', userId = '';
     
-    before((done) => { //Before each test we empty the database
+    before((done) => { // Before test we empty the database
         User.where('email').ne(config.admin.email).remove({}, (err) => { 
            done();         
         });     
@@ -58,6 +58,21 @@ describe('Users', () => {
                     done();
                 });
         });
+        it('UPDATE an user', (done) => {
+            chai.request(server)
+                .put('/api/users/' + userId)
+                .send({
+                    email: 'tan.chau@waverleysoftware.com',
+                    name: 'Tan Updated',
+                    password: 'admin'
+                })
+                .end((err, res) => {
+                    res.should.have.status(200);			
+                    res.body.status.should.eql(1);
+                    console.log('updated userId: ' + userId);
+                    done();
+                });
+        });
     });
     /*
     * Test the /GET route
@@ -75,7 +90,7 @@ describe('Users', () => {
         });
         it('GET one user', (done) => {
             chai.request(server)
-                .get('/api/users/'+userId)
+                .get('/api/users/' + userId)
                 .end((err, res) => {
                     res.should.have.status(200);					
                     res.body.status.should.eql(1);
