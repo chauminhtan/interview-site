@@ -4,15 +4,8 @@
   "description": "system use nodejs-express framework as a backend and use mongodb-mongoose to store data",
   "main": "server/server.js",
   "scripts": {
-    "start-server": "node server/server.js",
-    "test-server": "./node_modules/mocha/bin/_mocha",
-    "build-css": "node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/",
-    "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive",
-    "start-js": "react-scripts start",
-    "start": "npm-run-all -p start-server watch-css start-js",
-    "build": "npm run build-css && react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "start": "node server/server.js",
+    "test": "./node_modules/mocha/bin/_mocha"
   },
   "author": "",
   "license": "ISC",
@@ -31,12 +24,9 @@
     "mongoose": "^4.10.1",
     "node-sass-chokidar": "^0.0.3",
     "nodemon": "^1.8.1",
-    "npm-run-all": "^4.0.2",
     "passport": "latest",
     "passport-local": "latest",
     "passport-local-mongoose": "^4.0.0",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
     "underscore": "latest",
     "view-helpers": "latest"
   },
@@ -54,7 +44,6 @@
     "gulp-task-listing": "^1.0.1",
     "gulp-util": "^3.0.8",
     "mocha": "^3.4.2",
-    "react-scripts": "1.0.10",
     "yargs": "^8.0.2"
   }
 }

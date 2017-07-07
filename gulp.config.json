@@ -1,5 +1,5 @@
 {
-	"client": "./src/",
+	"client": "./client/src/",
 	"server": "./server/",
 	"api": "/api",
 	"data": "/../../data/",
@@ -24,7 +24,7 @@
 		"!./src/app/**/*-spaghetti.js"
 	],
 	"specs": [
-		"./src/test/specs/*.spec.js"
+		"./test/specs/*.spec.js"
 	],
 	"nodejs": [
 		"./server/**/*.js",
@@ -34,9 +34,9 @@
 
 	],
 	"images": [
-		"./src/assets/imgs/**/*.*"
+		"./client/src/assets/imgs/**/*.*"
 	],
-	"jsons": "./src/assets/jsons/*.json",
+	"jsons": "./client/src/assets/jsons/*.json",
 	"report": "./report/",
 	"build": "./build/"
 }
