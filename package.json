@@ -22,7 +22,6 @@
     "later": "latest",
     "moment": "latest",
     "mongoose": "^4.10.1",
-    "node-sass-chokidar": "^0.0.3",
     "nodemon": "^1.8.1",
     "passport": "latest",
     "passport-local": "latest",
