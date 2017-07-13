@@ -1,6 +1,4 @@
 import React, { Component } from "react";
-import Header from "./Header";
-import Footer from "./Footer";
 
 class Index extends Component {
     render() {
@@ -13,7 +11,6 @@ class Index extends Component {
                         {this.props.children}
                     </div>
                 </section>
-                <Footer />
             </div>
         );
     }

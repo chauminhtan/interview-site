@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 var routes = require(__dirname + '/routes/api');
 var http = require('http');
 var path = require('path');
+var cors = require('cors');
 var env = process.env.NODE_ENV = process.env.NODE_ENV || 'development',
     config = require(__dirname + '/config/config'),
     mongoose = require('mongoose'),
@@ -23,6 +24,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors());                // enable ALL CORS requests
 
 // development only
 if (app.get('env') === 'development') {
