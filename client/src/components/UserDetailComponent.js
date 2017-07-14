@@ -41,7 +41,7 @@ class UserDetailComponent extends Component {
             message.isShow = true;
 
             if(res.status === 1) {
-                // this.goBack();
+                this.goBack(); return;
                 message.color = 'green';
             }
             this.setState({message: message}, this.hideMessage(2000));
@@ -58,7 +58,7 @@ class UserDetailComponent extends Component {
             message.isShow = true;
 
             if(res.status === 1) {
-                this.goBack();
+                this.goBack(); return;
                 message.color = 'green';
             }
             

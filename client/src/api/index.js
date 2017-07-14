@@ -41,10 +41,10 @@ axios.interceptors.request.use(function (config) {
         config.headers['token'] = Store.getLocalToken();
     }
     return config;
-  }, function (error) {
+}, function (error) {
     // Do something with request error
     return Promise.reject(error);
-  });
+});
 
 // Add a response interceptor
 axios.interceptors.response.use(function (response) {
@@ -53,9 +53,8 @@ axios.interceptors.response.use(function (response) {
     if (response.status >= 200 && response.status < 300) {
         return response.data;
     }
-
     return response;
-  }, function (error) {
+}, function (error) {
     // Do something with response error
     return Promise.reject(error);
-  });
+});

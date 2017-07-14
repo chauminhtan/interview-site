@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-// import PropTypes from 'prop-types';
 import { Menu, Dropdown, Icon, Segment } from 'semantic-ui-react';
 import { NavLink, withRouter } from 'react-router-dom';
 import Auth from '../api/Auth';
@@ -21,13 +20,8 @@ const UserNav = withRouter(({ history }) => (
 ))
 
 class Header extends Component {
-    state = { activeItem: 'home' }
-
-    handleItemClick = (e, { name }) => this.setState({ activeItem: name });
 
     render() {
-        const { activeItem } = this.state;
-        const {title, isLoggedIn} = this.props;
         
         if (!Auth.isAuthenticated()) {
             return (

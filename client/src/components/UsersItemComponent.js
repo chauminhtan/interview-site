@@ -11,16 +11,10 @@ class UsersItemComponent extends Component {
             <Item as={Link} to={'/users/' + id}>
                 <Item.Content>
                     <Item.Header>
-                        {name} {isAdmin ? <Label color='blue' size='tiny'>admin</Label> :  <Label color='green' size='tiny'>candidate</Label>}
+                        {name} {isAdmin ? <Label circular empty color='blue'></Label> :  <Label circular color='green' size='mini'>user</Label>}
                     </Item.Header>
-                    <Item.Meta>
-                        <span>
-                        {email}
-                        </span>
-                    </Item.Meta>
-                    <Item.Description>
-                        Created: {moment(dateModified).fromNow()}
-                    </Item.Description>
+                    <Item.Meta>{email}</Item.Meta>
+                    <Item.Description>Created: {moment(dateModified).fromNow()}</Item.Description>
                 </Item.Content>
             </Item>
         );
