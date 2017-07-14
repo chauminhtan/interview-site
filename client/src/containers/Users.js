@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Loader, Grid } from "semantic-ui-react";
+import { Loader } from "semantic-ui-react";
 import { Helmet } from 'react-helmet';
 import UsersApi from '../api/Users';
 import UsersComponent from '../components/UsersComponent';
@@ -11,42 +11,46 @@ class Users extends Component {
 
         this.state = {
             loading: false,
-            users: []
+            users: [],
+            requestRefresh: false
         }
     }
     
     // Update the data when the component mounts
     componentDidMount() {
-        UsersApi.getUsers(res => {
-            // console.log(res);
-            this.updateData(res.data);
-        })
-        this.setState({loading: true});
+        this.setState({loading: true}, this.updateData);
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log('componentWillReceiveProps');
-        // Check to see if the requestRefresh prop has changed
+        // console.log('componentWillReceiveProps');
+    }
+
+    // Callback from the `UsersComponent` component
+    onComponentRefresh = () => {
+        this.setState({loading: true}, this.updateData);
     }
 
     // Call out to server data and refresh directory
-    updateData(data) {
-        this.setState({
-            loading: false,
-            users: data
-        });
+    updateData = () => {
+        UsersApi.getUsers(res => {
+            // console.log(res);
+            this.setState({
+                loading: false,
+                users: res.data
+            });
+        })
     }
 
     render() {
         const { loading, users } =  this.state;
         const props = { users };
-        console.log(users);
+        // console.log(users);
         return (
             <div>
                 <Helmet>
                     <title>Interview System: Users</title>
                 </Helmet>
-                {!loading ? <UsersComponent {...props} /> : <Loader active>Loading...</Loader>}
+                {!loading ? <UsersComponent onComponentRefresh={this.onComponentRefresh} {...props} /> : <Loader active>Loading...</Loader>}
             </div>
         );
     }

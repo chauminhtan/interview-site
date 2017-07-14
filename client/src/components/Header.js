@@ -10,7 +10,7 @@ const UserNav = withRouter(({ history }) => (
             <Dropdown text={Store.getUserInfo() ? JSON.parse(Store.getUserInfo()).name : ''} className='link item' pointing>
                 <Dropdown.Menu>
                     <Menu.Item header>View Profile</Menu.Item>
-                    <Menu.Item name='logout' onClick={() => {Auth.signout(() => history.push('/'))}} />
+                    <Menu.Item name='logout' onClick={() => {Auth.signout(() => history.push('/home'))}} />
                 </Dropdown.Menu>
             </Dropdown>
         </Menu.Menu>

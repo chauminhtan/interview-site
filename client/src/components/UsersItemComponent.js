@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from 'react-router-dom';
-import { Item, Divider, Label } from "semantic-ui-react";
+import { Item, Label } from "semantic-ui-react";
 import moment from 'moment';
 
 class UsersItemComponent extends Component {

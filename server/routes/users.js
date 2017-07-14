@@ -60,7 +60,7 @@ module.exports = {
 	getAll: (req, res) => {
 		// return all users for admin
 		// console.log(req.user)
-		User.where('deleted').ne('true').select('id email name dateModified isAdmin').exec((err, users) => {
+		User.where('deleted').ne('true').where('isAdmin').ne('true').select('id email name dateModified isAdmin').exec((err, users) => {
 			// res.json(users);
 			if (err) {
 				sendErr(res, err);
@@ -109,22 +109,35 @@ module.exports = {
 	},
 	delete: function(req, res) {
 		/* careful with _id here */
-		User.findById(req.params.id, function(err, user) {
+		// User.findById(req.params.id, function(err, user) {
+		// 	if (err) {
+		// 		// console.log(err);
+		// 		sendErr(res, err);
+		// 		return;
+		// 	}
+
+		// 	extend(user, {
+		// 		deleted: 1
+		// 	});
+		// 	user.save(function(err) {
+		// 		res.json({
+		// 			status: 1,
+		// 			message: 'deleled userId: ' + req.params.id
+		// 		})
+		// 	});
+		// });
+
+		// remove out of db
+		User.findByIdAndRemove(req.params.id, function(err, user) {
 			if (err) {
 				// console.log(err);
 				sendErr(res, err);
 				return;
 			}
-
-			extend(user, {
-				deleted: 1
-			});
-			user.save(function(err) {
-				res.json({
-					status: 1,
-					message: 'deleled userId: ' + req.params.id
-				})
-			});
+			res.json({
+				status: 1,
+				message: 'deleled userId: ' + req.params.id
+			})
 		});
 	}
 }

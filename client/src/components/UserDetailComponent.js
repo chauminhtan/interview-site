@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-import { Button, Card, Icon, Message } from 'semantic-ui-react';
+import { Button, Card, Icon, Message, Header } from 'semantic-ui-react';
 import moment from 'moment';
 import UsersApi from '../api/Users';
 import { RIEInput } from 'riek';
@@ -19,7 +19,8 @@ class UserDetailComponent extends Component {
         user: {
             name: '',
             email: ''
-        }
+        },
+        modififed: false
     }
 
     goBack = () => {
@@ -29,6 +30,7 @@ class UserDetailComponent extends Component {
     onChange = (newState) => {
         extend(this.props.user, newState);
         // console.log(this.props.user);
+        this.setState({modififed: true});
     }
 
     edit = () => {
@@ -41,8 +43,9 @@ class UserDetailComponent extends Component {
             message.isShow = true;
 
             if(res.status === 1) {
-                this.goBack(); return;
                 message.color = 'green';
+                this.goBack(); 
+                return;
             }
             this.setState({message: message}, this.hideMessage(2000));
         })
@@ -58,8 +61,9 @@ class UserDetailComponent extends Component {
             message.isShow = true;
 
             if(res.status === 1) {
-                this.goBack(); return;
                 message.color = 'green';
+                this.goBack(); 
+                return;
             }
             
             this.setState({message: message}, this.hideMessage(2000));
@@ -78,8 +82,8 @@ class UserDetailComponent extends Component {
     render() {
         const { user } = Object.keys(this.props.user).length ? this.props : this.state;
         const from = { pathname: '/users' };
-        const { redirectToReferer, message } =  this.state;
-        console.log(user);
+        const { redirectToReferer, message, modififed } =  this.state;
+        // console.log(user);
 
         if (redirectToReferer) {
             return (
@@ -90,7 +94,8 @@ class UserDetailComponent extends Component {
         return (
             <div>
                 {message.isShow ? <Message onDismiss={this.hideMessage} color={message.color} header={message.header} content={message.content} /> : ''}
-                <Card>
+                <Header as='h2'>User Information</Header>
+                <Card fluid>
                     <Card.Content>
                         <Card.Header>
                             <RIEInput propName='name' value={user.name} change={this.onChange} />
@@ -103,10 +108,10 @@ class UserDetailComponent extends Component {
                         </Card.Meta>
                     </Card.Content>
                     <Card.Content extra>
-                        <div className='ui two buttons'>
-                            <Button color='green' onClick={this.edit}>Save</Button>
+                        {/* <div className='ui two buttons'> */}
+                            <Button color='green' disabled={!modififed} onClick={this.edit}>Save</Button>
                             <Button color='red' onClick={this.delete}>Delete</Button>
-                        </div>
+                        {/* </div> */}
                     </Card.Content>
                 </Card>
                 <Button color='grey' animated onClick={this.goBack}>

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Loader, Grid } from "semantic-ui-react";
+import { Loader } from "semantic-ui-react";
 import { Helmet } from 'react-helmet';
 import UsersApi from '../api/Users';
 import UserDetailComponent from '../components/UserDetailComponent';
