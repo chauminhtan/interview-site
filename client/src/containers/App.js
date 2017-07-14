@@ -6,7 +6,7 @@ import Header from '../components/Header';
 import Home from './Home';
 import Users from './Users';
 import UserDetail from './UserDetail';
-import Setting from './Setting';
+import Questions from './Questions';
 import Login from './Login';
 import AuthApi from '../api/Auth';
 
@@ -32,7 +32,7 @@ class App extends Component {
                                 <PrivateRoute path="/home" component={Home} />
                                 <PrivateRoute exact path="/users" component={Users} />
                                 <PrivateRoute exact path="/users/:id" component={UserDetail} />
-                                <PrivateRoute path="/setting" component={Setting} />
+                                <PrivateRoute path="/questions" component={Questions} />
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>

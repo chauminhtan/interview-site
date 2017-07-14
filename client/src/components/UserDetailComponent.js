@@ -22,30 +22,57 @@ class UserDetailComponent extends Component {
         }
     }
 
-    goBack () {
+    goBack = () => {
         this.setState({ redirectToReferer: true })
     }
 
     onChange = (newState) => {
         extend(this.props.user, newState);
-        console.log(this.props.user);
+        // console.log(this.props.user);
     }
 
-    edit () {
+    edit = () => {
         UsersApi.update(this.props.user, res => {
-            console.log(res);
-            this.setState({message: {isShow: true, color: 'green', header: 'Saved User!', content: res.message}});
+            // console.log(res);
+            let message = extend({}, this.state.message);
+            message['header'] = 'Save User!';
+            message.content = res.message;
+            message.color = 'red';
+            message.isShow = true;
+
+            if(res.status === 1) {
+                // this.goBack();
+                message.color = 'green';
+            }
+            this.setState({message: message}, this.hideMessage(2000));
         })
     }
 
-    delete () {
+    delete = () => {
         UsersApi.delete(this.props.user.id, res => {
-            console.log(res);
+            // console.log(res);
+            let message = extend({}, this.state.message);
+            message['header'] = 'Delete User!';
+            message.content = res.message;
+            message.color = 'red';
+            message.isShow = true;
+
             if(res.status === 1) {
                 this.goBack();
+                message.color = 'green';
             }
-            this.setState({message: {isShow: true, color: 'red', header: 'Delete User!', content: res.message}});
+            
+            this.setState({message: message}, this.hideMessage(2000));
         })
+    }
+
+    hideMessage = (time) => {
+        time = time ? time : 0;
+        let message = extend({}, this.state.message);
+        message.isShow = false;
+        setTimeout(() => {
+            this.setState({message: message});
+        }, time)
     }
     
     render() {
@@ -62,16 +89,14 @@ class UserDetailComponent extends Component {
 
         return (
             <div>
-                {message.isShow ? <Message color={message.color} header={message.header} content={message.content} /> : ''}
+                {message.isShow ? <Message onDismiss={this.hideMessage} color={message.color} header={message.header} content={message.content} /> : ''}
                 <Card>
                     <Card.Content>
                         <Card.Header>
-                            {/* {user.name} */}
-                            <RIEInput propName='name' value={user.name} change={this.onChange.bind(this)} />
+                            <RIEInput propName='name' value={user.name} change={this.onChange} />
                         </Card.Header>
                         <Card.Description>
-                            {/* {user.email} */}
-                            <RIEInput  propName='email' value={user.email} change={this.onChange.bind(this)} />
+                            <RIEInput  propName='email' value={user.email} change={this.onChange} />
                         </Card.Description>
                         <Card.Meta>
                             Created: {moment(user.dateModified).fromNow()}
@@ -79,12 +104,12 @@ class UserDetailComponent extends Component {
                     </Card.Content>
                     <Card.Content extra>
                         <div className='ui two buttons'>
-                            <Button color='green' onClick={this.edit.bind(this)}>Save</Button>
-                            <Button color='red' onClick={this.delete.bind(this)}>Delete</Button>
+                            <Button color='green' onClick={this.edit}>Save</Button>
+                            <Button color='red' onClick={this.delete}>Delete</Button>
                         </div>
                     </Card.Content>
                 </Card>
-                <Button color='grey' animated onClick={this.goBack.bind(this)}>
+                <Button color='grey' animated onClick={this.goBack}>
                     <Button.Content hidden>Back</Button.Content>
                     <Button.Content visible>
                         <Icon name='left arrow' />

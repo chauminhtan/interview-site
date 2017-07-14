@@ -41,7 +41,7 @@ class Header extends Component {
             <Menu pointing secondary>
                 <Menu.Item name='home' as={NavLink} to='/home' onClick={this.handleItemClick} />
                 <Menu.Item name='users' as={NavLink} to='/users' onClick={this.handleItemClick} />
-                <Menu.Item name='setting' as={NavLink} to='/setting' onClick={this.handleItemClick} />
+                <Menu.Item name='questions' as={NavLink} to='/questions' onClick={this.handleItemClick} />
                 <Menu.Menu position='right'>
                     <UserNav />
                 </Menu.Menu>

@@ -19,7 +19,7 @@ class UsersItemComponent extends Component {
                         </span>
                     </Item.Meta>
                     <Item.Description>
-                        Create Date: {moment(dateModified).fromNow()}
+                        Created: {moment(dateModified).fromNow()}
                     </Item.Description>
                 </Item.Content>
             </Item>

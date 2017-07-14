@@ -49,22 +49,7 @@ class Login extends Component {
                 </Grid.Row>
             </Grid>
         )
-
-        // return (
-        //     <Card centered>
-        //         <Card.Content header='Login' />
-        //         <Card.Content>
-        //             <Card.Description>
-        //                 <Form onSubmit={this.login} widths="equal">
-        //                     <Form.Input label="Email" placeholder="Email" />
-        //                     <Form.Input label="Password" type="password" placeholder="Password" />
-        //                     <Button type="submit">Login</Button>
-        //                 </Form>
-        //             </Card.Description>
-        //         </Card.Content>
-        //     </Card>
-        // );
-  }
+    }
 }
 
 export default Login;

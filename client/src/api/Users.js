@@ -46,8 +46,8 @@ const Users = {
             setTimeout(cb(res), 100);
         })
     },
-    delete(user, cb) {
-        axios.delete(Config.serverURL + '/api/users/' + user.id)
+    delete(userId, cb) {
+        axios.delete(Config.serverURL + '/api/users/' + userId)
         .then(res => {
             // handle error here
             if (res.status === 1) {

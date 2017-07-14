@@ -109,20 +109,19 @@ module.exports = {
 	},
 	delete: function(req, res) {
 		/* careful with _id here */
-		console.log(req.params.id);
 		User.findById(req.params.id, function(err, user) {
-			console.log(req.params.id);
 			if (err) {
-				console.log(err);
+				// console.log(err);
 				sendErr(res, err);
 				return;
 			}
+
 			extend(user, {
 				deleted: 1
 			});
 			user.save(function(err) {
 				res.json({
-					status: '1',
+					status: 1,
 					message: 'deleled userId: ' + req.params.id
 				})
 			});
