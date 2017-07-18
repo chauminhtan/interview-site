@@ -25,7 +25,9 @@
   flex-direction: column;
   height: 100%;
   min-height: 100%; }
+  .MainLayout .MainContent {
+    margin: 10px; }
   .MainLayout a {
     color: rgba(0, 0, 0, 0.68); }
     .MainLayout a:hover {
-      color: #4183C4; }
+      color: #4183c4; }

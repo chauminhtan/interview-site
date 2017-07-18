@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import { Redirect } from 'react-router-dom';
-import { Item, Grid, Button, Icon, Message, Header, Modal, Form } from "semantic-ui-react";
-// import UsersItemComponent from './UsersItemComponent';
-import UsersApi from '../api/Users';
+import QuestionsApi from '../api/Questions';
 import extend from 'extend';
 import {
   Table,
@@ -18,8 +16,9 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import Snackbar from 'material-ui/Snackbar';
 import Dialog from 'material-ui/Dialog';
 import moment from 'moment';
+import { Item, Grid, Button, Icon, Message, Header, Modal, Form } from "semantic-ui-react";
 
-class UsersComponent extends Component {
+class QuestionsComponent extends Component {
     constructor (props) {
         super(props);
         this.state = {
@@ -45,13 +44,14 @@ class UsersComponent extends Component {
     addUser = () => {
         // call to api server
         const userData = {
-            'email': document.getElementById('email').value, 
-            'password': document.getElementById('password').value,
-            'name': document.getElementById('name').value,
-            'isAdmin': false
+            'description': document.getElementById('description').value, 
+            'category': document.getElementById('category').value,
+            'answer': document.getElementById('answer').value,
+            'time': document.getElementById('time').value,
+            'type': document.getElementById('type').value
         };
 
-        UsersApi.create(userData, res => {
+        QuestionsApi.create(userData, res => {
 
             let message = extend({}, this.state.message);
             message.content = res.message;
@@ -66,7 +66,7 @@ class UsersComponent extends Component {
     }
 
     onChange = (e) => {
-        const isValid = document.getElementById('name').value.length && document.getElementById('email').value.length && document.getElementById('password').value.length;
+        const isValid = document.getElementById('description').value.length && document.getElementById('category').value.length && document.getElementById('answer').value.length && document.getElementById('time').value.length && document.getElementById('type').value.length;
         this.setState({isReadySubmit: isValid});
     }
 
@@ -89,7 +89,7 @@ class UsersComponent extends Component {
         for (var key in this.state.users) {
             if (key == selectedRows[0]) {
                 // redirect to user detail page
-                this.setState({redirectToReferer: '/users/' + this.state.users[key].id})
+                this.setState({redirectToReferer: '/questions/' + this.state.users[key].id})
                 break;
             }
         }
@@ -102,7 +102,7 @@ class UsersComponent extends Component {
 
     // Call out to server data and refresh directory
     updateData = () => {
-        UsersApi.getUsers(res => {
+        QuestionsApi.getAll(res => {
             // console.log(res);
             this.setState({
                 loading: false,
@@ -152,25 +152,29 @@ class UsersComponent extends Component {
                     autoScrollBodyContent={true}
                     >
                     <Form id="loginForm" onSubmit={this.addUser} widths="equal">
-                         <Form.Input id="name" label="Name" placeholder="Name" onChange={this.onChange} />
-                         <Form.Input id="email" label="Email" placeholder="Email" onChange={this.onChange} />
-                         <Form.Input id="password" label="Password" type="password" placeholder="Password" onChange={this.onChange} />
+                         <Form.Input id="description" label="Question" placeholder="Question" onChange={this.onChange} />
+                         <Form.Input id="category" label="Category" placeholder="Category" onChange={this.onChange} />
+                         <Form.Input id="answer" label="Answer" placeholder="Answer" onChange={this.onChange} />
+                         <Form.Input id="time" label="Time" placeholder="Time" onChange={this.onChange} value='10' />
+                         <Form.Input id="type" label="Type" placeholder="Type" onChange={this.onChange} value='text' />
                          {/* <Button content="Save" /> */}
                      </Form>
                 </Dialog>
                 <Table onRowSelection={this.handleRowSelection}>
                     <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                         <TableRow>
-                            <TableHeaderColumn>Name</TableHeaderColumn>
-                            <TableHeaderColumn>Email</TableHeaderColumn>
+                            <TableHeaderColumn>Question</TableHeaderColumn>
+                            <TableHeaderColumn>Category</TableHeaderColumn>
+                            <TableHeaderColumn>Answer</TableHeaderColumn>
                             <TableHeaderColumn>Created</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
                     <TableBody displayRowCheckbox={false}>
                         {users.map( (row, index) => (
                         <TableRow key={index}>
-                            <TableRowColumn>{row.name}</TableRowColumn>
-                            <TableRowColumn>{row.email}</TableRowColumn>
+                            <TableRowColumn>{row.description}</TableRowColumn>
+                            <TableRowColumn>{row.category}</TableRowColumn>
+                            <TableRowColumn>{row.answer}</TableRowColumn>
                             <TableRowColumn>{moment(row.dateModified).fromNow()}</TableRowColumn>
                         </TableRow>
                         ))}
@@ -181,44 +185,7 @@ class UsersComponent extends Component {
                 </FloatingActionButton>
             </div>
         )
-
-        // return (
-        //     <Grid stackable>
-        //         <Grid.Column width={16}>
-        //             {message.isShow ? <Message onDismiss={this.hideMessage} color={message.color} header={message.header} content={message.content} /> : ''}
-                    
-        //             <Modal dimmer='blurring' size='small' trigger={<Button circular icon='add user' color='blue' floated='right' onClick={this.handleOpen} />} open={this.state.modalOpen}>
-        //                 <Header icon='user' content='New User Information' />
-        //                 <Modal.Content>
-        //                     {/* <p>Your form should go here</p> */}
-        //                     <Form id="loginForm" onSubmit={this.addUser} widths="equal">
-        //                         <Form.Input id="name" label="Name" placeholder="Name" onChange={this.onChange} />
-        //                         <Form.Input id="email" label="Email" placeholder="Email" onChange={this.onChange} />
-        //                         <Form.Input id="password" label="Password" type="password" placeholder="Password" onChange={this.onChange} />
-        //                         {/* <Button content="Save" /> */}
-        //                     </Form>
-        //                 </Modal.Content>
-        //                 <Modal.Actions>
-        //                     <Button color='red' onClick={this.handleClose}>
-        //                         <Icon name='remove' /> Cancel
-        //                     </Button>
-        //                     <Button color='green' disabled={!isReadySubmit} onClick={this.addUser}>
-        //                         <Icon name='checkmark' /> Save
-        //                     </Button>
-        //                 </Modal.Actions>
-        //             </Modal>
-                
-        //         {!users
-        //             ? 'Hm, it looks like there are no items to show you :('
-        //             : <Item.Group divided link>
-        //                 {users.map((user, i) => {
-        //                     return <UsersItemComponent key={i} {...user} />
-        //                 })}
-        //             </Item.Group>}
-        //         </Grid.Column>
-        //     </Grid>
-        // );
     }
 }
 
-export default UsersComponent;
+export default QuestionsComponent;

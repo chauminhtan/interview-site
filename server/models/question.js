@@ -4,12 +4,12 @@ var mongoose = require('mongoose'),
 var QuestionSchema = new Schema({
     description: { type: String, require: true },
     category: { type: String, require: true },
-    type: { type: Object },
+    type: { type: String, default: 'text' },
 	extra: { type: String },
     answer: { type: String, require: true },
-	time: { type: Number },
+	time: { type: Number, default: 10 },
     dateModified: { type: Date, default: Date.now },
-    status: String,
+    status:  {type: String, default: '1' },
     deleted: {type: Boolean, default: false }
 }, {
     strict: true,

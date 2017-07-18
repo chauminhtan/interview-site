@@ -3,6 +3,7 @@ import { Button, Form, Grid } from "semantic-ui-react";
 import { Helmet } from 'react-helmet';
 import { Redirect } from "react-router-dom";
 import Auth from "../api/Auth";
+import Header from '../components/Header';
 
 class Login extends Component {
 
@@ -34,20 +35,25 @@ class Login extends Component {
         }
 
         return (
-            <Grid verticalAlign="middle" centered columns={1} textAlign="left" relaxed>
+            <div>
+                <Header title='Login' />
                 <Helmet>
                     <title>Interview System: Login</title>
                 </Helmet>
-                <Grid.Row>
-                    <Grid.Column tablet={10} mobile={16} computer={6}>
-                        <Form id="loginForm" onSubmit={this.login} widths="equal">
-                            <Form.Input id="email" label="Email" placeholder="Email" />
-                            <Form.Input id="password" label="Password" type="password" placeholder="Password" />
-                            <Button content="Login" />
-                        </Form>
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
+                <div className='MainContent'>
+                    <Grid verticalAlign="middle" centered columns={1} textAlign="left" relaxed>
+                        <Grid.Row>
+                            <Grid.Column tablet={10} mobile={16} computer={6}>
+                                <Form id="loginForm" onSubmit={this.login} widths="equal">
+                                    <Form.Input id="email" label="Email" placeholder="Email" />
+                                    <Form.Input id="password" label="Password" type="password" placeholder="Password" />
+                                    <Button content="Login" />
+                                </Form>
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
+                </div>
+            </div>
         )
     }
 }

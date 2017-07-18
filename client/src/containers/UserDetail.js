@@ -3,6 +3,7 @@ import { Loader } from "semantic-ui-react";
 import { Helmet } from 'react-helmet';
 import UsersApi from '../api/Users';
 import UserDetailComponent from '../components/UserDetailComponent';
+import Header from '../components/Header';
 
 class UserDetail extends Component {
 
@@ -45,10 +46,13 @@ class UserDetail extends Component {
         // console.log(user);
         return (
             <div>
+                <Header title='User Detail' />
                 <Helmet>
                     <title>Interview System: User Detail</title>
                 </Helmet>
-                {!loading && props ? <UserDetailComponent {...props} /> : <Loader active>Loading...</Loader>}
+                <div className='MainContent'>
+                    {!loading && props ? <UserDetailComponent {...props} /> : <Loader active>Loading...</Loader>}
+                </div>
             </div>
         );
     }

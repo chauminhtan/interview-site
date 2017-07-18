@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
-import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Redirect, withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { Grid } from 'semantic-ui-react';
 import Header from '../components/Header';
 import Home from './Home';
@@ -19,23 +20,23 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
 )
 
 class App extends Component {
+
+    // Update the data when the component mounts
+    componentDidMount() {
+        
+    }
+
     render() {
+        
         return (
             <Router>
                 <div className="MainLayout">
-                    <Header />
                     <Route path="/login" component={Login} />
-                    <Grid verticalAlign="middle" container centered columns={1} textAlign="left" relaxed>
-                        <Grid.Row>
-                            <Grid.Column tablet={16} mobile={16} computer={16}>
-                                <PrivateRoute exact path="/" component={Home} />
-                                <PrivateRoute path="/home" component={Home} />
-                                <PrivateRoute exact path="/users" component={Users} />
-                                <PrivateRoute exact path="/users/:id" component={UserDetail} />
-                                <PrivateRoute path="/questions" component={Questions} />
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
+                    <PrivateRoute exact path="/" component={Home} />
+                    <PrivateRoute path="/home" component={Home} />
+                    <PrivateRoute exact path="/users" component={Users} />
+                    <PrivateRoute exact path="/users/:id" component={UserDetail} />
+                    <PrivateRoute path="/questions" component={Questions} />
                 </div>
             </Router>
         );

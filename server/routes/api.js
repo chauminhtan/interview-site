@@ -24,7 +24,11 @@ module.exports = function (app, passport, auth) {
     /**
      * Question apis
      */
+    app.get('/api/questions', questions.getAll);
+    app.get('/api/questions/:id', questions.getOne);
     app.post('/api/questions', questions.create);
+    app.put('/api/questions/:id', questions.update);
+    app.delete('/api/questions/:id', questions.delete);
     /**
      * Test apis
      */
