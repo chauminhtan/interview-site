@@ -155,8 +155,7 @@ class UsersComponent extends Component {
                          <Form.Input id="name" label="Name" placeholder="Name" onChange={this.onChange} />
                          <Form.Input id="email" label="Email" placeholder="Email" onChange={this.onChange} />
                          <Form.Input id="password" label="Password" type="password" placeholder="Password" onChange={this.onChange} />
-                         {/* <Button content="Save" /> */}
-                     </Form>
+                    </Form>
                 </Dialog>
                 <Table onRowSelection={this.handleRowSelection}>
                     <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
@@ -166,7 +165,7 @@ class UsersComponent extends Component {
                             <TableHeaderColumn>Created</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
-                    <TableBody displayRowCheckbox={false}>
+                    <TableBody displayRowCheckbox={false} showRowHover={true}>
                         {users.map( (row, index) => (
                         <TableRow key={index}>
                             <TableRowColumn>{row.name}</TableRowColumn>
@@ -181,43 +180,6 @@ class UsersComponent extends Component {
                 </FloatingActionButton>
             </div>
         )
-
-        // return (
-        //     <Grid stackable>
-        //         <Grid.Column width={16}>
-        //             {message.isShow ? <Message onDismiss={this.hideMessage} color={message.color} header={message.header} content={message.content} /> : ''}
-                    
-        //             <Modal dimmer='blurring' size='small' trigger={<Button circular icon='add user' color='blue' floated='right' onClick={this.handleOpen} />} open={this.state.modalOpen}>
-        //                 <Header icon='user' content='New User Information' />
-        //                 <Modal.Content>
-        //                     {/* <p>Your form should go here</p> */}
-        //                     <Form id="loginForm" onSubmit={this.addUser} widths="equal">
-        //                         <Form.Input id="name" label="Name" placeholder="Name" onChange={this.onChange} />
-        //                         <Form.Input id="email" label="Email" placeholder="Email" onChange={this.onChange} />
-        //                         <Form.Input id="password" label="Password" type="password" placeholder="Password" onChange={this.onChange} />
-        //                         {/* <Button content="Save" /> */}
-        //                     </Form>
-        //                 </Modal.Content>
-        //                 <Modal.Actions>
-        //                     <Button color='red' onClick={this.handleClose}>
-        //                         <Icon name='remove' /> Cancel
-        //                     </Button>
-        //                     <Button color='green' disabled={!isReadySubmit} onClick={this.addUser}>
-        //                         <Icon name='checkmark' /> Save
-        //                     </Button>
-        //                 </Modal.Actions>
-        //             </Modal>
-                
-        //         {!users
-        //             ? 'Hm, it looks like there are no items to show you :('
-        //             : <Item.Group divided link>
-        //                 {users.map((user, i) => {
-        //                     return <UsersItemComponent key={i} {...user} />
-        //                 })}
-        //             </Item.Group>}
-        //         </Grid.Column>
-        //     </Grid>
-        // );
     }
 }
 

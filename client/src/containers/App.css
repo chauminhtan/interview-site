@@ -31,3 +31,7 @@
     color: rgba(0, 0, 0, 0.68); }
     .MainLayout a:hover {
       color: #4183c4; }
+  .MainLayout .defaultForm input {
+    width: 100%; }
+  .MainLayout .defaultForm textarea {
+    width: 100%; }

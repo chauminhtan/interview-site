@@ -157,8 +157,7 @@ class QuestionsComponent extends Component {
                          <Form.Input id="answer" label="Answer" placeholder="Answer" onChange={this.onChange} />
                          <Form.Input id="time" label="Time" placeholder="Time" onChange={this.onChange} value='10' />
                          <Form.Input id="type" label="Type" placeholder="Type" onChange={this.onChange} value='text' />
-                         {/* <Button content="Save" /> */}
-                     </Form>
+                    </Form>
                 </Dialog>
                 <Table onRowSelection={this.handleRowSelection}>
                     <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
@@ -166,15 +165,19 @@ class QuestionsComponent extends Component {
                             <TableHeaderColumn>Question</TableHeaderColumn>
                             <TableHeaderColumn>Category</TableHeaderColumn>
                             <TableHeaderColumn>Answer</TableHeaderColumn>
+                            <TableHeaderColumn>Type</TableHeaderColumn>
+                            <TableHeaderColumn>Time</TableHeaderColumn>
                             <TableHeaderColumn>Created</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
-                    <TableBody displayRowCheckbox={false}>
+                    <TableBody displayRowCheckbox={false} showRowHover={true}>
                         {users.map( (row, index) => (
                         <TableRow key={index}>
                             <TableRowColumn>{row.description}</TableRowColumn>
                             <TableRowColumn>{row.category}</TableRowColumn>
                             <TableRowColumn>{row.answer}</TableRowColumn>
+                            <TableRowColumn>{row.type}</TableRowColumn>
+                            <TableRowColumn>{row.time}</TableRowColumn>
                             <TableRowColumn>{moment(row.dateModified).fromNow()}</TableRowColumn>
                         </TableRow>
                         ))}
