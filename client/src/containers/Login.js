@@ -27,6 +27,7 @@ class Login extends Component {
     render() {
         const { from } = this.props.location.state || { from: { pathname: '/' } };
         const { redirectToReferer } =  this.state;
+        const { location } = this.props;
 
         if (redirectToReferer) {
             return (
@@ -36,7 +37,7 @@ class Login extends Component {
 
         return (
             <div>
-                <Header title='Login' />
+                <Header location={location} title='Login' />
                 <Helmet>
                     <title>Interview System: Login</title>
                 </Helmet>

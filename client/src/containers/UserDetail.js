@@ -19,7 +19,7 @@ class UserDetail extends Component {
     
     // Update the data when the component mounts
     componentDidMount() {
-        console.log(this.props);
+        // console.log(this.props);
         UsersApi.getUser(this.props.match.params.id, res => {
             // console.log(res);
             this.updateData(res.data);
@@ -43,10 +43,11 @@ class UserDetail extends Component {
     render() {
         const { loading, user } =  this.state;
         const props = { user };
+        const { location } = this.props;
         // console.log(user);
         return (
             <div>
-                <Header title='User Detail' />
+                <Header location={location} title='User Detail' />
                 <Helmet>
                     <title>Interview System: User Detail</title>
                 </Helmet>

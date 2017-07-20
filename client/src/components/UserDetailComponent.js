@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-import { Button, Card, Icon, Message, Header } from 'semantic-ui-react';
 import moment from 'moment';
 import UsersApi from '../api/Users';
 import { RIEInput } from 'riek';
 import extend from 'extend';
+import Snackbar from 'material-ui/Snackbar';
+import { Card, CardActions, CardTitle } from 'material-ui/Card';
+import RaisedButton from 'material-ui/RaisedButton';
+import Divider from 'material-ui/Divider';
+import Paper from 'material-ui/Paper';
+import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
 
 class UserDetailComponent extends Component {
 
@@ -12,8 +17,6 @@ class UserDetailComponent extends Component {
         redirectToReferer: false,
         message: {
             isShow: false,
-            color: 'green',
-            header: '',
             content: ''
         },
         user: {
@@ -36,47 +39,34 @@ class UserDetailComponent extends Component {
     edit = () => {
         UsersApi.update(this.props.user, res => {
             // console.log(res);
-            let message = extend({}, this.state.message);
-            message['header'] = 'Save User!';
-            message.content = res.message;
-            message.color = 'red';
-            message.isShow = true;
+            const message = { isShow: true, content: res.message };
 
             if(res.status === 1) {
-                message.color = 'green';
                 this.goBack(); 
                 return;
             }
-            this.setState({message: message}, this.hideMessage(2000));
+            this.setState({message: message});
         })
     }
 
     delete = () => {
         UsersApi.delete(this.props.user.id, res => {
             // console.log(res);
-            let message = extend({}, this.state.message);
-            message['header'] = 'Delete User!';
-            message.content = res.message;
-            message.color = 'red';
-            message.isShow = true;
+            const message = { isShow: true, content: res.message };
 
             if(res.status === 1) {
-                message.color = 'green';
                 this.goBack(); 
                 return;
             }
             
-            this.setState({message: message}, this.hideMessage(2000));
+            this.setState({message: message});
         })
     }
 
-    hideMessage = (time) => {
-        time = time ? time : 0;
+    handleRequestClose = () => {
         let message = extend({}, this.state.message);
         message.isShow = false;
-        setTimeout(() => {
-            this.setState({message: message});
-        }, time)
+        this.setState({message: message});
     }
     
     render() {
@@ -93,33 +83,36 @@ class UserDetailComponent extends Component {
 
         return (
             <div>
-                {message.isShow ? <Message onDismiss={this.hideMessage} color={message.color} header={message.header} content={message.content} /> : ''}
-                <Header as='h2'>User Information</Header>
-                <Card fluid>
-                    <Card.Content>
-                        <Card.Header>
+                <h2>User Information</h2>
+                <Snackbar
+                    open={message.isShow}
+                    message={message.content}
+                    autoHideDuration={3000}
+                    onRequestClose={this.handleRequestClose}
+                />
+                <Paper zDepth={2}>
+                    <Card className='defaultForm'>
+                        <CardTitle className='title' subtitle='Name'>
                             <RIEInput propName='name' value={user.name} change={this.onChange} />
-                        </Card.Header>
-                        <Card.Description>
-                            <RIEInput  propName='email' value={user.email} change={this.onChange} />
-                        </Card.Description>
-                        <Card.Meta>
-                            Created: {moment(user.dateModified).fromNow()}
-                        </Card.Meta>
-                    </Card.Content>
-                    <Card.Content extra>
-                        {/* <div className='ui two buttons'> */}
-                            <Button color='green' disabled={!modififed} onClick={this.edit}>Save</Button>
-                            <Button color='red' onClick={this.delete}>Delete</Button>
-                        {/* </div> */}
-                    </Card.Content>
-                </Card>
-                <Button color='grey' animated onClick={this.goBack}>
-                    <Button.Content hidden>Back</Button.Content>
-                    <Button.Content visible>
-                        <Icon name='left arrow' />
-                    </Button.Content>
-                </Button>
+                        </CardTitle>
+                        <Divider />
+                        <CardTitle subtitle='Email'>
+                            <RIEInput propName='email' value={user.email} change={this.onChange} />
+                        </CardTitle>
+                        <Divider />
+                        <CardTitle subtitle='Created'>
+                            {moment(user.dateModified).fromNow()}
+                        </CardTitle>
+                        {/* <Divider /> */}
+                        <CardActions>
+                            <RaisedButton primary disabled={!modififed} onClick={this.edit} label="Save" />
+                            <RaisedButton secondary onClick={this.delete} label="Delete" />
+                        </CardActions>
+                    </Card>
+                </Paper>
+                <h4>
+                    <RaisedButton primary={false} label='back' icon={<ArrowBack />} onTouchTap={this.goBack} />
+                </h4>
             </div>
         );
     }

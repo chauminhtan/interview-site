@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Redirect } from 'react-router-dom';
-import { Item, Grid, Button, Icon, Message, Header, Modal, Form } from "semantic-ui-react";
+import { Input } from "semantic-ui-react";
 // import UsersItemComponent from './UsersItemComponent';
 import UsersApi from '../api/Users';
 import extend from 'extend';
@@ -17,12 +17,15 @@ import FlatButton from 'material-ui/FlatButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import Snackbar from 'material-ui/Snackbar';
 import Dialog from 'material-ui/Dialog';
+import Paper from 'material-ui/Paper';
+import TextField from 'material-ui/TextField';
 import moment from 'moment';
 
 class UsersComponent extends Component {
     constructor (props) {
         super(props);
         this.state = {
+            search: '',
             message: {
                 isShow: false,
                 color: 'green',
@@ -31,6 +34,7 @@ class UsersComponent extends Component {
             },
             modalOpen: false,
             users: [],
+            originalUsers: [],
             user: {
                 name: '',
                 email: '',
@@ -44,14 +48,9 @@ class UsersComponent extends Component {
 
     addUser = () => {
         // call to api server
-        const userData = {
-            'email': document.getElementById('email').value, 
-            'password': document.getElementById('password').value,
-            'name': document.getElementById('name').value,
-            'isAdmin': false
-        };
+        const {user} = this.state;
 
-        UsersApi.create(userData, res => {
+        UsersApi.create(user, res => {
 
             let message = extend({}, this.state.message);
             message.content = res.message;
@@ -66,8 +65,15 @@ class UsersComponent extends Component {
     }
 
     onChange = (e) => {
-        const isValid = document.getElementById('name').value.length && document.getElementById('email').value.length && document.getElementById('password').value.length;
-        this.setState({isReadySubmit: isValid});
+        // const isValid = document.getElementById('name').value.length && document.getElementById('email').value.length && document.getElementById('password').value.length;
+        // this.setState({isReadySubmit: isValid});
+        let user = extend({}, this.state.user);
+        user[e.target.id] = e.target.value;
+        // console.log(user);
+        const isValid = user.name.length && 
+                        user.email.length && 
+                        user.password.length;
+        this.setState({user: user, isReadySubmit: isValid});
     }
 
     handleRequestClose = () => {
@@ -87,12 +93,24 @@ class UsersComponent extends Component {
     handleRowSelection = (selectedRows) => {
         // console.log(selectedRows[0]);
         for (var key in this.state.users) {
-            if (key == selectedRows[0]) {
+            if (key === selectedRows[0].toString()) {
                 // redirect to user detail page
                 this.setState({redirectToReferer: '/users/' + this.state.users[key].id})
                 break;
             }
         }
+    };
+
+    handleSearch = (event) => {
+        const users = this.state.originalUsers;
+        let filteredUsers = users.filter(user => {
+            return user.name.search(event.target.value) > -1;
+        });
+        
+        this.setState({
+            search: event.target.value,
+            users: filteredUsers
+        });
     };
 
     // Update the data when the component mounts
@@ -106,14 +124,15 @@ class UsersComponent extends Component {
             // console.log(res);
             this.setState({
                 loading: false,
-                users: res.data
+                users: res.data,
+                originalUsers: res.data
             }, this.props.onComponentRefresh);
         })
     }
 
     render() {
         // const { users } = this.props;
-        const { message, isReadySubmit, users, redirectToReferer } =  this.state;
+        const { message, isReadySubmit, users, redirectToReferer, search } =  this.state;
         // console.log(users);
         if (redirectToReferer.length) {
             return (
@@ -124,6 +143,7 @@ class UsersComponent extends Component {
         const actions = [
             <FlatButton
                 label="Cancel"
+                secondary={true}
                 onTouchTap={this.handleClose}
             />,
             <FlatButton
@@ -138,46 +158,66 @@ class UsersComponent extends Component {
         return (
             <div>
                 <Snackbar
-                    open={this.state.message.isShow}
-                    message={this.state.message.content}
-                    autoHideDuration={4000}
+                    open={message.isShow}
+                    message={message.content}
+                    autoHideDuration={3000}
                     onRequestClose={this.handleRequestClose}
                 />
                 <Dialog
-                    title="New User Information"
+                    title="New User"
                     actions={actions}
                     modal={false}
                     open={this.state.modalOpen}
                     onRequestClose={this.handleClose}
                     autoScrollBodyContent={true}
                     >
-                    <Form id="loginForm" onSubmit={this.addUser} widths="equal">
-                         <Form.Input id="name" label="Name" placeholder="Name" onChange={this.onChange} />
-                         <Form.Input id="email" label="Email" placeholder="Email" onChange={this.onChange} />
-                         <Form.Input id="password" label="Password" type="password" placeholder="Password" onChange={this.onChange} />
-                    </Form>
+                    <TextField id="name"
+                        fullWidth={true}
+                        hintText="Name Field"
+                        floatingLabelText="Name"
+                        onChange={this.onChange}
+                        /><br />
+                    <TextField id="email"
+                        fullWidth={true}
+                        hintText="Email Field"
+                        floatingLabelText="Email"
+                        onChange={this.onChange}
+                        /><br />
+                    <TextField id="password"
+                        fullWidth={true}
+                        hintText="Password Field"
+                        floatingLabelText="Password"
+                        type='password'
+                        onChange={this.onChange}
+                        />
                 </Dialog>
-                <Table onRowSelection={this.handleRowSelection}>
-                    <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
-                        <TableRow>
-                            <TableHeaderColumn>Name</TableHeaderColumn>
-                            <TableHeaderColumn>Email</TableHeaderColumn>
-                            <TableHeaderColumn>Created</TableHeaderColumn>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody displayRowCheckbox={false} showRowHover={true}>
-                        {users.map( (row, index) => (
-                        <TableRow key={index}>
-                            <TableRowColumn>{row.name}</TableRowColumn>
-                            <TableRowColumn>{row.email}</TableRowColumn>
-                            <TableRowColumn>{moment(row.dateModified).fromNow()}</TableRowColumn>
-                        </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                <FloatingActionButton secondary={true} style={{float: 'right'}} onTouchTap={this.handleOpen}>
-                    <ContentAdd />
-                </FloatingActionButton>
+                <h5>
+                    <Input icon='search' value={search} onChange={this.handleSearch} placeholder='Search...' />
+                    <FloatingActionButton mini={true} secondary={true} style={{float: 'right'}} onTouchTap={this.handleOpen}>
+                        <ContentAdd />
+                    </FloatingActionButton>
+                    <div className='clear' />
+                </h5>
+                <Paper zDepth={2}>
+                    <Table onRowSelection={this.handleRowSelection}>
+                        <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+                            <TableRow>
+                                <TableHeaderColumn>Name</TableHeaderColumn>
+                                <TableHeaderColumn>Email</TableHeaderColumn>
+                                <TableHeaderColumn>Created</TableHeaderColumn>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody displayRowCheckbox={false} showRowHover={true}>
+                            {users.map( (row, index) => (
+                            <TableRow key={index}>
+                                <TableRowColumn>{row.name}</TableRowColumn>
+                                <TableRowColumn>{row.email}</TableRowColumn>
+                                <TableRowColumn>{moment(row.dateModified).fromNow()}</TableRowColumn>
+                            </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </Paper>
             </div>
         )
     }

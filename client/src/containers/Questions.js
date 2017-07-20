@@ -28,10 +28,11 @@ class Questions extends Component {
 
     render() {
         const { loading } =  this.state;
+        const { location } = this.props;
 
         return (
             <div>
-                <Header title='Questions' />
+                <Header location={location} title='Questions' />
                 <div className='MainContent'>
                     {loading && <CircularProgress />}
                     <QuestionsComponent onComponentRefresh={this.onComponentRefresh} />

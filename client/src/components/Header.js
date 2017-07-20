@@ -1,58 +1,26 @@
 import React, { Component } from "react";
-import { Menu, Dropdown, Icon, Segment } from "semantic-ui-react";
-import { NavLink, withRouter, Redirect } from "react-router-dom";
+// import { Menu, Dropdown, Icon, Segment } from "semantic-ui-react";
+import { Link, Redirect } from "react-router-dom";
 import Auth from "../api/Auth";
 import { Store } from "../api/index";
 import PropTypes from 'prop-types';
 import AppBar from "material-ui/AppBar";
 import IconMenu from "material-ui/IconMenu";
 import IconButton from "material-ui/IconButton";
-import FontIcon from "material-ui/FontIcon";
-import NavigationExpandMoreIcon from "material-ui/svg-icons/navigation/expand-more";
 import MenuItem from "material-ui/MenuItem";
-import DropDownMenu from "material-ui/DropDownMenu";
 import FlatButton from "material-ui/FlatButton";
-import {
-  Toolbar,
-  ToolbarGroup,
-  ToolbarSeparator,
-  ToolbarTitle
-} from "material-ui/Toolbar";
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import Drawer from 'material-ui/Drawer';
-
-// const ShowTheLocation = withRouter(Header);
-// const UserNav = withRouter(
-//   ({ history }) =>
-//     Auth.isAuthenticated()
-//       ? <Menu.Menu>
-//           <Dropdown
-//             text={
-//               Store.getUserInfo() ? JSON.parse(Store.getUserInfo()).name : ""
-//             }
-//             className="link item"
-//             pointing
-//           >
-//             <Dropdown.Menu>
-//               <Menu.Item header>View Profile</Menu.Item>
-//               <Menu.Item
-//                 name="logout"
-//                 onClick={() => {
-//                   Auth.signout(() => history.push("/home"));
-//                 }}
-//               />
-//             </Dropdown.Menu>
-//           </Dropdown>
-//         </Menu.Menu>
-//       : <Menu.Item name="login" as={NavLink} to="/login" />
-// );
+import {List, ListItem, makeSelectable} from 'material-ui/List';
+import SocialPeople from 'material-ui/svg-icons/social/people';
+import ActionHome from 'material-ui/svg-icons/action/home';
+import ContentInbox from 'material-ui/svg-icons/content/inbox';
 
 class Login extends Component {
     static muiName = "FlatButton";
 
     render() {
-        return <FlatButton {...this.props} label="Login"><NavLink to='/login'></NavLink></FlatButton>;
+        return <FlatButton {...this.props} label="Login"><Link to='/login'></Link></FlatButton>;
     }
 }
 
@@ -83,18 +51,54 @@ class Logged extends Component {
                 {...props}
                 iconButtonElement={
                     <IconButton>
-                        <MoreVertIcon />
+                        <MoreVertIcon color={'white'} />
                     </IconButton>
                 }
                 targetOrigin={{ horizontal: "right", vertical: "top" }}
                 anchorOrigin={{ horizontal: "right", vertical: "top" }}
             >
-                <MenuItem><NavLink to='/home'>{name}</NavLink></MenuItem>
+                <MenuItem primaryText={name} containerElement={<Link to='/home' />}></MenuItem>
                 <MenuItem primaryText="Sign out" onTouchTap={this.signOut} />
             </IconMenu>
         )
     }
 }
+
+let SelectableList = makeSelectable(List);
+
+function wrapState(ComposedComponent) {
+    return class SelectableList extends Component {
+        static propTypes = {
+            children: PropTypes.node.isRequired,
+            defaultValue: PropTypes.number.isRequired,
+        };
+
+        componentWillMount() {
+            this.setState({
+                selectedIndex: this.props.defaultValue,
+            });
+        }
+
+        handleRequestChange = (event, index) => {
+            this.setState({
+                selectedIndex: index,
+            });
+        };
+
+        render() {
+            return (
+                <ComposedComponent
+                value={this.state.selectedIndex}
+                onChange={this.handleRequestChange}
+                >
+                {this.props.children}
+                </ComposedComponent>
+            );
+        }
+    };
+}
+
+SelectableList = wrapState(SelectableList);
 
 class Header extends Component {
     state = {
@@ -111,14 +115,20 @@ class Header extends Component {
 
     handleClose = () => this.setState({openSideBar: false});
 
+    onTap = (e, data) => {
+        console.log(e.target);
+        this.handleClose();
+    }
+
     render() {
         const { openSideBar } = this.state;
-        const { title } = this.props;
+        const { title, location } = this.props;
+        const pathname = location.pathname === '/' ? '/home' : location.pathname;
         const logged = Auth.isAuthenticated();
         let menus = [
-            {title: 'Home', link: '/home'},
-            {title: 'Users', link: '/Users'},
-            {title: 'Questions', link: '/questions'},
+            {title: 'Home', link: '/home', value: pathname === '/home' ? 1 : 0, icon: <ActionHome />},
+            {title: 'Users', link: '/users', value: pathname === '/users' ? 1 : 0, icon: <SocialPeople />},
+            {title: 'Questions', link: '/questions', value: pathname === '/questions' ? 1 : 0, icon: <ContentInbox />},
         ]
 
         if (!logged) {
@@ -135,9 +145,13 @@ class Header extends Component {
                     open={openSideBar}
                     onRequestChange={(openSideBar) => this.setState({openSideBar})}
                     >
+                    <SelectableList defaultValue={1}>
                     {menus.map((menu, i) => {
-                        return <MenuItem key={i} onTouchTap={this.handleClose}><NavLink to={menu.link}>{menu.title}</NavLink></MenuItem>
+                        return <ListItem containerElement={<Link to={menu.link} />} 
+                                    primaryText={menu.title} onTouchTap={this.handleClose} 
+                                    value={menu.value} leftIcon={menu.icon} key={i} />
                     })}
+                    </SelectableList>
                 </Drawer>
             </AppBar>
         );

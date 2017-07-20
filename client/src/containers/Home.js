@@ -4,11 +4,11 @@ import Header from '../components/Header';
 
 class Home extends Component {
     render() {
-        const { match, location, history } = this.props;
-        
+        const { location } = this.props;
+        // console.log(location);
         return (
             <div>
-                <Header title='Home' />
+                <Header location={location} title='Home' />
                 <Helmet>
                     <title>Interview System: Home</title>
                 </Helmet>

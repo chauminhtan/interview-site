@@ -43,10 +43,11 @@ class QuestionDetail extends Component {
     render() {
         const { loading, question } =  this.state;
         const props = { question };
-        // console.log(question);
+        const { location } = this.props;
+
         return (
             <div>
-                <Header title='Question Detail' />
+                <Header location={location} title='Question Detail' />
                 <Helmet>
                     <title>Interview System: Question Detail</title>
                 </Helmet>

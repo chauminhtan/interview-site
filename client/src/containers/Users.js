@@ -30,10 +30,11 @@ class Users extends Component {
 
     render() {
         const { loading } =  this.state;
+        const { location } = this.props;
         
         return (
             <div>
-                <Header title='Users' />
+                <Header location={location} title='Users' />
                 <Helmet>
                     <title>Interview System: Users</title>
                 </Helmet>

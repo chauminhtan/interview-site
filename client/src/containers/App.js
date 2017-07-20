@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
-import { BrowserRouter as Router, Route, Redirect, withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { Grid } from 'semantic-ui-react';
-import Header from '../components/Header';
+import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
+// import Header from '../components/Header';
 import Home from './Home';
 import Users from './Users';
 import UserDetail from './UserDetail';
