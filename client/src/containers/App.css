@@ -32,7 +32,7 @@
     .MainLayout a:hover {
       color: #4183c4; }
   .MainLayout .defaultForm input {
-    width: 100%; }
+    width: 100% !important; }
   .MainLayout .defaultForm textarea {
     width: 100%; }
   .MainLayout .clear {

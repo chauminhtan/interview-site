@@ -13,6 +13,7 @@ import {
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import FlatButton from 'material-ui/FlatButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
+import ContentRemoved from 'material-ui/svg-icons/content/remove-circle';
 import Snackbar from 'material-ui/Snackbar';
 import Dialog from 'material-ui/Dialog';
 import Paper from 'material-ui/Paper';
@@ -20,8 +21,12 @@ import MenuItem from "material-ui/MenuItem";
 import SelectField from "material-ui/SelectField";
 import TextField from 'material-ui/TextField';
 import Chip from 'material-ui/Chip';
+import Avatar from 'material-ui/Avatar';
+import IconButton from 'material-ui/IconButton';
+import { RIETextArea, RIEInput } from 'riek';
 import moment from 'moment';
 import { Input } from "semantic-ui-react";
+import PickAnswerComponent from '../components/PickAnswerComponent';
 
 const QuestionTypes = [
   <MenuItem key={1} value='Text' primaryText="Text" />,
@@ -32,15 +37,7 @@ const CategoryTypes = [
   <MenuItem key={2} value='QA' primaryText="QA" />,
 ];
 
-const styles = {
-    chip: {
-        margin: 4,
-    },
-    wrapper: {
-        display: 'flex',
-        flexWrap: 'wrap',
-    },
-}
+const PickAnswers = ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4'];
 
 class QuestionsComponent extends Component {
     constructor (props) {
@@ -59,8 +56,9 @@ class QuestionsComponent extends Component {
                 category: '',
                 answer: '',
                 time: 0,
-                type: '',
+                type: ''
             },
+            pickAnswers: PickAnswers,
             isReadySubmit: false,
             redirectToReferer: ''
         }
@@ -68,7 +66,14 @@ class QuestionsComponent extends Component {
 
     addData = () => {
         // call to api server
-        const data = this.state.question;
+        let data = this.state.question;
+        if (data.type.toLowerCase() === 'pick') {
+            data.pickAnswer = this.state.pickAnswers.map((item, index) => {
+                let obj = {id: index+1, text: item};
+                return obj;
+            });
+            console.log(data.pickAnswer);
+        }
         QuestionsApi.create(data, res => {
 
             let message = extend({}, this.state.message);
@@ -163,24 +168,70 @@ class QuestionsComponent extends Component {
         })
     }
 
-    handleRequestDelete = () => {
-        alert('under building...')
+    newAnswer () {
+        return 'New Answer';
     }
 
-    handleTouchTap = () => {
-        alert('under building...')
+    addMoreAnswer = () => {
+        const newAnswer = this.newAnswer(this.state.pickAnswers.length + 1);
+        let pickAnswers = this.state.pickAnswers;
+        pickAnswers.push(newAnswer);
+        console.log(pickAnswers);
+        this.setState({pickAnswers: pickAnswers});
+    }
+
+    removedAnswer = (key) => {
+        console.log(key);
+        const pickAnswers = this.state.pickAnswers.filter((answer, index) => {
+            return index !== key;
+        })
+
+        this.setState({pickAnswers: pickAnswers});
+    }
+
+    onPickAnswerChange = (data) => {
+        // console.log(data);
+        // const key = Object.keys(newState)[0];
+        // const index = parseInt(key.substr(6));
+        if (data.index > -1 && data.index <= this.state.pickAnswers.length) {
+            let pickAnswers = this.state.pickAnswers;
+            pickAnswers[data.index] = data.value;
+            // console.log(pickAnswers);
+            this.setState({pickAnswers: pickAnswers});
+        }
+    }
+
+    renderAnswer(answer, i) {
+        return (
+            // <div style={styles.pickAnswer} key={i}>
+            //     <IconButton tooltip="Removed this answer" tooltipPosition="top-right" onTouchTap={this.removedAnswer.bind(this, i)}>
+            //         <ContentRemoved />
+            //     </IconButton>
+            //     <RIEInput propName={'Answer'+i} value={answer} change={this.onPickAnswerChange} />
+            // </div>
+            <PickAnswerComponent key={i} AnswerIndex={i} answer={answer} onRemoved={this.removedAnswer} onChange={this.onPickAnswerChange} />
+        )
+    }
+
+    renderAnswers(question) {
+        const totalPickAnswer = question.pickAnswers ? question.pickAnswers.length : 0;
+        let renderPickAnswers = [];
+        for (let i=0; i < totalPickAnswer; i++) {
+            renderPickAnswers.push(this.renderAnswer(question.pickAnswers[i], i));
+        }
+        const moreAnswer = <FlatButton key={totalPickAnswer + 1} label="add more" onTouchTap={this.addMoreAnswer} />;
+        renderPickAnswers.push(moreAnswer);
+        return (renderPickAnswers);
     }
 
     render() {
-        const { message, isReadySubmit, questions, redirectToReferer, search, question } =  this.state;
+        const { message, isReadySubmit, questions, redirectToReferer, search, question, totalPickAnswer, pickAnswers } =  this.state;
         // console.log(questions);
         if (redirectToReferer.length) {
             return (
                 <Redirect to={{pathname: redirectToReferer}} />
             )
         }
-
-        const Chips = [{id: 'chip1', text: 'answer 1'},{id: 'chip2', text: 'answer 2'}];
 
         const actions = [
             <FlatButton
@@ -196,6 +247,8 @@ class QuestionsComponent extends Component {
                 disabled={!isReadySubmit}
             />,
         ];
+
+        const renderPickAnswers = question.type.toLowerCase() === 'pick' ? this.renderAnswers(this.state) : '';
 
         return (
             <div>
@@ -237,17 +290,13 @@ class QuestionsComponent extends Component {
                     <TextField id="answer"
                         fullWidth={true}
                         hintText="Answer Field"
-                        floatingLabelText="Answer"
+                        floatingLabelText="Correct Answer"
                         multiLine={true}
                         rowsMax={4}
                         onChange={this.onChange}
                         /><br />
-                    <div style={styles.wrapper}>
-                    {Chips.map( (chip, index) => (
-                        <Chip style={styles.chip} key={index} onTouchTap={this.handleTouchTap} onRequestDelete={this.handleRequestDelete}>
-                            {chip.text}
-                        </Chip>
-                    ))}
+                    <div className='defaultForm'>
+                        { renderPickAnswers }
                     </div>
                     <TextField id="time"
                         fullWidth={true}

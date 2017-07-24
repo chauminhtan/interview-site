@@ -5,7 +5,7 @@ var QuestionSchema = new Schema({
     description: { type: String, require: true },
     category: { type: String, require: true },
     type: { type: String, default: 'text' },
-	extra: { type: String },
+	pickAnswers: [{}],
     answer: { type: String, require: true },
 	time: { type: Number, default: 10 },
     dateModified: { type: Date, default: Date.now },
