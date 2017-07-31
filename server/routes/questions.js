@@ -20,7 +20,7 @@ module.exports = {
 		});
 	}, //end create
 	getAll: (req, res) => {
-		Question.where('deleted').ne('true').select('id description category answer type time pickAnswers dateModified').exec((err, questions) => {
+		Question.where('deleted').ne('true').select('id title language category answer type time pickAnswers dateModified').exec((err, questions) => {
 			if (err) {
 				sendErr(res, err);
 			} else {
@@ -31,7 +31,7 @@ module.exports = {
 		});
 	}, //end getAll
 	getOne: (req, res) => {
-		Question.where('_id').equals(req.params.id).select('id description category answer type time pickAnswers dateModified').exec((err, question) => {
+		Question.where('_id').equals(req.params.id).select('id title language category answer type time pickAnswers dateModified').exec((err, question) => {
 			if (err) {
 				sendErr(res, err);
 			} else {
@@ -55,24 +55,6 @@ module.exports = {
 	},
 	delete: function(req, res) {
 		/* careful with _id here */
-		// Question.findById(req.params.id, function(err, question) {
-		// 	if (err) {
-		// 		// console.log(err);
-		// 		sendErr(res, err);
-		// 		return;
-		// 	}
-
-		// 	extend(question, {
-		// 		deleted: 1
-		// 	});
-		// 	question.save(function(err) {
-		// 		res.json({
-		// 			status: 1,
-		// 			message: 'deleled id: ' + req.params.id
-		// 		})
-		// 	});
-		// });
-
 		// remove out of db
 		Question.findByIdAndRemove(req.params.id, function(err, data) {
 			if (err) {
@@ -82,7 +64,7 @@ module.exports = {
 			}
 			res.json({
 				status: 1,
-				message: 'deleled userId: ' + req.params.id
+				message: 'deleled quesId: ' + req.params.id
 			})
 		});
 	}

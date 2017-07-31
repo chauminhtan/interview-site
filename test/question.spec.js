@@ -10,7 +10,7 @@ var Question = require('../server/models/question');
 chai.use(chaiHttp);
 // Our parent block
 describe('Questions', () => {
-    var token = '', questionId = '';
+    var token = '', itemId = '';
     
     before((done) => { // Before test we empty the database
         Question.remove({}, (err) => { 
@@ -21,8 +21,8 @@ describe('Questions', () => {
     /*
     * Test the /POST route
     */
-    describe('/POST question', () => {
-        it('CREATE an question', (done) => {
+    describe('/POST', () => {
+        it('CREATE an item', (done) => {
             chai.request(server)
                 .post('/api/questions')
                 .send({
@@ -35,11 +35,36 @@ describe('Questions', () => {
                     res.body.status.should.eql(1);
                     res.body.data.should.be.a('object');
                     res.body.data.should.have.property('id');
-                    userId = res.body.data.id;
-                    console.log('userId: ' + userId);
+                    itemId = res.body.data.id;
+                    console.log('itemId: ' + itemId);
                     done();
                 });
         });
     });
-
+    /*
+    * Test the /GET route
+    */
+    describe('/GET', () => {
+        it('GET All', (done) => {
+            chai.request(server)
+                .get('/api/questions')
+                .end((err, res) => {
+                    res.should.have.status(200);			
+                    res.body.status.should.eql(1);
+                    res.body.data.should.be.a('array');
+                    done();
+                });
+        });
+        it('GET ONE', (done) => {
+            chai.request(server)
+                .get('/api/questions/' + itemId)
+                .end((err, res) => {
+                    res.should.have.status(200);					
+                    res.body.status.should.eql(1);
+                    res.body.data.should.be.a('object');
+                    res.body.data.id.should.eql(itemId);
+                    done();
+                });
+        });
+    });
 });

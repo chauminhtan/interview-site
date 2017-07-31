@@ -27,16 +27,17 @@ class QuestionDetailComponent extends Component {
             {id: "Pick", text: "Pick"}
         ],
         categoryOptions : [
-            {id: "Developer", text: "Developer"},
-            {id: "QA", text: "QA"}
+            {id: "Coding", text: "Coding"},
+            {id: "Other", text: "Other"}
         ],
         question: {
             answer: '',
             category: '',
-            description: '',
+            language: '',
+            title: '',
             time: '',
             type: '',
-            pickAnswer: [],
+            pickAnswers: [],
             dateModified: ''
         },
         modififed: false
@@ -69,7 +70,8 @@ class QuestionDetailComponent extends Component {
 
     edit = () => {
         // console.log(this.props.question)
-        QuestionsApi.update(this.props.question, res => {
+        let data = this.props.question;
+        QuestionsApi.update(data, res => {
             // console.log(res);
             let message = extend({}, this.state.message);
             message.content = res.message;
@@ -105,33 +107,35 @@ class QuestionDetailComponent extends Component {
         this.setState({message: message});
     }
 
-    newAnswer () {
-        return 'New Answer';
+    newAnswer (id) {
+        return {id: id, text: 'New Answer'};
     }
 
     addMoreAnswer = () => {
-        const newAnswer = this.newAnswer();
-        let pickAnswers = this.state.pickAnswers;
-        pickAnswers.push(newAnswer);
-        console.log(pickAnswers);
-        this.setState({pickAnswers: pickAnswers});
+        let question = this.props.question;
+        const newAnswer = this.newAnswer(question.pickAnswers.length + 1);
+        question.pickAnswers.push(newAnswer);
+        console.log(question);
+        this.setState({modififed: true});
     }
 
     removedAnswer = (key) => {
         console.log(key);
-        const pickAnswers = this.state.pickAnswers.filter((answer, index) => {
+        let question = this.props.question;
+        question.pickAnswers = question.pickAnswers.filter((answer, index) => {
             return index !== key;
         })
 
-        this.setState({pickAnswers: pickAnswers});
+        console.log(this.props.question);
+        this.setState({modififed: true});
     }
 
     onPickAnswerChange = (data) => {
-        if (data.index > -1 && data.index <= this.state.pickAnswers.length) {
-            let pickAnswers = this.state.pickAnswers;
-            pickAnswers[data.index] = data.value;
-            // console.log(pickAnswers);
-            this.setState({pickAnswers: pickAnswers});
+        let question = this.props.question;
+        if (data.index > -1 && data.index <= question.pickAnswers.length) {
+            question.pickAnswers[data.index] = {id: data.index + 1, text: data.value};
+            console.log(this.props.question);
+            this.setState({modififed: true});
         }
     }
 
@@ -151,7 +155,7 @@ class QuestionDetailComponent extends Component {
         }
         const moreAnswer = <FlatButton key={totalPickAnswer + 1} label="add more" onTouchTap={this.addMoreAnswer} />;
         renderPickAnswers.push(moreAnswer);
-        return (renderPickAnswers);
+        return (<CardTitle subtitle='Pick Answers'>{renderPickAnswers}</CardTitle>);
     }
     
     render() {
@@ -181,47 +185,51 @@ class QuestionDetailComponent extends Component {
                 />
                 <Paper zDepth={2}>
                     <Tabs>
-                        <Tab label="Question Information" >
+                        <Tab label="Question" >
                             <Card className='defaultForm'>
                                 <CardTitle className='title' subtitle='Title'>
-                                    <RIETextArea propName='description' value={question.description} change={this.onChange} />
+                                    <RIETextArea propName='title' value={question.title} change={this.onChange} />
+                                </CardTitle>
+                                <Divider />
+                                <CardTitle subtitle='Language'>
+                                    {question.language}
                                 </CardTitle>
                                 <Divider />
                                 <CardTitle subtitle='Category'>
                                     <RIESelect propName='category' value={category} change={this.onChange} options={categoryOptions} />
                                 </CardTitle>
                                 <Divider />
-                                <CardTitle subtitle='Correct Answer'>
+                                {/* <CardTitle subtitle='Correct Answer'>
                                     <RIETextArea propName='answer' value={question.answer} change={this.onChange} />
                                 </CardTitle>
                                 <Divider />
                                 <CardTitle subtitle='Type (Text | Pick)'>
                                     <RIESelect propName='type' value={typeQuestion} change={this.onChange} options={typeOptions} />
                                 </CardTitle>
-                                <Divider />
+                                <Divider /> */}
                                 <CardTitle subtitle='Time for answer (second)'>
                                     <RIENumber propName='time' value={question.time} change={this.onChange} />
-                                </CardTitle>
+                                </CardTitle> 
                                 <CardActions>
                                     <RaisedButton primary disabled={!modififed} onClick={this.edit} label="Save" />
                                     <RaisedButton secondary onClick={this.delete} label="Delete" />
                                 </CardActions>
                             </Card>
                         </Tab>
-                        <Tab label="Answer Information" >
-                            <Card className='defaultForm'>
+                        <Tab label="Answer" >
+                            <Card>
                                 <Divider />
                                 <CardTitle subtitle='Correct Answer'>
-                                    <RIETextArea propName='answer' value={question.answer} change={this.onChange} />
+                                    <RIETextArea className='fullWidth' propName='answer' value={question.answer} change={this.onChange} />
                                 </CardTitle>
                                 <Divider />
                                 <CardTitle subtitle='Type (Text | Pick)'>
                                     <RIESelect propName='type' value={typeQuestion} change={this.onChange} options={typeOptions} />
                                 </CardTitle>
                                 <Divider />
-                                 <CardTitle subtitle='Pick Answers'>
+                                {/* <CardTitle subtitle='Pick Answers'> */}
                                     { renderPickAnswers }
-                                </CardTitle> 
+                                {/* </CardTitle>  */}
                                 <CardActions>
                                     <RaisedButton primary disabled={!modififed} onClick={this.edit} label="Save" />
                                     <RaisedButton secondary onClick={this.delete} label="Delete" />

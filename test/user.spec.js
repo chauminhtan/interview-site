@@ -51,8 +51,9 @@ describe('Users', () => {
                     res.should.have.status(200);			
                     res.body.status.should.eql(1);
                     res.body.data.should.be.a('object');
-                    res.body.data.should.have.property('userId');
                     res.body.data.should.have.property('token');
+                    res.body.data.should.have.property('userInfo');
+                    res.body.data.userInfo.should.have.property('userId');
                     token = res.body.data.token;
                     console.log('token: ' + token);
                     done();

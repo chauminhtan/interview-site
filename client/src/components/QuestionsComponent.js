@@ -13,17 +13,13 @@ import {
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import FlatButton from 'material-ui/FlatButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
-import ContentRemoved from 'material-ui/svg-icons/content/remove-circle';
 import Snackbar from 'material-ui/Snackbar';
 import Dialog from 'material-ui/Dialog';
 import Paper from 'material-ui/Paper';
 import MenuItem from "material-ui/MenuItem";
 import SelectField from "material-ui/SelectField";
 import TextField from 'material-ui/TextField';
-import Chip from 'material-ui/Chip';
-import Avatar from 'material-ui/Avatar';
-import IconButton from 'material-ui/IconButton';
-import { RIETextArea, RIEInput } from 'riek';
+import AutoComplete from 'material-ui/AutoComplete';
 import moment from 'moment';
 import { Input } from "semantic-ui-react";
 import PickAnswerComponent from '../components/PickAnswerComponent';
@@ -33,9 +29,10 @@ const QuestionTypes = [
   <MenuItem key={2} value='Pick' primaryText="Pick" />,
 ];
 const CategoryTypes = [
-  <MenuItem key={1} value='Developer' primaryText="Developer" />,
-  <MenuItem key={2} value='QA' primaryText="QA" />,
+  <MenuItem key={1} value='Coding' primaryText="Developer" />,
+  <MenuItem key={2} value='Other' primaryText="QA" />,
 ];
+const LanguageTypes = ['General','Java','C#','Python','Javascript', 'QA'];
 
 const PickAnswers = ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4'];
 
@@ -44,6 +41,7 @@ class QuestionsComponent extends Component {
         super(props);
         this.state = {
             search: '',
+            searchText: '',
             message: {
                 isShow: false,
                 content: ''
@@ -52,7 +50,8 @@ class QuestionsComponent extends Component {
             questions: [],
             originalQuestions: [],
             question: {
-                description: '',
+                title: '',
+                language: '',
                 category: '',
                 answer: '',
                 time: 0,
@@ -68,11 +67,11 @@ class QuestionsComponent extends Component {
         // call to api server
         let data = this.state.question;
         if (data.type.toLowerCase() === 'pick') {
-            data.pickAnswer = this.state.pickAnswers.map((item, index) => {
+            data.pickAnswers = this.state.pickAnswers.map((item, index) => {
                 let obj = {id: index+1, text: item};
                 return obj;
             });
-            console.log(data.pickAnswer);
+            console.log(data.pickAnswers);
         }
         QuestionsApi.create(data, res => {
 
@@ -92,7 +91,7 @@ class QuestionsComponent extends Component {
         let question = extend({}, this.state.question);
         question[e.target.id] = e.target.value;
         // console.log(question);
-        const isValid = question.description.length && 
+        const isValid = question.title.length && 
                         question.category.length && 
                         question.answer.length && 
                         question.time > 0 && 
@@ -142,7 +141,7 @@ class QuestionsComponent extends Component {
     handleSearch = (event) => {
         const questions = this.state.originalQuestions;
         let filteredQuestions = questions.filter(question => {
-            return question.description.search(event.target.value) > -1;
+            return question.title.search(event.target.value) > -1;
         });
         // console.log(filteredQuestions);
         this.setState({
@@ -191,10 +190,8 @@ class QuestionsComponent extends Component {
 
     onPickAnswerChange = (data) => {
         // console.log(data);
-        // const key = Object.keys(newState)[0];
-        // const index = parseInt(key.substr(6));
-        if (data.index > -1 && data.index <= this.state.pickAnswers.length) {
-            let pickAnswers = this.state.pickAnswers;
+        let pickAnswers = this.state.pickAnswers;
+        if (data.index > -1 && data.index <= pickAnswers.length) {
             pickAnswers[data.index] = data.value;
             // console.log(pickAnswers);
             this.setState({pickAnswers: pickAnswers});
@@ -224,8 +221,30 @@ class QuestionsComponent extends Component {
         return (renderPickAnswers);
     }
 
+    handleUpdateInput = (searchText) => {
+        this.setState({
+            searchText: searchText,
+        });
+    };
+
+    handleNewRequest = (searchText) => {
+        let question = extend({}, this.state.question);
+        question['language'] = searchText;
+        // console.log(question);
+        const isValid = question.title.length && 
+                        question.language.length && 
+                        question.category.length && 
+                        question.answer.length && 
+                        question.time > 0 && 
+                        question.type.length;
+        this.setState({question: question, isReadySubmit: isValid});
+        // this.setState({
+        //     searchText: searchText,
+        // });
+    };
+
     render() {
-        const { message, isReadySubmit, questions, redirectToReferer, search, question, totalPickAnswer, pickAnswers } =  this.state;
+        const { message, isReadySubmit, questions, redirectToReferer, search, question } =  this.state;
         // console.log(questions);
         if (redirectToReferer.length) {
             return (
@@ -266,11 +285,20 @@ class QuestionsComponent extends Component {
                     onRequestClose={this.handleClose}
                     autoScrollBodyContent={true}
                     >
-                    <TextField id="description"
+                    <TextField id="title"
                         fullWidth={true}
                         hintText="Title Field"
                         floatingLabelText="Title"
                         onChange={this.onChange}
+                        /><br />
+                    <AutoComplete
+                        hintText="Language"
+                        searchText={this.state.searchText}
+                        onUpdateInput={this.handleUpdateInput}
+                        onNewRequest={this.handleNewRequest}
+                        dataSource={LanguageTypes}
+                        filter={(searchText, key) => (key.indexOf(searchText) !== -1)}
+                        openOnFocus={true}
                         /><br />
                     <SelectField id='category'
                         value={question.category}
@@ -317,8 +345,8 @@ class QuestionsComponent extends Component {
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                             <TableRow>
                                 <TableHeaderColumn>Title</TableHeaderColumn>
+                                <TableHeaderColumn>Language</TableHeaderColumn>
                                 <TableHeaderColumn>Category</TableHeaderColumn>
-                                <TableHeaderColumn>Answer</TableHeaderColumn>
                                 <TableHeaderColumn>Type</TableHeaderColumn>
                                 <TableHeaderColumn>Time</TableHeaderColumn>
                                 <TableHeaderColumn>Created</TableHeaderColumn>
@@ -327,9 +355,9 @@ class QuestionsComponent extends Component {
                         <TableBody displayRowCheckbox={false} showRowHover={true} stripedRows={true}>
                             {questions.map( (row, index) => (
                             <TableRow key={index}>
-                                <TableRowColumn>{row.description}</TableRowColumn>
+                                <TableRowColumn>{row.title}</TableRowColumn>
+                                <TableRowColumn>{row.language}</TableRowColumn>
                                 <TableRowColumn>{row.category}</TableRowColumn>
-                                <TableRowColumn>{row.answer}</TableRowColumn>
                                 <TableRowColumn>{row.type}</TableRowColumn>
                                 <TableRowColumn>{row.time}</TableRowColumn>
                                 <TableRowColumn>{moment(row.dateModified).fromNow()}</TableRowColumn>

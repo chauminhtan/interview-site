@@ -2,7 +2,8 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 var QuestionSchema = new Schema({
-    description: { type: String, require: true },
+    title: { type: String, require: true },
+    language: { type: String, require: true },
     category: { type: String, require: true },
     type: { type: String, default: 'text' },
 	pickAnswers: [{}],

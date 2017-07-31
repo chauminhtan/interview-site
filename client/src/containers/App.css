@@ -35,5 +35,7 @@
     width: 100% !important; }
   .MainLayout .defaultForm textarea {
     width: 100%; }
+  .MainLayout .fullWidth {
+    width: 100% !important; }
   .MainLayout .clear {
     clear: both; }
