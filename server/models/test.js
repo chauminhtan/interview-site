@@ -3,10 +3,10 @@ var mongoose = require('mongoose'),
 
 var TestSchema = new Schema({
     title: { type: String, require: true },
-    category: { type: String, require: true },
+    category: { type: String, require: true, default: '' },
     questions: [{ 
         id: String, 
-        description: String
+        title: String
     }],
 	time: { type: Number },
     dateModified: { type: Date, default: Date.now },

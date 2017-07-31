@@ -15,6 +15,7 @@ import {List, ListItem, makeSelectable} from 'material-ui/List';
 import SocialPeople from 'material-ui/svg-icons/social/people';
 import ActionHome from 'material-ui/svg-icons/action/home';
 import ContentInbox from 'material-ui/svg-icons/content/inbox';
+import EventNote from 'material-ui/svg-icons/notification/event-note';
 
 class Login extends Component {
     static muiName = "FlatButton";
@@ -129,6 +130,7 @@ class Header extends Component {
             {title: 'Home', link: '/home', value: pathname === '/home' ? 1 : 0, icon: <ActionHome />},
             {title: 'Users', link: '/users', value: pathname === '/users' ? 1 : 0, icon: <SocialPeople />},
             {title: 'Questions', link: '/questions', value: pathname === '/questions' ? 1 : 0, icon: <ContentInbox />},
+            {title: 'Tests', link: '/tests', value: pathname === '/tests' ? 1 : 0, icon: <EventNote />},
         ]
 
         if (!logged) {
