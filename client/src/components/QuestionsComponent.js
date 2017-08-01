@@ -200,12 +200,6 @@ class QuestionsComponent extends Component {
 
     renderAnswer(answer, i) {
         return (
-            // <div style={styles.pickAnswer} key={i}>
-            //     <IconButton tooltip="Removed this answer" tooltipPosition="top-right" onTouchTap={this.removedAnswer.bind(this, i)}>
-            //         <ContentRemoved />
-            //     </IconButton>
-            //     <RIEInput propName={'Answer'+i} value={answer} change={this.onPickAnswerChange} />
-            // </div>
             <PickAnswerComponent key={i} AnswerIndex={i} answer={answer} onRemoved={this.removedAnswer} onChange={this.onPickAnswerChange} />
         )
     }
