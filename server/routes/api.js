@@ -38,6 +38,8 @@ module.exports = function (app, passport, auth) {
     app.post('/api/tests', tests.create);
     app.put('/api/tests/:id', tests.update);
     app.delete('/api/tests/:id', tests.delete);
+    app.get('/api/position', tests.getAllPosition);
+    app.get('/api/position/:id', tests.getPosition);
     // ping api
     app.get('/api/ping', (req, res) => {
         console.log('pong..');

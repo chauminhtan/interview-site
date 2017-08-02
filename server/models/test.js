@@ -3,7 +3,10 @@ var mongoose = require('mongoose'),
 
 var TestSchema = new Schema({
     title: { type: String, require: true },
-    category: { type: String, require: true, default: '' },
+    position: { 
+        id: { type: String, require: true, default: '' },
+        name: { type: String, require: true, default: '' }
+    },
     questions: [{ 
         id: String, 
         title: String

@@ -58,7 +58,29 @@ const ApiCollection = {
 
             setTimeout(cb(res), 100);
         })
-    }
+    },
+    getPosition(id, cb) {
+        axios.get(Config.serverURL + '/api/position/' + id)
+        .then(res => {
+            // handle error here
+            if (res.status === 1) {
+                
+            }
+
+            setTimeout(cb(res), 100);
+        })
+    },
+    getAllPosition(cb) {
+        axios.get(Config.serverURL + '/api/position')
+        .then(res => {
+            // handle error here
+            if (res.status === 1) {
+                
+            }
+
+            setTimeout(cb(res), 100);
+        })
+    },
 }
 
 export default ApiCollection;

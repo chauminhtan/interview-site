@@ -1,8 +1,15 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
-var CategorySchema = new Schema({
+var PositionSchema = new Schema({
     name: { type: String, require: true },
+    languages: [{
+        name: String,
+        categories: [{
+            title: String,
+            quantity: Number
+        }]
+    }],
     dateModified: { type: Date, default: Date.now },
     status: String,
     deleted: {type: Boolean, default: false }
@@ -11,14 +18,14 @@ var CategorySchema = new Schema({
     safe: true
 });
 
-CategorySchema.set('toJSON', {
+PositionSchema.set('toJSON', {
 	virtuals: true
 });
 
-CategorySchema.options.toJSON.transform = function (doc, ret, options) {
+PositionSchema.options.toJSON.transform = function (doc, ret, options) {
   // remove the _id of every document before returning the result
   delete ret._id;
   delete ret.__v;
 };
 
-module.exports = mongoose.model('Category', CategorySchema);
+module.exports = mongoose.model('Position', PositionSchema);

@@ -23,31 +23,44 @@ import TextField from 'material-ui/TextField';
 import AutoComplete from 'material-ui/AutoComplete';
 import moment from 'moment';
 import { Input } from "semantic-ui-react";
-import PickAnswerComponent from '../components/PickAnswerComponent';
 
-const QuestionTypes = [
-  <MenuItem key={1} value='Text' primaryText="Text" />,
-  <MenuItem key={2} value='Pick' primaryText="Pick" />,
+const PositionTypes = [
+  <MenuItem key={1} value='C# Developer' primaryText="C# Developer" />,
+  <MenuItem key={2} value='Java Developer' primaryText="Java Developer" />,
+  <MenuItem key={3} value='Python Developer' primaryText="Python Developer" />,
+  <MenuItem key={4} value='Frontend Developer' primaryText="Frontend Developer" />,
+  <MenuItem key={5} value='QA Engineer' primaryText="QA Engineer" />,
 ];
 
-const LanguageTypes = ['General','Java','C#','Python','Javascript', 'QA'];
+const LanguageTypes = [
+  <MenuItem key={1} value='General' primaryText="General" />,
+  <MenuItem key={2} value='Java' primaryText="Java" />,
+  <MenuItem key={3} value='C#' primaryText="C#" />,
+  <MenuItem key={4} value='Python' primaryText="Python" />,
+  <MenuItem key={5} value='Javascript' primaryText="Javascript" />,
+  <MenuItem key={6} value='QA' primaryText="QA" />,
+];
+
+// const LanguageTypes = ['General','Java','C#','Python','Javascript', 'QA'];
 
 const CategoryTypes = ['Coding','Other'];
 
-const PickAnswers = ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4'];
+// const PositionTypes = ['C# Developer', 'Java Developer', 'Python Developer', 'Frontend Developer', 'QA Engineer'];
 
 class TestsComponent extends Component {
     constructor (props) {
         super(props);
         this.state = {
             search: '',
-            langText: '',
-            categoryText: '',
+            language: '',
+            category: '',
             message: {
                 isShow: false,
                 content: ''
             },
             modalOpen: false,
+            position: {},
+            category: {},
             questions: [],
             originalQuestions: [],
             selectedQuestions: [],
@@ -55,11 +68,12 @@ class TestsComponent extends Component {
             originalTests: [],
             test: {
                 title: '',
-                category: '',
+                position: { 
+                    name: '', id: ''
+                },
                 questions: [],
                 time: 0
             },
-            pickAnswers: PickAnswers,
             isReadySubmit: false,
             redirectToReferer: ''
         }
@@ -68,7 +82,7 @@ class TestsComponent extends Component {
     addData = () => {
         // call to api server
         let data = this.state.test;
-        
+        // console.log(data);
         TestsApi.create(data, res => {
 
             let message = extend({}, this.state.message);
@@ -79,24 +93,50 @@ class TestsComponent extends Component {
                 // return;
             }
 
-            this.setState({message: message, modalOpen: false, loading: true}, this.updateData);
+            this.setState({ message: message, modalOpen: false, loading: true }, this.updateData);
         });
     }
+
+    isValid = (test) => {
+        return test.title.length && 
+            test.position.name.length && 
+            test.questions.length && 
+            test.time > 0;
+    };
 
     onChange = (e) => {
         let test = extend({}, this.state.test);
         test[e.target.id] = e.target.value;
         // console.log(test);
-        const isValid = test.title.length && 
-                        test.questions.length && 
-                        test.time > 0;
-        this.setState({test: test, isReadySubmit: isValid});
+        const isValid = this.isValid(test);
+        this.setState({ test: test, isReadySubmit: isValid });
+    }
+
+    handleChangePosition = (event, index, value) => {
+        // console.log(value);
+        let test = extend({}, this.state.test);
+        test.position = value;
+        const isValid = this.isValid(test);
+        this.setState({ test: test, isReadySubmit: isValid });
+    }
+
+    handleChangeLang = (event, index, value) => {
+        console.log(value)
+        const questions = this.state.originalQuestions;
+        let filteredQuestions = questions.filter(question => {
+            return question.language.search(value) > -1;
+        });
+        
+        this.setState({
+            language: value,
+            questions: filteredQuestions
+        });
     }
 
     handleRequestClose = () => {
         let message = extend({}, this.state.message);
         message.isShow = false;
-        this.setState({message: message});
+        this.setState({ message: message });
     }
 
     handleOpen = (e) => this.setState({
@@ -108,11 +148,10 @@ class TestsComponent extends Component {
     })
 
     handleRowSelection = (selectedRows) => {
-        // console.log(selectedRows[0]);
         for (var key in this.state.questions) {
             if (key === selectedRows[0].toString()) {
                 // redirect to user detail page
-                this.setState({redirectToReferer: '/questions/' + this.state.questions[key].id})
+                this.setState({ redirectToReferer: '/questions/' + this.state.questions[key].id })
                 break;
             }
         }
@@ -123,19 +162,18 @@ class TestsComponent extends Component {
             let found = selectedQuestions.indexOf(row.id);
             if ( found !== -1 ) {
                 selectedQuestions.splice(found, 1);
-                // console.log(row.id);
-            };
+            }
+            return true;
         });
         return selectedQuestions;
     }
 
     _selectedAllQuestions(questions, selectedQuestions){
         questions.map((row,index) => {
-            // console.log(row);
             if (selectedQuestions.indexOf(row.id) === -1) {
-                // test.questions.push(row);
                 selectedQuestions.push(row.id);
             }
+            return true;
         })
         return selectedQuestions;
     }
@@ -148,6 +186,7 @@ class TestsComponent extends Component {
                 questions.push(row);
                 time += row.time;
             }
+            return true;
         });
         return { questions, time }
     }
@@ -164,11 +203,9 @@ class TestsComponent extends Component {
             case 'all':
                 selectedQuestions = this._selectedAllQuestions(questions, selectedQuestions);
                 break;
-            
             case 'none':
                 selectedQuestions = this._unSelectedQuestions(questions, selectedQuestions);
                 break;
-
             default:
                 selectedQuestions = this._unSelectedQuestions(questions, selectedQuestions);
                 // only select checked questions
@@ -176,6 +213,7 @@ class TestsComponent extends Component {
                     if (selectedQuestions.indexOf(questions[row].id) === -1) {
                         selectedQuestions.push(questions[row].id);
                     }
+                    return true;
                 });
                 break;
         }
@@ -184,10 +222,9 @@ class TestsComponent extends Component {
         test.questions = refreshData.questions;
         test.time = refreshData.time;
 
-        const isValid = test.title.length && 
-                        test.questions.length && 
-                        test.time > 0;
+        const isValid = this.isValid(test);
         console.log(selectedQuestions);
+        console.log(test);
         this.setState({test: test, selectedQuestions: selectedQuestions, isReadySubmit: isValid});
     };
 
@@ -200,7 +237,7 @@ class TestsComponent extends Component {
         let filteredTests = tests.filter(test => {
             return test.title.search(event.target.value) > -1;
         });
-        // console.log(filteredQuestions);
+        
         this.setState({
             search: event.target.value,
             tests: filteredTests
@@ -211,6 +248,7 @@ class TestsComponent extends Component {
     componentDidMount() {
         console.log('componentDidMoun');
         this.getQuestionData();
+        this.getPositionData();
         this.setState({loading: true}, this.updateData);
     }
 
@@ -238,47 +276,68 @@ class TestsComponent extends Component {
         })
     }
 
-    handleUpdateInput = (searchText) => {
+    getPositionData = () => {
+        TestsApi.getAllPosition(res => {
+            console.log(res);
+            this.setState({
+                loading: false,
+                positions: res.data
+            });
+        })
+    }
+
+    handleUpdateInput = (searchTxt) => {
         this.setState({
-            searchText: searchText,
+            searchText: searchTxt,
         });
     };
 
-    handleLangguage = (langText) => {
-        console.log(langText);
+    handleUpdateLang = (searchTxt) => {
         const questions = this.state.originalQuestions;
-        const categoryText = this.state.categoryText;
         let filteredQuestions = questions.filter(question => {
-            return categoryText.length ? 
-                question.language.toLowerCase() === langText.toLowerCase() && question.category.toLowerCase() === categoryText.toLowerCase() :
-                question.language.toLowerCase() === langText.toLowerCase();
+            return question.language.search(searchTxt) > -1;
         });
-        // console.log(filteredQuestions);
+        
         this.setState({
-            langText: langText,
+            language: searchTxt,
             questions: filteredQuestions
         });
     };
 
-    handleCategory = (categoryText) => {
-        console.log(categoryText);
+    handleChoseLang = (language) => {
+        console.log(language);
         const questions = this.state.originalQuestions;
-        const langText = this.state.langText;
+        const category = this.state.category;
         let filteredQuestions = questions.filter(question => {
-            return langText.length ? 
-                question.language.toLowerCase() === langText.toLowerCase() && question.category.toLowerCase() === categoryText.toLowerCase() :
-                question.category.toLowerCase() === categoryText.toLowerCase();
+            return category.length ? 
+                question.language.toLowerCase() === language.toLowerCase() && question.category.toLowerCase() === category.toLowerCase() :
+                question.language.toLowerCase() === language.toLowerCase();
         });
         // console.log(filteredQuestions);
         this.setState({
-            categoryText: categoryText,
+            language: language,
+            questions: filteredQuestions
+        });
+    };
+
+    handleChangeCategory = (event, index, value) => {
+        // console.log(value);
+        const { originalQuestions, language } = this.state;
+        let filteredQuestions = originalQuestions.filter(question => {
+            return language.length ? 
+                question.language.toLowerCase() === language.toLowerCase() && question.category.toLowerCase() === value.toLowerCase() :
+                question.category.toLowerCase() === value.toLowerCase();
+        });
+        // console.log(filteredQuestions);
+        this.setState({
+            category: value,
             questions: filteredQuestions
         });
     };
 
     render() {
-        const { message, isReadySubmit, test, tests, questions, redirectToReferer, search, question, selectedQuestions } =  this.state;
-        // console.log(questions);
+        const { message, isReadySubmit, test, tests, questions, redirectToReferer, search, language, category, positions } =  this.state;
+        // console.log(positions);
         if (redirectToReferer.length) {
             return (
                 <Redirect to={{pathname: redirectToReferer}} />
@@ -300,6 +359,82 @@ class TestsComponent extends Component {
             />,
         ];
 
+        let positionsSelectField = positions ? 
+            (
+                <SelectField id='position'
+                    value={test.position}
+                    onChange={this.handleChangePosition}
+                    floatingLabelText="Position"
+                    style={{marginRight: '20px'}}
+                    >
+                    {positions.map((position, i) => {
+                        return <MenuItem key={i} value={position} primaryText={position.name} />
+                    })}
+                </SelectField>
+            ) : '';
+
+        
+            let LangSelectField = test.position && test.position.languages ? 
+            (
+                <SelectField id='language'
+                    value={language}
+                    onChange={this.handleChangeLang}
+                    floatingLabelText="Language"
+                    style={{ marginRight: '20px' }}
+                    >
+                    {test.position.languages.map((item, i) => {
+                        return <MenuItem key={i} value={item.name} primaryText={item.name} />
+                    })}
+                </SelectField>
+            ) : '';
+            
+        let categories = language && test.position && test.position.languages ? test.position.languages.filter(item => item.name === language)[0].categories : [];
+        // console.log(categories);
+        let CategorySelectField = LangSelectField && categories ? 
+            (
+                <SelectField id='category'
+                    value={category}
+                    onChange={this.handleChangeCategory}
+                    floatingLabelText="Category"
+                    >
+                    {categories.map((item, i) => {
+                        console.log(item);
+                        return <MenuItem key={i} value={item.title} primaryText={item.title} />
+                    })}
+                </SelectField>
+            ) : '';
+
+        let listAvailableQuestions = language && category ? 
+            (
+                <Table fixedHeader={true} multiSelectable={true} onRowSelection={this.handleQuestionSelection}>
+                    <TableHeader displaySelectAll={true}>
+                            <TableRow>
+                            <TableHeaderColumn colSpan="3" tooltip="Available Quetions">
+                                
+                            </TableHeaderColumn>
+                        </TableRow> 
+                        <TableRow>
+                            <TableHeaderColumn>Title</TableHeaderColumn>
+                            <TableHeaderColumn>Language</TableHeaderColumn>
+                            <TableHeaderColumn>Category</TableHeaderColumn>
+                            {/* <TableHeaderColumn>Time</TableHeaderColumn> */}
+                            {/* <TableHeaderColumn>Created</TableHeaderColumn> */}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody displayRowCheckbox={true} deselectOnClickaway={false} showRowHover={true} stripedRows={true}>
+                        {questions.map( (row, index) => (
+                        <TableRow key={index} selected={this.isSelected(row)}>
+                            <TableRowColumn>{row.title}</TableRowColumn>
+                            <TableRowColumn>{row.language}</TableRowColumn>
+                            <TableRowColumn>{row.category}</TableRowColumn>
+                            {/* <TableRowColumn>{row.time}</TableRowColumn> */}
+                            {/* <TableRowColumn>{moment(row.dateModified).fromNow()}</TableRowColumn> */}
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            )
+            : '';
         
         return (
             <div>
@@ -324,77 +459,17 @@ class TestsComponent extends Component {
                         onChange={this.onChange}
                         value={test.title}
                         /><br />
-                    {/* <AutoComplete
-                        hintText="Language"
-                        searchText={this.state.langText}
-                        onUpdateInput={this.handleUpdateInput}
-                        onNewRequest={this.handleNewLangguage}
-                        dataSource={LanguageTypes}
-                        filter={(langText, key) => (key.indexOf(langText) !== -1)}
-                        openOnFocus={true}
-                        style={{marginRight: '20px'}}
-                        />
-                    <AutoComplete
-                        hintText="Category"
-                        searchText={this.state.categoryText}
-                        onUpdateInput={this.handleUpdateInput}
-                        onNewRequest={this.handleNewRequest}
-                        dataSource={CategoryTypes}
-                        filter={(categoryText, key) => (key.indexOf(categoryText) !== -1)}
-                        openOnFocus={true}
-                        /><br /> */}
+                    { positionsSelectField }
                     <TextField id="time"
-                        fullWidth={true}
+                        fullWidth={false}
                         hintText="Time in second"
                         floatingLabelText="Time"
                         onChange={this.onChange}
                         value={test.time}
+                        style={{verticalAlign: 'top'}}
                         /><br />
-                    <Table fixedHeader={true} multiSelectable={true} onRowSelection={this.handleQuestionSelection}>
-                        <TableHeader displaySelectAll={true}>
-                             <TableRow>
-                                <TableHeaderColumn colSpan="4" tooltip="Super Header">
-                                    <AutoComplete
-                                        hintText="Language"
-                                        searchText={this.state.langText}
-                                        onUpdateInput={this.handleUpdateInput}
-                                        onNewRequest={this.handleLangguage}
-                                        dataSource={LanguageTypes}
-                                        filter={(searchText, key) => (key.indexOf(searchText) !== -1)}
-                                        openOnFocus={true}
-                                        style={{marginRight: '20px'}}
-                                        />
-                                    <AutoComplete
-                                        hintText="Category"
-                                        searchText={this.state.categoryText}
-                                        onUpdateInput={this.handleUpdateInput}
-                                        onNewRequest={this.handleCategory}
-                                        dataSource={CategoryTypes}
-                                        filter={(searchText, key) => (key.indexOf(searchText) !== -1)}
-                                        openOnFocus={true}
-                                        />
-                                </TableHeaderColumn>
-                            </TableRow> 
-                            <TableRow>
-                                <TableHeaderColumn>Title</TableHeaderColumn>
-                                <TableHeaderColumn>Language</TableHeaderColumn>
-                                <TableHeaderColumn>Category</TableHeaderColumn>
-                                {/* <TableHeaderColumn>Time</TableHeaderColumn> */}
-                                {/* <TableHeaderColumn>Created</TableHeaderColumn> */}
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody displayRowCheckbox={true} deselectOnClickaway={false} showRowHover={true} stripedRows={true}>
-                            {questions.map( (row, index) => (
-                            <TableRow key={index} selected={this.isSelected(row)}>
-                                <TableRowColumn>{row.id}</TableRowColumn>
-                                <TableRowColumn>{row.language}</TableRowColumn>
-                                <TableRowColumn>{row.category}</TableRowColumn>
-                                {/* <TableRowColumn>{row.time}</TableRowColumn> */}
-                                {/* <TableRowColumn>{moment(row.dateModified).fromNow()}</TableRowColumn> */}
-                            </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                    { LangSelectField } { CategorySelectField }
+                    { listAvailableQuestions }
                 </Dialog>
                 <h5>
                     <Input icon='search' value={search} onChange={this.handleSearch} placeholder='Search...' />
@@ -408,7 +483,7 @@ class TestsComponent extends Component {
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                             <TableRow>
                                 <TableHeaderColumn>Title</TableHeaderColumn>
-                                <TableHeaderColumn>Category</TableHeaderColumn>
+                                <TableHeaderColumn>Position</TableHeaderColumn>
                                 <TableHeaderColumn>Time</TableHeaderColumn>
                                 <TableHeaderColumn>Created</TableHeaderColumn>
                             </TableRow>
@@ -417,7 +492,7 @@ class TestsComponent extends Component {
                             {tests.map( (row, index) => (
                             <TableRow key={index}>
                                 <TableRowColumn>{row.title}</TableRowColumn>
-                                <TableRowColumn>{row.category}</TableRowColumn>
+                                <TableRowColumn>{row.position.name}</TableRowColumn>
                                 <TableRowColumn>{row.time}</TableRowColumn>
                                 <TableRowColumn>{moment(row.dateModified).fromNow()}</TableRowColumn>
                             </TableRow>
