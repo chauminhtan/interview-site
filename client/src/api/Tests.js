@@ -81,6 +81,17 @@ const ApiCollection = {
             setTimeout(cb(res), 100);
         })
     },
+    generate(data, cb) {
+        axios.post(Config.serverURL + '/api/testsGenerate', data)
+        .then(res => {
+            // handle error here
+            if (res.status === 1) {
+                
+            }
+
+            setTimeout(cb(res), 100);
+        })
+    },
 }
 
 export default ApiCollection;

@@ -1,6 +1,7 @@
 var path = require('path'),
 	Test = require(path.join(__dirname, "..", "/models/test")),
 	Position = require(path.join(__dirname, "..", "/models/position")),
+	Question = require(path.join(__dirname, "..", "/models/question")),
 	extend = require('extend'),
 	response = require('../include/response'),
 	sendErr = response.sendErr,
@@ -20,6 +21,36 @@ module.exports = {
 			}
 		});
 	}, //end create
+	generate: (req, res) => {
+		var test = new Test();
+		extend(test, req.body);
+		Position.where('_id').equals(test.position.id).select('id name languages dateModified').exec((err, data) => {
+			if (err) {
+				sendErr(res, err);
+			} else {
+				var languages = data[0].languages;
+				// pick questions follow requirement of the position
+				Question.where('deleted').ne('true').where('language').equals(languages[0].name).select('id title position category time pickAnswers').exec((err, questions) => {
+					if (err) {
+						sendErr(res, err);
+					} else {
+						test.questions = questions;
+						test.save((err, result) => {
+							if (err) {
+								sendErr(res, err);
+							} else {
+								sendSuccess(res, {
+									data: result,
+									questions: questions
+								});
+							}
+						});
+					}
+				});
+				// then save the test with questions got from 
+			}
+		});
+	},
 	getAll: (req, res) => {
 		Test.where('deleted').ne('true').select('id title questions position time dateModified').exec((err, tests) => {
 			if (err) {

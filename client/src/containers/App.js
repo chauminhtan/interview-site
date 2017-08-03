@@ -39,6 +39,7 @@ class App extends Component {
                     <PrivateRoute exact path="/questions" component={Questions} />
                     <PrivateRoute exact path="/questions/:id" component={QuestionDetail} />
                     <PrivateRoute exact path="/tests" component={Tests} />
+                    <PrivateRoute exact path="/tests/:id" component={QuestionDetail} />
                 </div>
             </Router>
         );

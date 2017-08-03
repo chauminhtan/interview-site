@@ -20,32 +20,51 @@ import Paper from 'material-ui/Paper';
 import MenuItem from "material-ui/MenuItem";
 import SelectField from "material-ui/SelectField";
 import TextField from 'material-ui/TextField';
-import AutoComplete from 'material-ui/AutoComplete';
+// import AutoComplete from 'material-ui/AutoComplete';
 import moment from 'moment';
 import { Input } from "semantic-ui-react";
 
-const PositionTypes = [
-  <MenuItem key={1} value='C# Developer' primaryText="C# Developer" />,
-  <MenuItem key={2} value='Java Developer' primaryText="Java Developer" />,
-  <MenuItem key={3} value='Python Developer' primaryText="Python Developer" />,
-  <MenuItem key={4} value='Frontend Developer' primaryText="Frontend Developer" />,
-  <MenuItem key={5} value='QA Engineer' primaryText="QA Engineer" />,
-];
+// const ClickableRow = (props) => {
+//   // Destructure props to keep the expected MUI TableRow props
+//   // while having access to the rowData prop
+//   const {rowData, ...restProps} = props;
+//   return (
+//     <TableRow
+//       {...restProps}
+//       onMouseDown={()=> console.log('clicked', props.rowData)}>
+//       {props.children}
+//     </TableRow>
+//   )
+// };
 
-const LanguageTypes = [
-  <MenuItem key={1} value='General' primaryText="General" />,
-  <MenuItem key={2} value='Java' primaryText="Java" />,
-  <MenuItem key={3} value='C#' primaryText="C#" />,
-  <MenuItem key={4} value='Python' primaryText="Python" />,
-  <MenuItem key={5} value='Javascript' primaryText="Javascript" />,
-  <MenuItem key={6} value='QA' primaryText="QA" />,
-];
+class ClickableRow extends Component {
+    state = {
+        redirectToReferer: ''
+    }
 
-// const LanguageTypes = ['General','Java','C#','Python','Javascript', 'QA'];
+    onClick = (path) => {
+        // console.log('clicked', path);
+        path = '/tests/' + path; 
+        // path = '/tests'; 
+        this.setState({ redirectToReferer: path });
+    }
 
-const CategoryTypes = ['Coding','Other'];
+    render() {
+        const { redirectToReferer } = this.state;
+        const { rowData, ...restProps } = this.props;
+        if (redirectToReferer.length) {
+            return (
+                <Redirect to={{pathname: redirectToReferer}} />
+            )
+        }
 
-// const PositionTypes = ['C# Developer', 'Java Developer', 'Python Developer', 'Frontend Developer', 'QA Engineer'];
+        return (
+            <TableRow {...restProps} onMouseDown={()=> this.onClick(rowData)}>
+                {this.props.children}
+            </TableRow>
+        )
+    }
+}
 
 class TestsComponent extends Component {
     constructor (props) {
@@ -59,8 +78,7 @@ class TestsComponent extends Component {
                 content: ''
             },
             modalOpen: false,
-            position: {},
-            category: {},
+            positions: [],
             questions: [],
             originalQuestions: [],
             selectedQuestions: [],
@@ -75,6 +93,7 @@ class TestsComponent extends Component {
                 time: 0
             },
             isReadySubmit: false,
+            isReadyGenerate: false,
             redirectToReferer: ''
         }
     }
@@ -97,27 +116,62 @@ class TestsComponent extends Component {
         });
     }
 
+    generateData = () => {
+        // call to api server
+        let data = this.state.test;
+        // console.log(data);
+        TestsApi.generate(data, res => {
+
+            let message = extend({}, this.state.message);
+            message.content = res.message;
+            message.isShow = true;
+            if(res.status === 1) {
+                //
+                // return;
+            }
+
+            this.setState({ message: message, modalOpen: false, loading: true }, this.updateData);
+        });
+    }
+
     isValid = (test) => {
         return test.title.length && 
             test.position.name.length && 
             test.questions.length && 
             test.time > 0;
-    };
+    }
+
+    isValidGenerate = (test) => {
+        return test.title.length && 
+            test.position.name.length;
+    }
 
     onChange = (e) => {
         let test = extend({}, this.state.test);
         test[e.target.id] = e.target.value;
         // console.log(test);
-        const isValid = this.isValid(test);
-        this.setState({ test: test, isReadySubmit: isValid });
+        const isValidSubmit = this.isValid(test);
+        const isValidGenerate = this.isValidGenerate(test);
+        this.setState({ 
+            test: test, 
+            isReadySubmit: isValidSubmit, 
+            isReadyGenerate: isValidGenerate
+        });
     }
 
     handleChangePosition = (event, index, value) => {
         // console.log(value);
         let test = extend({}, this.state.test);
         test.position = value;
-        const isValid = this.isValid(test);
-        this.setState({ test: test, isReadySubmit: isValid });
+        const isValidSubmit = this.isValid(test);
+        const isValidGenerate = this.isValidGenerate(test);
+        this.setState({ 
+            test: test, 
+            isReadySubmit: isValidSubmit, 
+            isReadyGenerate: isValidGenerate, 
+            language: '', 
+            category: '' 
+        });
     }
 
     handleChangeLang = (event, index, value) => {
@@ -132,6 +186,21 @@ class TestsComponent extends Component {
             questions: filteredQuestions
         });
     }
+
+    handleChangeCategory = (event, index, value) => {
+        // console.log(value);
+        const { originalQuestions, language } = this.state;
+        let filteredQuestions = originalQuestions.filter(question => {
+            return language.length ? 
+                question.language.toLowerCase() === language.toLowerCase() && question.category.toLowerCase() === value.toLowerCase() :
+                question.category.toLowerCase() === value.toLowerCase();
+        });
+        // console.log(filteredQuestions);
+        this.setState({
+            category: value,
+            questions: filteredQuestions
+        });
+    };
 
     handleRequestClose = () => {
         let message = extend({}, this.state.message);
@@ -148,14 +217,16 @@ class TestsComponent extends Component {
     })
 
     handleRowSelection = (selectedRows) => {
-        for (var key in this.state.questions) {
-            if (key === selectedRows[0].toString()) {
-                // redirect to user detail page
-                this.setState({ redirectToReferer: '/questions/' + this.state.questions[key].id })
-                break;
-            }
-        }
-    };
+        console.log(selectedRows);
+        // const rows = this.state.tests;
+        // for (var key in rows) {
+        //     if (key === selectedRows[0].toString()) {
+        //         // redirect to user detail page
+        //         this.setState({ redirectToReferer: '/tests/' + rows[key].id })
+        //         break;
+        //     }
+        // }
+    }
 
     _unSelectedQuestions(questions, selectedQuestions){
         questions.map((row,index) => {
@@ -222,10 +293,16 @@ class TestsComponent extends Component {
         test.questions = refreshData.questions;
         test.time = refreshData.time;
 
-        const isValid = this.isValid(test);
+        const isValidSubmit = this.isValid(test);
+        const isValidGenerate = this.isValidGenerate(test);
         console.log(selectedQuestions);
         console.log(test);
-        this.setState({test: test, selectedQuestions: selectedQuestions, isReadySubmit: isValid});
+        this.setState({ 
+            test: test, 
+            selectedQuestions: selectedQuestions, 
+            isReadySubmit: isValidSubmit, 
+            isReadyGenerate: isValidGenerate
+        });
     };
 
     isSelected = (data) => {
@@ -278,7 +355,7 @@ class TestsComponent extends Component {
 
     getPositionData = () => {
         TestsApi.getAllPosition(res => {
-            console.log(res);
+            // console.log(res);
             this.setState({
                 loading: false,
                 positions: res.data
@@ -286,57 +363,8 @@ class TestsComponent extends Component {
         })
     }
 
-    handleUpdateInput = (searchTxt) => {
-        this.setState({
-            searchText: searchTxt,
-        });
-    };
-
-    handleUpdateLang = (searchTxt) => {
-        const questions = this.state.originalQuestions;
-        let filteredQuestions = questions.filter(question => {
-            return question.language.search(searchTxt) > -1;
-        });
-        
-        this.setState({
-            language: searchTxt,
-            questions: filteredQuestions
-        });
-    };
-
-    handleChoseLang = (language) => {
-        console.log(language);
-        const questions = this.state.originalQuestions;
-        const category = this.state.category;
-        let filteredQuestions = questions.filter(question => {
-            return category.length ? 
-                question.language.toLowerCase() === language.toLowerCase() && question.category.toLowerCase() === category.toLowerCase() :
-                question.language.toLowerCase() === language.toLowerCase();
-        });
-        // console.log(filteredQuestions);
-        this.setState({
-            language: language,
-            questions: filteredQuestions
-        });
-    };
-
-    handleChangeCategory = (event, index, value) => {
-        // console.log(value);
-        const { originalQuestions, language } = this.state;
-        let filteredQuestions = originalQuestions.filter(question => {
-            return language.length ? 
-                question.language.toLowerCase() === language.toLowerCase() && question.category.toLowerCase() === value.toLowerCase() :
-                question.category.toLowerCase() === value.toLowerCase();
-        });
-        // console.log(filteredQuestions);
-        this.setState({
-            category: value,
-            questions: filteredQuestions
-        });
-    };
-
     render() {
-        const { message, isReadySubmit, test, tests, questions, redirectToReferer, search, language, category, positions } =  this.state;
+        const { message, isReadyGenerate, isReadySubmit, test, tests, questions, redirectToReferer, search, language, category, positions } =  this.state;
         // console.log(positions);
         if (redirectToReferer.length) {
             return (
@@ -349,14 +377,20 @@ class TestsComponent extends Component {
                 label="Cancel"
                 secondary={true}
                 onTouchTap={this.handleClose}
-            />,
+                />,
             <FlatButton
                 label="Submit"
                 primary={true}
                 keyboardFocused={true}
                 onTouchTap={this.addData}
                 disabled={!isReadySubmit}
-            />,
+                />,
+            <FlatButton
+                label="Generate"
+                keyboardFocused={true}
+                onTouchTap={this.generateData}
+                disabled={!isReadyGenerate}
+                />,
         ];
 
         let positionsSelectField = positions ? 
@@ -387,7 +421,7 @@ class TestsComponent extends Component {
                     })}
                 </SelectField>
             ) : '';
-            
+    
         let categories = language && test.position && test.position.languages ? test.position.languages.filter(item => item.name === language)[0].categories : [];
         // console.log(categories);
         let CategorySelectField = LangSelectField && categories ? 
@@ -398,13 +432,12 @@ class TestsComponent extends Component {
                     floatingLabelText="Category"
                     >
                     {categories.map((item, i) => {
-                        console.log(item);
                         return <MenuItem key={i} value={item.title} primaryText={item.title} />
                     })}
                 </SelectField>
             ) : '';
 
-        let listAvailableQuestions = language && category ? 
+        let listAvailableQuestions = language ? 
             (
                 <Table fixedHeader={true} multiSelectable={true} onRowSelection={this.handleQuestionSelection}>
                     <TableHeader displaySelectAll={true}>
@@ -468,7 +501,8 @@ class TestsComponent extends Component {
                         value={test.time}
                         style={{verticalAlign: 'top'}}
                         /><br />
-                    { LangSelectField } { CategorySelectField }
+                    { LangSelectField } 
+                    { CategorySelectField } 
                     { listAvailableQuestions }
                 </Dialog>
                 <h5>
@@ -490,12 +524,12 @@ class TestsComponent extends Component {
                         </TableHeader>
                         <TableBody displayRowCheckbox={false} showRowHover={true} stripedRows={true}>
                             {tests.map( (row, index) => (
-                            <TableRow key={index}>
+                            <ClickableRow key={index} rowData={row.id}>
                                 <TableRowColumn>{row.title}</TableRowColumn>
                                 <TableRowColumn>{row.position.name}</TableRowColumn>
                                 <TableRowColumn>{row.time}</TableRowColumn>
                                 <TableRowColumn>{moment(row.dateModified).fromNow()}</TableRowColumn>
-                            </TableRow>
+                            </ClickableRow>
                             ))}
                         </TableBody>
                     </Table>
