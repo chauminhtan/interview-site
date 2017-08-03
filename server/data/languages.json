@@ -7,31 +7,31 @@
         "categories" : [ 
             {
                 "title" : "Coding",
-                "quantity" : 2
+                "quantity" : 7
             }, 
             {
                 "title" : "Re-Expresstion",
-                "quantity" : 2
+                "quantity" : 5
             }, 
             {
                 "title" : "OOP",
-                "quantity" : 2
+                "quantity" : 13
             }, 
             {
                 "title" : "OO-Design",
-                "quantity" : 2
+                "quantity" : 5
             }, 
             {
                 "title" : "Database",
-                "quantity" : 2
+                "quantity" : 20
             }, 
             {
                 "title" : "Backend",
-                "quantity" : 2
+                "quantity" : 10
             }, 
             {
                 "title" : "OS",
-                "quantity" : 2
+                "quantity" : 10
             }
         ]
     },
@@ -43,11 +43,11 @@
         "categories" : [ 
             {
                 "title" : "Coding",
-                "quantity" : 2
+                "quantity" : 4
             }, 
             {
                 "title" : "Text-Question",
-                "quantity" : 2
+                "quantity" : 38
             }
         ]
     },
@@ -59,23 +59,23 @@
         "categories" : [ 
             {
                 "title" : "Datatype",
-                "quantity" : 3
+                "quantity" : 10
             }, 
             {
                 "title" : "Operation",
-                "quantity" : 3
+                "quantity" : 5
             },
             {
                 "title" : "Class & Object",
-                "quantity" : 3
+                "quantity" : 10
             },
             {
                 "title" : "Func & Sub-Routines",
-                "quantity" : 2
+                "quantity" : 5
             },
             {
                 "title" : "Text-Question",
-                "quantity" : 8
+                "quantity" : 20
             }
         ]
     },
@@ -86,24 +86,132 @@
         "dateModified" : "2017-08-02T03:39:15.827Z",
         "categories" : [ 
             {
-                "title" : "Datatype",
-                "quantity" : 3
+                "title" : "View Code - Answer",
+                "quantity" : 10
             }, 
             {
-                "title" : "Operation",
-                "quantity" : 3
+                "title" : "Datatype",
+                "quantity" : 7
             },
             {
-                "title" : "Class & Object",
-                "quantity" : 3
+                "title" : "Operator",
+                "quantity" : 9
             },
             {
-                "title" : "Func & Sub-Routines",
-                "quantity" : 2
+                "title" : "String",
+                "quantity" : 10
+            },
+            {
+                "title" : "List",
+                "quantity" : 10
+            },
+            {
+                "title" : "Function",
+                "quantity" : 10
+            },
+            {
+                "title" : "Mapping",
+                "quantity" : 6
             },
             {
                 "title" : "Text-Question",
-                "quantity" : 8
+                "quantity" : 26
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "name" : "Javascript",
+        "deleted" : false,
+        "dateModified" : "2017-08-02T03:39:15.827Z",
+        "categories" : [ 
+            {
+                "title" : "Type",
+                "quantity" : 5
+            }, 
+            {
+                "title" : "Inheritance",
+                "quantity" : 5
+            }, 
+            {
+                "title" : "Functions creation and invocation",
+                "quantity" : 5
+            }, 
+            {
+                "title" : "Closures, chain of scopes",
+                "quantity" : 5
+            }, 
+            {
+                "title" : "Async programming",
+                "quantity" : 5
+            },
+            {
+                "title" : "ECMAScript 6/7",
+                "quantity": 5
+            },
+            {
+                "title" : "HTTP/HTTPS",
+                "quantity" : 5
+            },
+            {
+                "title" : "Ajax",
+                "quantity": 5
+            },
+            {
+                "title" : "Authentication and Authorization",
+                "quantity" : 5
+            },
+            {
+                "title" : "DOM Manipulation",
+                "quantity": 5
+            },
+            {
+                "title" : "HTML5 API",
+                "quantity": 6
+            },
+            {
+                "title" : "Storages",
+                "quantity": 5
+            },
+            {
+                "title" : "Web Components",
+                "quantity": 5
+            },
+            {
+                "title" : "Offline Mode",
+                "quantity": 5
+            },
+            {
+                "title" : "RxJs",
+                "quantity": 5
+            },
+            {
+                "title" : "ReactJS",
+                "quantity": 5
+            },
+            {
+                "title" : "AngularJS",
+                "quantity": 5
+            },
+            {
+                "title" : "jQuery",
+                "quantity": 5
+            },
+            {
+                "title" : "Injection, CORS, XSS",
+                "quantity": 4
+            },
+            {
+                "title" : "Underscore",
+                "quantity": 5
+            },
+            {
+                "title" : "CSS",
+                "quantity": 16
+            },
+            {
+                "title" : "Coding",
+                "quantity": 9
             }
         ]
     }
