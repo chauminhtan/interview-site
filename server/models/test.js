@@ -10,8 +10,11 @@ var TestSchema = new Schema({
     questions: [{ 
         id: String, 
         title: String,
+        typeQ: String,
         time: Number,
-        pickAnswers: [{}]
+        pickAnswers: [{}],
+        language: String,
+        category: String,
     }],
 	time: { type: Number },
     dateModified: { type: Date, default: Date.now },

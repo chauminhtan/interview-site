@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Redirect } from 'react-router-dom';
 import QuestionsApi from '../api/Questions';
 import TestsApi from '../api/Tests';
-
 import extend from 'extend';
 import {
   Table,
@@ -23,8 +22,6 @@ import SelectField from "material-ui/SelectField";
 import TextField from 'material-ui/TextField';
 import moment from 'moment';
 import { Input } from "semantic-ui-react";
-
-import TableQuestionComponent from '../components/TableQuestionComponent';
 
 // const ClickableRow = (props) => {
 //   // Destructure props to keep the expected MUI TableRow props
@@ -229,22 +226,71 @@ class TestsComponent extends Component {
         // }
     }
 
-    updateSelectedQuestions = (selectedQuestions) => {
-        console.log(selectedQuestions);
-        const { originalQuestions } = this.state;
-        let test = extend({}, this.state.test);
-        test.questions = [];
-        test.time = 0;
+    _unSelectedQuestions(questions, selectedQuestions){
+        questions.map((row,index) => {
+            let found = selectedQuestions.indexOf(row.id);
+            if ( found !== -1 ) {
+                selectedQuestions.splice(found, 1);
+            }
+            return true;
+        });
+        return selectedQuestions;
+    }
 
+    _selectedAllQuestions(questions, selectedQuestions){
+        questions.map((row,index) => {
+            if (selectedQuestions.indexOf(row.id) === -1) {
+                selectedQuestions.push(row.id);
+            }
+            return true;
+        })
+        return selectedQuestions;
+    }
+
+    _updateSelectedQuestions(originalQuestions, selectedQuestions){
+        let questions = [], time = 0;
         originalQuestions.map((row,index) => {
             let found = selectedQuestions.indexOf(row.id);
             if ( found !== -1 ) {
                 row.typeQ = row.type;
-                test.questions.push(row);
-                test.time += row.time;
+                questions.push(row);
+                time += row.time;
             }
             return true;
         });
+        return { questions, time }
+    }
+
+    handleQuestionSelection = (selectedRows) => {
+        console.log(selectedRows);
+        const { questions, originalQuestions } = this.state;
+        let { selectedQuestions } = this.state;
+        let test = extend({}, this.state.test);
+        test.questions = [];
+        test.time = 0;
+
+        switch (selectedRows) {
+            case 'all':
+                selectedQuestions = this._selectedAllQuestions(questions, selectedQuestions);
+                break;
+            case 'none':
+                selectedQuestions = this._unSelectedQuestions(questions, selectedQuestions);
+                break;
+            default:
+                selectedQuestions = this._unSelectedQuestions(questions, selectedQuestions);
+                // only select checked questions
+                selectedRows.map((row,index) => {
+                    if (selectedQuestions.indexOf(questions[row].id) === -1) {
+                        selectedQuestions.push(questions[row].id);
+                    }
+                    return true;
+                });
+                break;
+        }
+
+        let refreshData = this._updateSelectedQuestions(originalQuestions, selectedQuestions);
+        test.questions = refreshData.questions;
+        test.time = refreshData.time;
 
         const isValidSubmit = this.isValid(test);
         const isValidGenerate = this.isValidGenerate(test);
@@ -256,7 +302,11 @@ class TestsComponent extends Component {
             isReadySubmit: isValidSubmit, 
             isReadyGenerate: isValidGenerate
         });
-    }
+    };
+
+    isSelected = (data) => {
+        return this.state.selectedQuestions.indexOf(data.id) !== -1;
+    };
 
     handleSearch = (event) => {
         const tests = this.state.originalTests;
@@ -313,7 +363,7 @@ class TestsComponent extends Component {
     }
 
     render() {
-        const { message, isReadyGenerate, isReadySubmit, test, tests, questions, redirectToReferer, search, language, category, positions, selectedQuestions } =  this.state;
+        const { message, isReadyGenerate, isReadySubmit, test, tests, questions, redirectToReferer, search, language, category, positions } =  this.state;
         // console.log(positions);
         if (redirectToReferer.length) {
             return (
@@ -388,7 +438,33 @@ class TestsComponent extends Component {
 
         let listAvailableQuestions = language ? 
             (
-                <TableQuestionComponent questions={questions} selectedQuestions={selectedQuestions} updateSelectedQuestions={this.updateSelectedQuestions} />
+                <Table fixedHeader={true} multiSelectable={true} onRowSelection={this.handleQuestionSelection}>
+                    <TableHeader displaySelectAll={true}>
+                            <TableRow>
+                            <TableHeaderColumn colSpan="3" tooltip="Available Quetions">
+                                
+                            </TableHeaderColumn>
+                        </TableRow> 
+                        <TableRow>
+                            <TableHeaderColumn>Title</TableHeaderColumn>
+                            <TableHeaderColumn>Language</TableHeaderColumn>
+                            <TableHeaderColumn>Category</TableHeaderColumn>
+                            {/* <TableHeaderColumn>Time</TableHeaderColumn> */}
+                            {/* <TableHeaderColumn>Created</TableHeaderColumn> */}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody displayRowCheckbox={true} deselectOnClickaway={false} showRowHover={true} stripedRows={true}>
+                        {questions.map( (row, index) => (
+                        <TableRow key={index} selected={this.isSelected(row)}>
+                            <TableRowColumn>{row.title}</TableRowColumn>
+                            <TableRowColumn>{row.language}</TableRowColumn>
+                            <TableRowColumn>{row.category}</TableRowColumn>
+                            {/* <TableRowColumn>{row.time}</TableRowColumn> */}
+                            {/* <TableRowColumn>{moment(row.dateModified).fromNow()}</TableRowColumn> */}
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
             )
             : '';
         
