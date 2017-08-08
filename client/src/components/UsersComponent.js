@@ -120,7 +120,7 @@ class UsersComponent extends Component {
 
     // Call out to server data and refresh directory
     updateData = () => {
-        UsersApi.getUsers(res => {
+        UsersApi.getAll(res => {
             // console.log(res);
             this.setState({
                 loading: false,

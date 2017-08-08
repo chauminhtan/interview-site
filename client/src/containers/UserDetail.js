@@ -20,7 +20,7 @@ class UserDetail extends Component {
     // Update the data when the component mounts
     componentDidMount() {
         // console.log(this.props);
-        UsersApi.getUser(this.props.match.params.id, res => {
+        UsersApi.getOne(this.props.match.params.id, res => {
             // console.log(res);
             this.updateData(res.data);
         })
@@ -52,7 +52,7 @@ class UserDetail extends Component {
                     <title>Interview System: User Detail</title>
                 </Helmet>
                 <div className='MainContent'>
-                    {!loading && props ? <UserDetailComponent {...props} /> : <Loader active>Loading...</Loader>}
+                    {!loading && user ? <UserDetailComponent {...props} /> : <Loader active>Loading...</Loader>}
                 </div>
             </div>
         );

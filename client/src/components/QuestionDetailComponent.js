@@ -53,7 +53,7 @@ class QuestionDetailComponent extends Component {
         switch (key) {
             case 'type':
                 const type = newState.type.text;
-                extend(this.props.question, {type: type});
+                extend(this.props.question, {typeQ: type});
                 break;
 
             case 'category':
@@ -163,7 +163,7 @@ class QuestionDetailComponent extends Component {
         const from = { pathname: '/questions' };
         const { redirectToReferer, message, modififed, typeOptions, categoryOptions } =  this.state;
         console.log(this.props.question);
-        const typeQuestion = {id: question.type, text: question.type};
+        const typeQuestion = {id: question.typeQ, text: question.typeQ};
         const category = {id: question.category, text: question.category};
         
         if (redirectToReferer) {
@@ -172,7 +172,7 @@ class QuestionDetailComponent extends Component {
             )
         }
 
-        let renderPickAnswers = question.type && question.type.toLowerCase() === 'pick' ? this.renderAnswers(question) : '';
+        let renderPickAnswers = question.typeQ && question.typeQ.toLowerCase() === 'pick' ? this.renderAnswers(question) : '';
 
         return (
             <div>

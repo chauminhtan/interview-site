@@ -239,7 +239,6 @@ class TestsComponent extends Component {
         originalQuestions.map((row,index) => {
             let found = selectedQuestions.indexOf(row.id);
             if ( found !== -1 ) {
-                row.typeQ = row.type;
                 test.questions.push(row);
                 test.time += row.time;
             }

@@ -7,7 +7,8 @@ var authenticate = auth.authenticateToken;
 module.exports = function (app, passport, auth) {
     var users = require(path.join(__dirname, 'users')),
         questions = require(path.join(__dirname, 'questions')),
-        tests = require(path.join(__dirname, 'tests'));
+        tests = require(path.join(__dirname, 'tests')),
+        sendmail = require(path.join(__dirname, 'sendmail'));
 
     /* REST API */
     /**
@@ -41,6 +42,10 @@ module.exports = function (app, passport, auth) {
     app.post('/api/testsGenerate', tests.generate);
     app.get('/api/position', tests.getAllPosition);
     app.get('/api/position/:id', tests.getPosition);
+    /**
+     * Sendmail apis
+     */
+    app.get('/api/sendmail', sendmail.test);
     // ping api
     app.get('/api/ping', (req, res) => {
         console.log('pong..');

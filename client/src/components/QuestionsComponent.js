@@ -55,7 +55,7 @@ class QuestionsComponent extends Component {
                 category: '',
                 answer: '',
                 time: 0,
-                type: ''
+                typeQ: ''
             },
             pickAnswers: PickAnswers,
             isReadySubmit: false,
@@ -66,7 +66,7 @@ class QuestionsComponent extends Component {
     addData = () => {
         // call to api server
         let data = this.state.question;
-        if (data.type.toLowerCase() === 'pick') {
+        if (data.typeQ.toLowerCase() === 'pick') {
             data.pickAnswers = this.state.pickAnswers.map((item, index) => {
                 let obj = {id: index+1, text: item};
                 return obj;
@@ -91,18 +91,22 @@ class QuestionsComponent extends Component {
         let question = extend({}, this.state.question);
         question[e.target.id] = e.target.value;
         // console.log(question);
-        const isValid = question.title.length && 
-                        question.category.length && 
-                        question.answer.length && 
-                        question.time > 0 && 
-                        question.type.length;
+        const isValid = this.isValid(question);
         this.setState({question: question, isReadySubmit: isValid});
+    }
+
+    isValid = (question) => {
+        return question.title.length && 
+            question.category.length && 
+            question.answer.length && 
+            question.time > 0 && 
+            question.typeQ.length;
     }
 
     handleChangeType = (event, index, value) => {
         // console.log(value);
         let question = extend({}, this.state.question);
-        question.type = value;
+        question.typeQ = value;
         this.setState({question: question});
     }
 
@@ -225,12 +229,7 @@ class QuestionsComponent extends Component {
         let question = extend({}, this.state.question);
         question['language'] = searchText;
         // console.log(question);
-        const isValid = question.title.length && 
-                        question.language.length && 
-                        question.category.length && 
-                        question.answer.length && 
-                        question.time > 0 && 
-                        question.type.length;
+        const isValid = this.isValid(question);
         this.setState({question: question, isReadySubmit: isValid});
         // this.setState({
         //     searchText: searchText,
@@ -261,7 +260,7 @@ class QuestionsComponent extends Component {
             />,
         ];
 
-        const renderPickAnswers = question.type.toLowerCase() === 'pick' ? this.renderAnswers(this.state) : '';
+        const renderPickAnswers = question.typeQ.toLowerCase() === 'pick' ? this.renderAnswers(this.state) : '';
 
         return (
             <div>
@@ -302,8 +301,8 @@ class QuestionsComponent extends Component {
                         >
                         {CategoryTypes}
                     </SelectField>
-                    <SelectField id='type'
-                        value={question.type}
+                    <SelectField id='typeQ'
+                        value={question.typeQ}
                         onChange={this.handleChangeType}
                         floatingLabelText="Type"
                         >
@@ -352,7 +351,7 @@ class QuestionsComponent extends Component {
                                 <TableRowColumn>{row.title}</TableRowColumn>
                                 <TableRowColumn>{row.language}</TableRowColumn>
                                 <TableRowColumn>{row.category}</TableRowColumn>
-                                <TableRowColumn>{row.type}</TableRowColumn>
+                                <TableRowColumn>{row.typeQ}</TableRowColumn>
                                 <TableRowColumn>{row.time}</TableRowColumn>
                                 <TableRowColumn>{moment(row.dateModified).fromNow()}</TableRowColumn>
                             </TableRow>

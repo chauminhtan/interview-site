@@ -68,11 +68,11 @@ class TableQuestionComponent extends Component {
     };
 
     render() {
-        const { questions, selectedQuestions } = this.props;
+        const { tests, selectedQuestions } = this.props;
         
-        // console.log(selectedQuestions);
-        if (questions.length == 0) {
-            return (<p>Questions is empty</p>);
+        console.log(selectedQuestions);
+        if (tests.length == 0) {
+            return (<p>Tests is empty</p>);
         }
 
         return (

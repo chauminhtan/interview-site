@@ -20,7 +20,7 @@ module.exports = {
 		});
 	}, //end create
 	getAll: (req, res) => {
-		Question.where('deleted').ne('true').select('id title language category answer type time pickAnswers dateModified').exec((err, questions) => {
+		Question.where('deleted').ne('true').select('id title language category answer typeQ time pickAnswers dateModified').exec((err, questions) => {
 			if (err) {
 				sendErr(res, err);
 			} else {
@@ -31,7 +31,7 @@ module.exports = {
 		});
 	}, //end getAll
 	getOne: (req, res) => {
-		Question.where('_id').equals(req.params.id).select('id title language category answer type time pickAnswers dateModified').exec((err, question) => {
+		Question.where('_id').equals(req.params.id).select('id title language category answer typeQ time pickAnswers dateModified').exec((err, question) => {
 			if (err) {
 				sendErr(res, err);
 			} else {

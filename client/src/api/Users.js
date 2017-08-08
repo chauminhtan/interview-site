@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Config }  from './index';
 
 const Users = {
-    getUsers(cb) {
+    getAll(cb) {
         axios.get(Config.serverURL + '/api/users')
         .then(res => {
             // handle error here
@@ -13,7 +13,7 @@ const Users = {
             setTimeout(cb(res), 100);
         })
     },
-    getUser(id, cb) {
+    getOne(id, cb) {
         axios.get(Config.serverURL + '/api/users/' + id)
         .then(res => {
             // handle error here

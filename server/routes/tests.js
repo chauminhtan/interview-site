@@ -30,10 +30,19 @@ module.exports = {
 			} else {
 				var languages = data[0].languages;
 				// pick questions follow requirement of the position
-				Question.where('deleted').ne('true').where('language').equals(languages[0].name).select('id title position category time pickAnswers').exec((err, questions) => {
+				Question.where('deleted').ne('true').where('language').equals(languages[0].name).select('id title language typeQ category time pickAnswers').exec((err, questions) => {
 					if (err) {
 						sendErr(res, err);
 					} else {
+						test.time = 0;
+						questions = questions.map((row,index) => {
+							test.time += row.time;
+							row = row.toObject();
+							row.id = row._id;
+							delete row._id;
+							return row;
+						});
+						// console.log(questions);
 						test.questions = questions;
 						test.save((err, result) => {
 							if (err) {

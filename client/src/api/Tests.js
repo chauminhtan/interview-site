@@ -92,6 +92,17 @@ const ApiCollection = {
             setTimeout(cb(res), 100);
         })
     },
+    sendmail(cb) {
+        axios.get(Config.serverURL + '/api/sendmail')
+        .then(res => {
+            // handle error here
+            if (res.status === 1) {
+                
+            }
+
+            setTimeout(cb(res), 100);
+        })
+    }
 }
 
 export default ApiCollection;

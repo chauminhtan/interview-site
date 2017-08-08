@@ -23,6 +23,7 @@
     "later": "latest",
     "moment": "latest",
     "mongoose": "^4.10.1",
+    "nodemailer": "^4.0.1",
     "nodemon": "^1.8.1",
     "passport": "latest",
     "passport-local": "latest",
