@@ -23,8 +23,9 @@ class QuestionDetailComponent extends Component {
             content: ''
         },
         typeOptions : [
-            {id: "Text", text: "Text"},
-            {id: "Pick", text: "Pick"}
+            { id: "Text", text: "Text" },
+            { id: "Pick", text: "Pick" },
+            { id: "Multiple", text: "Multiple" }
         ],
         categoryOptions : [
             {id: "Coding", text: "Coding"},
@@ -172,7 +173,8 @@ class QuestionDetailComponent extends Component {
             )
         }
 
-        let renderPickAnswers = question.typeQ && question.typeQ.toLowerCase() === 'pick' ? this.renderAnswers(question) : '';
+        let renderPickAnswers = question.typeQ && (question.typeQ.toLowerCase() === 'pick' || question.typeQ.toLowerCase() === 'multiple') ? 
+                                this.renderAnswers(question) : '';
 
         return (
             <div>
@@ -223,7 +225,7 @@ class QuestionDetailComponent extends Component {
                                     <RIETextArea className='fullWidth' propName='answer' value={question.answer} change={this.onChange} />
                                 </CardTitle>
                                 <Divider />
-                                <CardTitle subtitle='Type (Text | Pick)'>
+                                <CardTitle subtitle='Type (Text | Pick | Multiple)'>
                                     <RIESelect propName='type' value={typeQuestion} change={this.onChange} options={typeOptions} />
                                 </CardTitle>
                                 <Divider />

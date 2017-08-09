@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Redirect } from 'react-router-dom';
 import QuestionsApi from '../api/Questions';
+import LangsApi from '../api/Languages';
 import extend from 'extend';
 import {
   Table,
@@ -27,12 +28,13 @@ import PickAnswerComponent from '../components/PickAnswerComponent';
 const QuestionTypes = [
   <MenuItem key={1} value='Text' primaryText="Text" />,
   <MenuItem key={2} value='Pick' primaryText="Pick" />,
+  <MenuItem key={3} value='Multiple' primaryText="Multiple" />,
 ];
-const CategoryTypes = [
-  <MenuItem key={1} value='Coding' primaryText="Developer" />,
-  <MenuItem key={2} value='Other' primaryText="QA" />,
-];
-const LanguageTypes = ['General','Java','C#','Python','Javascript', 'QA'];
+// const CategoryTypes = [
+//   <MenuItem key={1} value='Coding' primaryText="Coding" />,
+//   <MenuItem key={2} value='Other' primaryText="Other" />,
+// ];
+// const LanguageTypes = ['General','Java','C#','Python','Javascript', 'QA'];
 
 const PickAnswers = ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4'];
 
@@ -41,14 +43,14 @@ class QuestionsComponent extends Component {
         super(props);
         this.state = {
             search: '',
-            searchText: '',
+            langText: '',
+            categoryText: '',
             message: {
                 isShow: false,
                 content: ''
             },
             modalOpen: false,
-            questions: [],
-            originalQuestions: [],
+            filteredQuestions: [],
             question: {
                 title: '',
                 language: '',
@@ -66,13 +68,37 @@ class QuestionsComponent extends Component {
     addData = () => {
         // call to api server
         let data = this.state.question;
-        if (data.typeQ.toLowerCase() === 'pick') {
+        const { langText, categoryText } = this.state;
+        if (data.typeQ.toLowerCase() === 'pick' || data.typeQ.toLowerCase() === 'multiple') {
             data.pickAnswers = this.state.pickAnswers.map((item, index) => {
                 let obj = {id: index+1, text: item};
                 return obj;
             });
             console.log(data.pickAnswers);
         }
+        // check create new language
+        const languages = this.props.languages;
+        if (languages.findIndex(language => language.name === data.language) === -1) {
+            const newLang = {
+                name: langText,
+                categories: [{quantity: 1, title: categoryText}]
+            }
+            LangsApi.create(newLang, res => {
+                let message = extend({}, this.state.message);
+                message.content = res.message;
+                message.isShow = true;
+                if(res.status === 1) {
+                    //
+                    // return;
+                }
+
+                this.setState({ 
+                    message: message, 
+                    modalOpen: false 
+                }, this.props.onComponentRefresh('language'));
+            });
+        }
+
         QuestionsApi.create(data, res => {
 
             let message = extend({}, this.state.message);
@@ -83,7 +109,10 @@ class QuestionsComponent extends Component {
                 // return;
             }
 
-            this.setState({message: message, modalOpen: false, loading: true}, this.updateData);
+            this.setState({ 
+                message: message, 
+                modalOpen: false 
+            }, this.props.onComponentRefresh('question'));
         });
     }
 
@@ -133,42 +162,31 @@ class QuestionsComponent extends Component {
 
     handleRowSelection = (selectedRows) => {
         // console.log(selectedRows[0]);
-        for (var key in this.state.questions) {
+        const questions = this.props.questions;
+        for (var key in questions) {
             if (key === selectedRows[0].toString()) {
                 // redirect to user detail page
-                this.setState({redirectToReferer: '/questions/' + this.state.questions[key].id})
+                this.setState({redirectToReferer: '/questions/' + questions[key].id})
                 break;
             }
         }
     };
 
     handleSearch = (event) => {
-        const questions = this.state.originalQuestions;
+        const questions = this.props.questions;
         let filteredQuestions = questions.filter(question => {
             return question.title.search(event.target.value) > -1;
         });
         // console.log(filteredQuestions);
         this.setState({
             search: event.target.value,
-            questions: filteredQuestions
+            filteredQuestions: filteredQuestions
         });
     };
 
     // Update the data when the component mounts
     componentDidMount() {
-        this.setState({loading: true}, this.updateData);
-    }
-
-    // Call out to server data and refresh directory
-    updateData = () => {
-        QuestionsApi.getAll(res => {
-            // console.log(res);
-            this.setState({
-                loading: false,
-                questions: res.data,
-                originalQuestions: res.data,
-            }, this.props.onComponentRefresh);
-        })
+        
     }
 
     newAnswer () {
@@ -219,31 +237,79 @@ class QuestionsComponent extends Component {
         return (renderPickAnswers);
     }
 
-    handleUpdateInput = (searchText) => {
+    handleUpdateInput = (langText) => {
+        console.log(langText);
+        // this.setState({
+        //     langText: langText,
+        // });
+        let question = extend({}, this.state.question);
+        question['language'] = langText;
+        console.log(langText);
+        const isValid = this.isValid(question);
         this.setState({
-            searchText: searchText,
+            langText: langText,
+            question: question, 
+            isReadySubmit: isValid
         });
     };
 
-    handleNewRequest = (searchText) => {
+    handleNewRequest = (langText) => {
         let question = extend({}, this.state.question);
-        question['language'] = searchText;
-        // console.log(question);
+        question['language'] = langText;
+        console.log(langText);
         const isValid = this.isValid(question);
-        this.setState({question: question, isReadySubmit: isValid});
+        this.setState({
+            question: question, 
+            isReadySubmit: isValid
+        });
+    };
+
+    handleUpdateCategory = (categoryText) => {
+        // console.log(categoryText);
         // this.setState({
-        //     searchText: searchText,
+        //     categoryText: categoryText,
         // });
+        let question = extend({}, this.state.question);
+        question['category'] = categoryText;
+        console.log(categoryText);
+        const isValid = this.isValid(question);
+        this.setState({
+            categoryText: categoryText,
+            question: question, 
+            isReadySubmit: isValid
+        });
+    };
+
+    handleSelectCategory = (categoryText) => {
+        let question = extend({}, this.state.question);
+        question['category'] = categoryText;
+        console.log(categoryText);
+        const isValid = this.isValid(question);
+        this.setState({
+            question: question, 
+            isReadySubmit: isValid
+        });
     };
 
     render() {
-        const { message, isReadySubmit, questions, redirectToReferer, search, question } =  this.state;
+        const { message, isReadySubmit, redirectToReferer, search, question } = this.state;
+        const { questions, languages } = this.props;
         // console.log(questions);
+        const filteredQuestions = this.state.filteredQuestions.length > 0 ? this.state.filteredQuestions : questions;
         if (redirectToReferer.length) {
             return (
                 <Redirect to={{pathname: redirectToReferer}} />
             )
         }
+        let CategoryTypes = [];
+        const LanguageTypes = languages.map( language => {
+            if (question.language && language.name === question.language) {
+                CategoryTypes = language.categories.map( category => category.title );
+            }
+            return language.name;
+        });
+        console.log(question);
+        console.log(LanguageTypes);
 
         const actions = [
             <FlatButton
@@ -260,7 +326,7 @@ class QuestionsComponent extends Component {
             />,
         ];
 
-        const renderPickAnswers = question.typeQ.toLowerCase() === 'pick' ? this.renderAnswers(this.state) : '';
+        const renderPickAnswers = question.typeQ.toLowerCase() === 'pick' || question.typeQ.toLowerCase() === 'multiple' ? this.renderAnswers(this.state) : '';
 
         return (
             <div>
@@ -286,21 +352,31 @@ class QuestionsComponent extends Component {
                         /><br />
                     <AutoComplete
                         hintText="Language"
-                        searchText={this.state.searchText}
+                        searchText={this.state.langText}
                         onUpdateInput={this.handleUpdateInput}
                         onNewRequest={this.handleNewRequest}
                         dataSource={LanguageTypes}
                         filter={(searchText, key) => (key.indexOf(searchText) !== -1)}
                         openOnFocus={true}
-                        /><br />
-                    <SelectField id='category'
+                        style={{marginRight: '20px'}}
+                        />
+                    {/* <SelectField id='category'
                         value={question.category}
                         onChange={this.handleChangeCategory}
                         floatingLabelText="Category"
                         style={{marginRight: '20px'}}
                         >
                         {CategoryTypes}
-                    </SelectField>
+                    </SelectField> */}
+                    <AutoComplete
+                        hintText="Category"
+                        searchText={this.state.categoryText}
+                        onUpdateInput={this.handleUpdateCategory}
+                        onNewRequest={this.handleSelectCategory}
+                        dataSource={CategoryTypes}
+                        filter={(searchText, key) => (key.indexOf(searchText) !== -1)}
+                        openOnFocus={true}
+                        /><br />
                     <SelectField id='typeQ'
                         value={question.typeQ}
                         onChange={this.handleChangeType}
@@ -346,7 +422,7 @@ class QuestionsComponent extends Component {
                             </TableRow>
                         </TableHeader>
                         <TableBody displayRowCheckbox={false} showRowHover={true} stripedRows={true}>
-                            {questions.map( (row, index) => (
+                            {filteredQuestions.map( (row, index) => (
                             <TableRow key={index}>
                                 <TableRowColumn>{row.title}</TableRowColumn>
                                 <TableRowColumn>{row.language}</TableRowColumn>

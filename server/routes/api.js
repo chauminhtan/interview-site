@@ -7,6 +7,7 @@ var authenticate = auth.authenticateToken;
 module.exports = function (app, passport, auth) {
     var users = require(path.join(__dirname, 'users')),
         questions = require(path.join(__dirname, 'questions')),
+        languages = require(path.join(__dirname, 'languages')),
         tests = require(path.join(__dirname, 'tests')),
         sendmail = require(path.join(__dirname, 'sendmail'));
 
@@ -40,6 +41,17 @@ module.exports = function (app, passport, auth) {
     app.put('/api/tests/:id', tests.update);
     app.delete('/api/tests/:id', tests.delete);
     app.post('/api/testsGenerate', tests.generate);
+    /**
+     * Language apis
+     */
+    app.get('/api/languages', languages.getAll);
+    app.get('/api/languages/:id', languages.getOne);
+    app.post('/api/languages', languages.create);
+    app.put('/api/languages/:id', languages.update);
+    app.delete('/api/languages/:id', languages.delete);
+    /**
+     * Position apis
+     */
     app.get('/api/position', tests.getAllPosition);
     app.get('/api/position/:id', tests.getPosition);
     /**

@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import extend from 'extend';
 import {
   Table,
   TableBody,
@@ -35,7 +34,7 @@ class TableQuestionComponent extends Component {
 
     handleQuestionSelection = (selectedRows) => {
         console.log(selectedRows);
-        const { questions, updateSelectedQuestions } = this.props;
+        const { questions } = this.props;
         let { selectedQuestions } = this.props;
 
         switch (selectedRows) {
@@ -71,7 +70,7 @@ class TableQuestionComponent extends Component {
         const { questions, selectedQuestions } = this.props;
         
         // console.log(selectedQuestions);
-        if (questions.length == 0) {
+        if (questions.length === 0) {
             return (<p>Questions is empty</p>);
         }
 

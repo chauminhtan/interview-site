@@ -24,7 +24,7 @@ class PickAnswer extends Component {
     render() {
         const { answer, AnswerIndex, onRemoved } = this.props;
         let value = answer ? answer : '';
-        console.log(answer);
+        // console.log(answer);
         return (
             <div style={styles.pickAnswer} key={AnswerIndex}>
                 <IconButton tooltip="Removed this answer" tooltipPosition="top-right" onTouchTap={ onRemoved.bind(this, AnswerIndex) }>

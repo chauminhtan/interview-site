@@ -141,13 +141,12 @@ class TestDetailComponent extends Component {
         this.setState({ 
             test: test, 
             selectedQuestions: selectedQuestions,
-            modififed: true
+            modififed: selectedQuestions.length > 0
         });
     }
 
     handleChange = (event, index, values) => {
         console.log(values);
-        let selectedUsers = this.state.selectedUsers;
         this.setState({
             selectedUsers: values
         });
@@ -170,7 +169,7 @@ class TestDetailComponent extends Component {
         const from = { pathname: '/tests' };
         const { redirectToReferer, message, modififed, selectedQuestions, selectedUsers } =  this.state;
         const selectedQ = selectedQuestions.length > 0 ? selectedQuestions : test.questions.map( question => question.id );
-        const listUsers = users.map( user => user.name);
+        const listUsers = users.map( user => user.name );
         // console.log(this.props.test);
         // console.log(listUsers);
         const email = {
@@ -194,6 +193,7 @@ class TestDetailComponent extends Component {
             (
                 <SelectField
                     multiple={true}
+                    fullWidth={true}
                     hintText="Select a name"
                     value={selectedUsers}
                     onChange={this.handleChange}
@@ -246,15 +246,15 @@ class TestDetailComponent extends Component {
                                 </CardActions>
                             </Card>
                         </Tab>
-                        <Tab label="Assigment">
+                        <Tab label="Assignment">
                             <Card>
-                                <CardTitle subtitle='Subject'>
+                                {/* <CardTitle subtitle='Subject'>
                                     <RIETextArea className='fullWidth' propName='subject' value={email.subject} change={this.onChangeEmail} />
                                 </CardTitle>
                                 <CardTitle subtitle='Content'>
                                     <RIETextArea className='fullWidth' propName='content' value={email.content} change={this.onChangeEmail} />
                                 </CardTitle>
-                                <Divider />
+                                <Divider /> */}
                                 <CardTitle subtitle='Select Users'>
                                     { UserSelectField }
                                 </CardTitle>

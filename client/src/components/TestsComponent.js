@@ -274,7 +274,7 @@ class TestsComponent extends Component {
         console.log('componentDidMoun');
         this.getQuestionData();
         this.getPositionData();
-        this.setState({loading: true}, this.updateData);
+        this.setState({ loading: true }, this.updateData);
     }
 
     // Call out to server data and refresh directory
@@ -316,7 +316,7 @@ class TestsComponent extends Component {
         // console.log(positions);
         if (redirectToReferer.length) {
             return (
-                <Redirect to={{pathname: redirectToReferer}} />
+                <Redirect to={{ pathname: redirectToReferer }} />
             )
         }
 
