@@ -98,6 +98,33 @@ class QuestionsComponent extends Component {
                 }, this.props.onComponentRefresh('language'));
             });
         }
+        else {// @todo: check create new category
+            let categories = [], language = null;
+            for (let i=0; i < languages.length; i++) {
+                if (data.language && languages[i].name === data.language) {
+                    language = languages[i];
+                    categories = language.categories.map( category => category.title );
+                    break;
+                }
+            }
+            if (categories.indexOf(data.category) === -1) {
+                language.categories.push({ title: data.category, quantity: 1 });
+                LangsApi.update(language, res => {
+                    let message = extend({}, this.state.message);
+                    message.content = res.message;
+                    message.isShow = true;
+                    if(res.status === 1) {
+                        //
+                        // return;
+                    }
+
+                    this.setState({ 
+                        message: message, 
+                        modalOpen: false 
+                    }, this.props.onComponentRefresh('language'));
+                });
+            }
+        }
 
         QuestionsApi.create(data, res => {
 

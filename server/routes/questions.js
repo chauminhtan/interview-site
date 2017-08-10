@@ -1,5 +1,6 @@
 var path = require('path'),
 	Question = require(path.join(__dirname, "..", "/models/question")),
+	Language = require(path.join(__dirname, "..", "/models/language")),
 	extend = require('extend'),
 	response = require('../include/response'),
 	sendErr = response.sendErr,
@@ -35,9 +36,18 @@ module.exports = {
 			if (err) {
 				sendErr(res, err);
 			} else {
-				sendSuccess(res, {
-					data: question[0]
-				});
+				Language.where('name').equals(question[0].language).select('id name categories').exec((err, languages) => {
+					if (err) {
+						sendErr(res, err);
+					} else {
+						sendSuccess(res, {
+							data: {
+								question: question[0],
+								language: languages[0]
+							}
+						});
+					}
+				})
 			}
 		});
 	},

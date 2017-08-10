@@ -162,10 +162,16 @@ class QuestionDetailComponent extends Component {
     render() {
         const { question } = Object.keys(this.props.question).length ? this.props : this.state;
         const from = { pathname: '/questions' };
-        const { redirectToReferer, message, modififed, typeOptions, categoryOptions } =  this.state;
-        console.log(this.props.question);
-        const typeQuestion = {id: question.typeQ, text: question.typeQ};
-        const category = {id: question.category, text: question.category};
+        const { redirectToReferer, message, modififed, typeOptions } =  this.state;
+        // console.log(this.props.question);
+        const { language } = this.props;
+        console.log(language);
+        const categoryOptions = language.categories.map(category => {
+            return { id: category.title, text: category.title };
+        })
+        console.log(categoryOptions);
+        const typeQuestion = { id: question.typeQ, text: question.typeQ };
+        const category = { id: question.category, text: question.category };
         
         if (redirectToReferer) {
             return (
@@ -187,13 +193,13 @@ class QuestionDetailComponent extends Component {
                 />
                 <Paper zDepth={2}>
                     <Tabs>
-                        <Tab label="Question" >
+                        <Tab label="Question">
                             <Card className='defaultForm'>
                                 <CardTitle className='title' subtitle='Title'>
                                     <RIETextArea propName='title' value={question.title} change={this.onChange} />
                                 </CardTitle>
                                 <Divider />
-                                <CardTitle subtitle='Language'>
+                                <CardTitle subtitle='Language' className='disabled'>
                                     {question.language}
                                 </CardTitle>
                                 <Divider />
@@ -201,14 +207,6 @@ class QuestionDetailComponent extends Component {
                                     <RIESelect propName='category' value={category} change={this.onChange} options={categoryOptions} />
                                 </CardTitle>
                                 <Divider />
-                                {/* <CardTitle subtitle='Correct Answer'>
-                                    <RIETextArea propName='answer' value={question.answer} change={this.onChange} />
-                                </CardTitle>
-                                <Divider />
-                                <CardTitle subtitle='Type (Text | Pick)'>
-                                    <RIESelect propName='type' value={typeQuestion} change={this.onChange} options={typeOptions} />
-                                </CardTitle>
-                                <Divider /> */}
                                 <CardTitle subtitle='Time for answer (second)'>
                                     <RIENumber propName='time' value={question.time} change={this.onChange} />
                                 </CardTitle> 
@@ -218,7 +216,7 @@ class QuestionDetailComponent extends Component {
                                 </CardActions>
                             </Card>
                         </Tab>
-                        <Tab label="Answer" >
+                        <Tab label="Answer">
                             <Card>
                                 <Divider />
                                 <CardTitle subtitle='Correct Answer'>
