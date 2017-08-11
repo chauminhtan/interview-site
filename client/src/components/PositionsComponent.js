@@ -80,8 +80,7 @@ class PositionsComponent extends Component {
                 content: ''
             },
             modalOpen: false,
-            positions: [],
-            originalPositions: [],
+            filteredPositions: [],
             position: {
                 name: '',
                 languages: []
@@ -95,49 +94,24 @@ class PositionsComponent extends Component {
     addData = () => {
         // call to api server
         let data = this.state.position;
-        // console.log(data);
-        TestsApi.create(data, res => {
+        console.log(data);
+        // PositionsApi.create(data, res => {
 
-            let message = extend({}, this.state.message);
-            message.content = res.message;
-            message.isShow = true;
-            if(res.status === 1) {
-                //
-                // return;
-            }
+        //     let message = extend({}, this.state.message);
+        //     message.content = res.message;
+        //     message.isShow = true;
+        //     if(res.status === 1) {
+        //         //
+        //         // return;
+        //     }
 
-            this.setState({ message: message, modalOpen: false, loading: true }, this.updateData);
-        });
+        //     this.setState({ message: message, modalOpen: false, loading: true }, this.updateData);
+        // });
     }
 
-    generateData = () => {
-        // call to api server
-        let data = this.state.position;
-        // console.log(data);
-        TestsApi.generate(data, res => {
-
-            let message = extend({}, this.state.message);
-            message.content = res.message;
-            message.isShow = true;
-            if(res.status === 1) {
-                //
-                // return;
-            }
-
-            this.setState({ message: message, modalOpen: false, loading: true }, this.updateData);
-        });
-    }
-
-    isValid = (test) => {
-        return test.title.length && 
-            test.position.name.length && 
-            test.questions.length && 
-            test.time > 0;
-    }
-
-    isValidGenerate = (test) => {
-        return test.title.length && 
-            test.position.name.length;
+    isValid = (position) => {
+        return position.title.length && 
+            position.languages.length;
     }
 
     onChange = (e) => {
@@ -151,31 +125,16 @@ class PositionsComponent extends Component {
         });
     }
 
-    handleChangePosition = (event, index, value) => {
+    handleChangeLang = (event, index, value) => {
         // console.log(value);
-        let test = extend({}, this.state.position);
-        test.position = value;
-        const isValidSubmit = this.isValid(test);
-        const isValidGenerate = this.isValidGenerate(test);
+        let position = extend({}, this.state.position);
+        position.language = value;
+        const isValidSubmit = this.isValid(position);
         this.setState({ 
-            test: test, 
-            isReadySubmit: isValidSubmit, 
-            isReadyGenerate: isValidGenerate, 
+            position: position, 
+            isReadySubmit: isValidSubmit,
             language: '', 
             category: '' 
-        });
-    }
-
-    handleChangeLang = (event, index, value) => {
-        console.log(value)
-        const questions = this.state.originalQuestions;
-        let filteredQuestions = questions.filter(question => {
-            return question.language.search(value) > -1;
-        });
-        
-        this.setState({
-            language: value,
-            questions: filteredQuestions
         });
     }
 
@@ -220,52 +179,24 @@ class PositionsComponent extends Component {
         // }
     }
 
-    updateSelectedQuestions = (selectedQuestions) => {
-        console.log(selectedQuestions);
-        const { originalQuestions } = this.state;
-        let test = extend({}, this.state.position);
-        test.questions = [];
-        test.time = 0;
-
-        originalQuestions.map((row,index) => {
-            let found = selectedQuestions.indexOf(row.id);
-            if ( found !== -1 ) {
-                test.questions.push(row);
-                test.time += row.time;
-            }
-            return true;
-        });
-
-        const isValidSubmit = this.isValid(test);
-        const isValidGenerate = this.isValidGenerate(test);
-        console.log(selectedQuestions);
-        console.log(test);
-        this.setState({ 
-            test: test, 
-            selectedQuestions: selectedQuestions, 
-            isReadySubmit: isValidSubmit, 
-            isReadyGenerate: isValidGenerate
-        });
-    }
-
     handleSearch = (event) => {
-        const tests = this.state.originalTests;
-        let filteredTests = tests.filter(test => {
-            return test.title.search(event.target.value) > -1;
+        const positions = this.props.positions;
+        let filteredPositions = positions.filter(item => {
+            return item.name.toLowerCase().search(event.target.value) > -1;
         });
         
         this.setState({
             search: event.target.value,
-            tests: filteredTests
+            filteredPositions: filteredPositions
         });
     };
 
     // Update the data when the component mounts
     componentDidMount() {
         console.log('componentDidMoun');
-        this.getQuestionData();
-        this.getPositionData();
-        this.setState({ loading: true }, this.updateData);
+        // this.getQuestionData();
+        // this.getPositionData();
+        // this.setState({ loading: true }, this.updateData);
     }
 
     // Call out to server data and refresh directory
@@ -303,7 +234,9 @@ class PositionsComponent extends Component {
     }
 
     render() {
-        const { message, isReadyGenerate, isReadySubmit, test, tests, questions, redirectToReferer, search, language, category, positions, selectedQuestions } =  this.state;
+        const { message, isReadySubmit, position, redirectToReferer, search, language, category } =  this.state;
+        const { positions, languages } = this.props;
+        const filteredPositions = this.state.filteredPositions.length > 0 ? this.state.filteredPositions : positions;
         // console.log(positions);
         if (redirectToReferer.length) {
             return (
@@ -324,63 +257,22 @@ class PositionsComponent extends Component {
                 onTouchTap={this.addData}
                 disabled={!isReadySubmit}
                 />,
-            <FlatButton
-                label="Generate"
-                keyboardFocused={true}
-                onTouchTap={this.generateData}
-                disabled={!isReadyGenerate}
-                />,
         ];
 
-        let positionsSelectField = positions ? 
-            (
-                <SelectField id='position'
-                    value={test.position}
-                    onChange={this.handleChangePosition}
-                    floatingLabelText="Position"
-                    style={{marginRight: '20px'}}
-                    >
-                    {positions.map((position, i) => {
-                        return <MenuItem key={i} value={position} primaryText={position.name} />
-                    })}
-                </SelectField>
-            ) : '';
-
         
-            let LangSelectField = test.position && test.position.languages ? 
-            (
-                <SelectField id='language'
-                    value={language}
-                    onChange={this.handleChangeLang}
-                    floatingLabelText="Language"
-                    style={{ marginRight: '20px' }}
-                    >
-                    {test.position.languages.map((item, i) => {
-                        return <MenuItem key={i} value={item.name} primaryText={item.name} />
-                    })}
-                </SelectField>
-            ) : '';
-    
-        let categories = language && test.position && test.position.languages ? test.position.languages.filter(item => item.name === language)[0].categories : [];
-        // console.log(categories);
-        let CategorySelectField = LangSelectField && categories ? 
-            (
-                <SelectField id='category'
-                    value={category}
-                    onChange={this.handleChangeCategory}
-                    floatingLabelText="Category"
-                    >
-                    {categories.map((item, i) => {
-                        return <MenuItem key={i} value={item.title} primaryText={item.title} />
-                    })}
-                </SelectField>
-            ) : '';
-
-        let listAvailableQuestions = language ? 
-            (
-                <TableQuestionComponent questions={questions} selectedQuestions={selectedQuestions} updateSelectedQuestions={this.updateSelectedQuestions} />
-            )
-            : '';
+        let LangSelectField = languages ? 
+        (
+            <SelectField id='language'
+                value={language}
+                onChange={this.handleChangeLang}
+                floatingLabelText="Language"
+                style={{ marginRight: '20px' }}
+                >
+                {languages.map((item, i) => {
+                    return <MenuItem key={i} value={item.name} primaryText={item.name} />
+                })}
+            </SelectField>
+        ) : '';
         
         return (
             <div>
@@ -391,32 +283,21 @@ class PositionsComponent extends Component {
                     onRequestClose={this.handleRequestClose}
                 />
                 <Dialog
-                    title="New Test"
+                    title="New Position"
                     actions={actions}
                     modal={false}
                     open={this.state.modalOpen}
                     onRequestClose={this.handleClose}
                     autoScrollBodyContent={true}
                     >
-                    <TextField id="title"
+                    <TextField id="name"
                         fullWidth={true}
-                        hintText="Title Field"
-                        floatingLabelText="Title"
+                        hintText="Name Field"
+                        floatingLabelText="Name"
                         onChange={this.onChange}
-                        value={test.title}
-                        /><br />
-                    { positionsSelectField }
-                    <TextField id="time"
-                        fullWidth={false}
-                        hintText="Time in second"
-                        floatingLabelText="Time"
-                        onChange={this.onChange}
-                        value={test.time}
-                        style={{verticalAlign: 'top'}}
+                        value={position.name}
                         /><br />
                     { LangSelectField } 
-                    { CategorySelectField } 
-                    { listAvailableQuestions }
                 </Dialog>
                 <h5>
                     <Input icon='search' value={search} onChange={this.handleSearch} placeholder='Search...' />
@@ -429,18 +310,16 @@ class PositionsComponent extends Component {
                     <Table onRowSelection={this.handleRowSelection}>
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                             <TableRow>
-                                <TableHeaderColumn>Title</TableHeaderColumn>
-                                <TableHeaderColumn>Position</TableHeaderColumn>
-                                <TableHeaderColumn>Time</TableHeaderColumn>
+                                <TableHeaderColumn>Name</TableHeaderColumn>
+                                <TableHeaderColumn>Languages</TableHeaderColumn>
                                 <TableHeaderColumn>Created</TableHeaderColumn>
                             </TableRow>
                         </TableHeader>
                         <TableBody displayRowCheckbox={false} showRowHover={true} stripedRows={true}>
-                            {tests.map( (row, index) => (
+                            {filteredPositions.map( (row, index) => (
                             <ClickableRow key={index} rowData={row.id}>
-                                <TableRowColumn>{row.title}</TableRowColumn>
-                                <TableRowColumn>{row.position.name}</TableRowColumn>
-                                <TableRowColumn>{row.time}</TableRowColumn>
+                                <TableRowColumn>{row.name}</TableRowColumn>
+                                <TableRowColumn>{row.languages}</TableRowColumn>
                                 <TableRowColumn>{moment(row.dateModified).fromNow()}</TableRowColumn>
                             </ClickableRow>
                             ))}

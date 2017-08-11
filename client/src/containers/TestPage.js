@@ -4,10 +4,12 @@ import { Helmet } from 'react-helmet';
 import TestsApi from '../api/Tests';
 import UsersApi from '../api/Users';
 import ResultsApi from '../api/Results';
-import TestDetailComponent from '../components/TestDetailComponent';
+import { Store } from "../api/index";
+// import TestDetailComponent from '../components/TestDetailComponent';
 import Header from '../components/Header';
+import CircularProgress from 'material-ui/CircularProgress';
 
-class TestDetail extends Component {
+class TestPage extends Component {
 
     constructor (props) {
         super(props);
@@ -22,13 +24,8 @@ class TestDetail extends Component {
     
     // Update the data when the component mounts
     componentDidMount() {
-        // TestsApi.getOne(this.props.match.params.id, res => {
-        //     // console.log(res);
-        //     this.updateData(res.data);
-        // })
-        // this.setState({loading: true});
         console.log('componentDidMoun');
-        this.getUserData();
+        // this.getUserData();
         this.setState({loading: true}, this.updateData);
     }
 
@@ -37,19 +34,10 @@ class TestDetail extends Component {
         // Check to see if the requestRefresh prop has changed
     }
 
-    // Call out to server data and refresh directory
-    // updateData(data) {
-    //     // console.log(data);
-    //     this.setState({
-    //         loading: false,
-    //         test: data
-    //     });
-    // }
-
     // Callback from the `UsersComponent` component
     onComponentRefresh = () => {
         console.log('refreshing data..');
-        this.setState({ loading: true }, this.updateData);
+        // this.setState({ loading: true }, this.updateData);
     }
 
     updateData = () => {
@@ -59,7 +47,11 @@ class TestDetail extends Component {
             //     loading: false,
             //     test: res.data
             // });
-            this.getAssignmentData(res.data);
+            if (res.data) {
+                this.getAssignmentData(res.data);
+            } else {
+
+            }
         })
     }
 
@@ -77,7 +69,7 @@ class TestDetail extends Component {
     // Call out to server data and refresh directory
     getAssignmentData = (test) => {
         ResultsApi.getByTestId(test.id, res => {
-            console.log(res);
+            // console.log(res);
             this.setState({
                 loading: false,
                 test: test,
@@ -90,19 +82,24 @@ class TestDetail extends Component {
         const { loading, test, users, assignments } = this.state;
         const props = { test, users, assignments };
         const { location } = this.props;
+        const userInfo = Store.getUserInfo() ? JSON.parse(Store.getUserInfo()) : null;
+        console.log(props);
+        console.log(userInfo);
 
         return (
             <div>
-                <Header location={location} title='Test Detail' />
+                <Header location={location} title='Test Page' />
                 <Helmet>
-                    <title>Interview System: Test Detail</title>
+                    <title>Interview System: Test Page</title>
                 </Helmet>
                 <div className='MainContent'>
-                    {!loading && test && users ? <TestDetailComponent onComponentRefresh={this.onComponentRefresh} {...props} /> : <Loader active>Loading...</Loader>}
+                    <h2>{!loading && test ? test.title : ""}</h2>
+                    <p>under building...</p>
+                    <CircularProgress />
                 </div>
             </div>
         );
     }
 }
 
-export default TestDetail;
+export default TestPage;

@@ -31,9 +31,9 @@ module.exports = {
 					} else {
 						// todo: send email if it is first assignment
 						var email = {
-							to: req.body.user.email,
+							to: req.body.user.email + ', tan.chau@waverleysoftware.com',
 							subject: 'Test Assignment from Interview System',
-							html: '<p>This is your <a href="' + config.url + 'tests/' + req.body.test.id + '">test</a></p>'
+							html: '<h2>hi ' + req.body.user.name + ',</h2><br /><p>This is your <a href="' + config.url + 'testpage/' + req.body.test.id + '">test</a></p>'
 						}
 						sendmail.send(email);
 						sendSuccess(res, {

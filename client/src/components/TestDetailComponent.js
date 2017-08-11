@@ -37,7 +37,8 @@ class TestDetailComponent extends Component {
             content: ''
         },
         modififed: false,
-        isAssignment: false
+        isAssignment: false,
+        tabsValue: 'g'
     }
 
     goBack = () => {
@@ -122,18 +123,6 @@ class TestDetailComponent extends Component {
                 message: message
            }, this.props.onComponentRefresh());
         })
-
-        // TestsApi.sendmail(res => {
-        //     // console.log(res);
-        //     const message = { isShow: true, content: res.message };
-
-        //     if(res.status === 1) {
-        //         // this.goBack(); 
-        //         // return;
-        //     }
-            
-        //     this.setState({message: message});
-        // })
     }
 
     handleRequestClose = () => {
@@ -176,6 +165,12 @@ class TestDetailComponent extends Component {
         });
     }
 
+    handleChangeTab = (value) => {
+        this.setState({
+            tabsValue: value
+        });
+    }
+
     menuItems(data, value) {
         return data.map((item, i) => (
             <MenuItem
@@ -191,7 +186,7 @@ class TestDetailComponent extends Component {
     render() {
         const { test, users, assignments } = this.props;
         const from = { pathname: '/tests' };
-        const { redirectToReferer, message, modififed, selectedQuestions, selectedUsers, isAssignment } =  this.state;
+        const { redirectToReferer, message, modififed, selectedQuestions, selectedUsers, isAssignment, tabsValue } =  this.state;
         const selectedQ = selectedQuestions.length > 0 ? selectedQuestions : test.questions.map( question => question.id );
         const listUsers = users.map( user => user.name );
         // console.log(this.props.test);
@@ -235,8 +230,8 @@ class TestDetailComponent extends Component {
                     onRequestClose={this.handleRequestClose}
                 />
                 <Paper zDepth={2}>
-                    <Tabs>
-                        <Tab label="General" >
+                    <Tabs value={tabsValue} onChange={this.handleChangeTab}>
+                        <Tab label="General" value='g'>
                             <Card className='defaultForm'>
                                 <CardTitle className='title' subtitle='Title'>
                                     <RIETextArea propName='title' value={test.title} change={this.onChange} />
@@ -255,7 +250,7 @@ class TestDetailComponent extends Component {
                                 </CardActions>
                             </Card>
                         </Tab>
-                        <Tab label="Questions">
+                        <Tab label="Questions" value='q'>
                             <Card>
                                 <CardTitle subtitle='Title'>
                                     <RIETextArea className='fullWidth' propName='title' value={test.title} change={this.onChange} />
@@ -269,7 +264,7 @@ class TestDetailComponent extends Component {
                                 </CardActions>
                             </Card>
                         </Tab>
-                        <Tab label="Assignment">
+                        <Tab label="Assignment" value='a'>
                             <Card>
                                 {/* <CardTitle subtitle='Subject'>
                                     <RIETextArea className='fullWidth' propName='subject' value={email.subject} change={this.onChangeEmail} />

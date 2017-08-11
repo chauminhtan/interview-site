@@ -39,18 +39,6 @@ module.exports = {
 				sendSuccess(res, {
 					data: position
 				});
-				// Language.where('name').equals(position[0].language).select('id name categories').exec((err, languages) => {
-				// 	if (err) {
-				// 		sendErr(res, err);
-				// 	} else {
-				// 		sendSuccess(res, {
-				// 			data: {
-				// 				position: position[0],
-				// 				language: languages[0]
-				// 			}
-				// 		});
-				// 	}
-				// })
 			}
 		});
 	},
