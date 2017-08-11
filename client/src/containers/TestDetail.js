@@ -3,6 +3,7 @@ import { Loader } from "semantic-ui-react";
 import { Helmet } from 'react-helmet';
 import TestsApi from '../api/Tests';
 import UsersApi from '../api/Users';
+import ResultsApi from '../api/Results';
 import TestDetailComponent from '../components/TestDetailComponent';
 import Header from '../components/Header';
 
@@ -14,7 +15,8 @@ class TestDetail extends Component {
         this.state = {
             loading: false,
             test: null,
-            users: null
+            users: null,
+            assignments: null
         }
     }
     
@@ -44,13 +46,20 @@ class TestDetail extends Component {
     //     });
     // }
 
+    // Callback from the `UsersComponent` component
+    onComponentRefresh = () => {
+        console.log('refreshing data..');
+        this.setState({ loading: true }, this.updateData);
+    }
+
     updateData = () => {
         TestsApi.getOne(this.props.match.params.id, res => {
             // console.log(res);
-            this.setState({
-                loading: false,
-                test: res.data
-            });
+            // this.setState({
+            //     loading: false,
+            //     test: res.data
+            // });
+            this.getAssignmentData(res.data);
         })
     }
 
@@ -65,9 +74,21 @@ class TestDetail extends Component {
         })
     }
 
+    // Call out to server data and refresh directory
+    getAssignmentData = (test) => {
+        ResultsApi.getByTestId(test.id, res => {
+            console.log(res);
+            this.setState({
+                loading: false,
+                test: test,
+                assignments: res.data
+            });
+        })
+    }
+
     render() {
-        const { loading, test, users } = this.state;
-        const props = { test, users };
+        const { loading, test, users, assignments } = this.state;
+        const props = { test, users, assignments };
         const { location } = this.props;
 
         return (
@@ -77,7 +98,7 @@ class TestDetail extends Component {
                     <title>Interview System: Question Detail</title>
                 </Helmet>
                 <div className='MainContent'>
-                    {!loading && test && users ? <TestDetailComponent {...props} /> : <Loader active>Loading...</Loader>}
+                    {!loading && test && users ? <TestDetailComponent onComponentRefresh={this.onComponentRefresh} {...props} /> : <Loader active>Loading...</Loader>}
                 </div>
             </div>
         );

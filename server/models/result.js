@@ -16,6 +16,11 @@ var ResultSchema = new Schema({
             category: String,
         }],
     },
+    user: {
+        id: String,
+        name: String,
+        email: String
+    },
     point: { type: Number, default: 0 },
 	time: { type: Number, default: 0 },
     dateModified: { type: Date, default: Date.now },

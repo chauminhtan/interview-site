@@ -3,24 +3,50 @@ var path = require('path'),
 	extend = require('extend'),
 	response = require('../include/response'),
 	sendErr = response.sendErr,
-	sendSuccess = response.sendSuccess;
+	sendSuccess = response.sendSuccess,
+	config = require(path.join(__dirname, "..",'/config/config')),
+	sendmail = require('../include/sendmail');
 
 module.exports = {
 	create: (req, res) => {
-		var result = new Result();
-		extend(result, req.body);
-		result.save((err, result) => {
+		// console.log(req.body);
+		Result.where('test.id').equals(req.body.test.id)
+			.where('user.id').equals(req.body.user.id)
+			.where('deleted').ne('true')
+			.select('id test user point time dateModified').exec((err, results) => {
 			if (err) {
 				sendErr(res, err);
-			} else {
+			}
+			
+			if (results.length > 0) {
 				sendSuccess(res, {
-					data: result
+					"message": 'data existed.'
+				});
+			} else {
+				var result = new Result();
+				extend(result, req.body);
+				result.save((err, result) => {
+					if (err) {
+						sendErr(res, err);
+					} else {
+						// todo: send email if it is first assignment
+						var email = {
+							to: req.body.user.email,
+							subject: 'Test Assignment from Interview System',
+							html: '<p>This is your <a href="' + config.url + 'tests/' + req.body.test.id + '">test</a></p>'
+						}
+						sendmail.send(email);
+						sendSuccess(res, {
+							data: result
+						});
+					}
 				});
 			}
-		});
+		})
+		
 	}, //end create
 	getAll: (req, res) => {
-		Result.where('deleted').ne('true').select('id test point time dateModified').exec((err, results) => {
+		Result.where('deleted').ne('true').select('id test user point time dateModified').exec((err, results) => {
 			if (err) {
 				sendErr(res, err);
 			} else {
@@ -30,8 +56,8 @@ module.exports = {
 			}
 		});
 	}, //end getAll
-	getByTest: (req, res) => {
-		Result.where('test.id').equals(req.params.id).where('deleted').ne('true').select('id test point time dateModified').exec((err, results) => {
+	getByTestId: (req, res) => {
+		Result.where('test.id').equals(req.params.id).where('deleted').ne('true').select('id test user point time dateModified').exec((err, results) => {
 			if (err) {
 				sendErr(res, err);
 			} else {
@@ -59,6 +85,7 @@ module.exports = {
 			}
 
 			extend(result, req.body);
+			console.log(result);
 			result.save((err) => {
 				sendSuccess(res);
 			});

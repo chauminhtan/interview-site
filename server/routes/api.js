@@ -8,6 +8,7 @@ module.exports = function (app, passport, auth) {
     var users = require(path.join(__dirname, 'users')),
         questions = require(path.join(__dirname, 'questions')),
         languages = require(path.join(__dirname, 'languages')),
+        positions = require(path.join(__dirname, 'positions')),
         tests = require(path.join(__dirname, 'tests')),
         results = require(path.join(__dirname, 'results')),
         sendmail = require(path.join(__dirname, 'sendmail'));
@@ -53,13 +54,15 @@ module.exports = function (app, passport, auth) {
     /**
      * Position apis
      */
-    app.get('/api/position', tests.getAllPosition);
-    app.get('/api/position/:id', tests.getPosition);
+    app.get('/api/positions', positions.getAll);
+    app.get('/api/positions/:id', positions.getOne);
     /**
      * Assignment apis
      */
-    app.post('/api/result', results.create);
-    app.get('/api/result/:id', results.getByTest);
+    app.post('/api/results', results.create);
+    app.get('/api/resultsByTestId/:id', results.getByTestId);
+    app.get('/api/results/:id', results.getOne);
+    app.get('/api/results', results.getAll);
     /**
      * Sendmail apis
      */

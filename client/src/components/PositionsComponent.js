@@ -68,7 +68,7 @@ class ClickableRow extends Component {
     }
 }
 
-class TestsComponent extends Component {
+class PositionsComponent extends Component {
     constructor (props) {
         super(props);
         this.state = {
@@ -81,18 +81,10 @@ class TestsComponent extends Component {
             },
             modalOpen: false,
             positions: [],
-            questions: [],
-            originalQuestions: [],
-            selectedQuestions: [],
-            tests: [],
-            originalTests: [],
-            test: {
-                title: '',
-                position: { 
-                    name: '', id: ''
-                },
-                questions: [],
-                time: 0
+            originalPositions: [],
+            position: {
+                name: '',
+                languages: []
             },
             isReadySubmit: false,
             isReadyGenerate: false,
@@ -102,7 +94,7 @@ class TestsComponent extends Component {
 
     addData = () => {
         // call to api server
-        let data = this.state.test;
+        let data = this.state.position;
         // console.log(data);
         TestsApi.create(data, res => {
 
@@ -120,7 +112,7 @@ class TestsComponent extends Component {
 
     generateData = () => {
         // call to api server
-        let data = this.state.test;
+        let data = this.state.position;
         // console.log(data);
         TestsApi.generate(data, res => {
 
@@ -149,21 +141,19 @@ class TestsComponent extends Component {
     }
 
     onChange = (e) => {
-        let test = extend({}, this.state.test);
+        let test = extend({}, this.state.position);
         test[e.target.id] = e.target.value;
         // console.log(test);
         const isValidSubmit = this.isValid(test);
-        const isValidGenerate = this.isValidGenerate(test);
         this.setState({ 
             test: test, 
-            isReadySubmit: isValidSubmit, 
-            isReadyGenerate: isValidGenerate
+            isReadySubmit: isValidSubmit
         });
     }
 
     handleChangePosition = (event, index, value) => {
         // console.log(value);
-        let test = extend({}, this.state.test);
+        let test = extend({}, this.state.position);
         test.position = value;
         const isValidSubmit = this.isValid(test);
         const isValidGenerate = this.isValidGenerate(test);
@@ -220,7 +210,7 @@ class TestsComponent extends Component {
 
     handleRowSelection = (selectedRows) => {
         console.log(selectedRows);
-        // const rows = this.state.tests;
+        // const rows = this.state.positions;
         // for (var key in rows) {
         //     if (key === selectedRows[0].toString()) {
         //         // redirect to user detail page
@@ -233,7 +223,7 @@ class TestsComponent extends Component {
     updateSelectedQuestions = (selectedQuestions) => {
         console.log(selectedQuestions);
         const { originalQuestions } = this.state;
-        let test = extend({}, this.state.test);
+        let test = extend({}, this.state.position);
         test.questions = [];
         test.time = 0;
 
@@ -462,4 +452,4 @@ class TestsComponent extends Component {
     }
 }
 
-export default TestsComponent;
+export default PositionsComponent;

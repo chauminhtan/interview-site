@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Config }  from './index';
 
-const model = 'tests';
+const model = 'positions';
 
 const ApiCollection = {
     getAll(cb) {
@@ -50,61 +50,6 @@ const ApiCollection = {
     },
     delete(id, cb) {
         axios.delete(Config.serverURL + '/api/' + model + '/' + id)
-        .then(res => {
-            // handle error here
-            if (res.status === 1) {
-                
-            }
-
-            setTimeout(cb(res), 100);
-        })
-    },
-    getPosition(id, cb) {
-        axios.get(Config.serverURL + '/api/positions/' + id)
-        .then(res => {
-            // handle error here
-            if (res.status === 1) {
-                
-            }
-
-            setTimeout(cb(res), 100);
-        })
-    },
-    getAllPosition(cb) {
-        axios.get(Config.serverURL + '/api/positions')
-        .then(res => {
-            // handle error here
-            if (res.status === 1) {
-                
-            }
-
-            setTimeout(cb(res), 100);
-        })
-    },
-    generate(data, cb) {
-        axios.post(Config.serverURL + '/api/testsGenerate', data)
-        .then(res => {
-            // handle error here
-            if (res.status === 1) {
-                
-            }
-
-            setTimeout(cb(res), 100);
-        })
-    },
-    assign(data, cb) {
-        axios.post(Config.serverURL + '/api/results', data)
-        .then(res => {
-            // handle error here
-            if (res.status === 1) {
-                
-            }
-
-            setTimeout(cb(res), 100);
-        })
-    },
-    sendmail(cb) {
-        axios.get(Config.serverURL + '/api/sendmail')
         .then(res => {
             // handle error here
             if (res.status === 1) {

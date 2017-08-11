@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 // import moment from 'moment';
 import TestsApi from '../api/Tests';
+import ResultsApi from '../api/Results';
 import { RIETextArea, RIENumber, RIESelect } from 'riek';
 import extend from 'extend';
 import { Card, CardActions, CardTitle } from 'material-ui/Card';
@@ -13,6 +14,7 @@ import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
 import Snackbar from 'material-ui/Snackbar';
 import { Tabs, Tab } from 'material-ui/Tabs';
 import TableQuestionComponent from '../components/TableQuestionComponent';
+import TableAssignmentComponent from '../components/TableAssignmentComponent';
 import SelectField from "material-ui/SelectField";
 import MenuItem from 'material-ui/MenuItem';
 
@@ -34,7 +36,8 @@ class TestDetailComponent extends Component {
             subject: '',
             content: ''
         },
-        modififed: false
+        modififed: false,
+        isAssignment: false
     }
 
     goBack = () => {
@@ -74,10 +77,12 @@ class TestDetailComponent extends Component {
             message.isShow = true;
 
             if(res.status === 1) {
-                this.goBack(); 
-                return;
+                // this.goBack(); 
+                // return;
             }
-            this.setState({message: message});
+            this.setState({
+                 message: message
+            }, this.props.onComponentRefresh());
         })
     }
 
@@ -97,9 +102,27 @@ class TestDetailComponent extends Component {
         })
     }
 
-    sendmail = () => {
+    assignment = () => {
         console.log(this.state.selectedUsers);
-        console.log(this.state.email);
+        let assignmentInfo = {
+            test: this.props.test,
+            user: this.state.selectedUsers
+        }
+        console.log(assignmentInfo);
+        ResultsApi.create(assignmentInfo, res => {
+            let message = extend({}, this.state.message);
+            message.content = res.message;
+            message.isShow = true;
+
+            if(res.status === 1) {
+                // this.goBack(); 
+                // return;
+            }
+            this.setState({
+                message: message
+           }, this.props.onComponentRefresh());
+        })
+
         // TestsApi.sendmail(res => {
         //     // console.log(res);
         //     const message = { isShow: true, content: res.message };
@@ -148,34 +171,35 @@ class TestDetailComponent extends Component {
     handleChange = (event, index, values) => {
         console.log(values);
         this.setState({
-            selectedUsers: values
+            selectedUsers: values,
+            isAssignment: Object.keys(values).length > 0
         });
     }
 
-    menuItems(data, values) {
+    menuItems(data, value) {
         return data.map((item, i) => (
             <MenuItem
                 key={i}
                 insetChildren={true}
-                checked={values && values.indexOf(item.name) > -1}
-                value={item.name}
+                checked={ value && value.name === item.name }
+                value={item}
                 primaryText={item.name}
             />
         ));
     }
     
     render() {
-        const { test, users } = this.props;
+        const { test, users, assignments } = this.props;
         const from = { pathname: '/tests' };
-        const { redirectToReferer, message, modififed, selectedQuestions, selectedUsers } =  this.state;
+        const { redirectToReferer, message, modififed, selectedQuestions, selectedUsers, isAssignment } =  this.state;
         const selectedQ = selectedQuestions.length > 0 ? selectedQuestions : test.questions.map( question => question.id );
         const listUsers = users.map( user => user.name );
         // console.log(this.props.test);
-        // console.log(listUsers);
-        const email = {
-            subject: test.title,
-            content: 'this is contnent'
-        }
+        console.log(assignments);
+        // const email = {
+        //     subject: test.title,
+        //     content: 'this is contnent'
+        // }
         
         if (redirectToReferer) {
             return (
@@ -192,7 +216,6 @@ class TestDetailComponent extends Component {
         let UserSelectField = users ? 
             (
                 <SelectField
-                    multiple={true}
                     fullWidth={true}
                     hintText="Select a name"
                     value={selectedUsers}
@@ -259,8 +282,10 @@ class TestDetailComponent extends Component {
                                     { UserSelectField }
                                 </CardTitle>
                                 <Divider />
+                                <TableAssignmentComponent assignments={assignments} />
+                                <Divider />
                                 <CardActions>
-                                    <RaisedButton primary disabled={!modififed} onClick={this.edit} label="Save" />
+                                    <RaisedButton primary disabled={!isAssignment} onClick={this.assignment} label="Save" />
                                 </CardActions>
                             </Card>
                         </Tab>
