@@ -7,6 +7,43 @@ var path = require('path'),
 	sendErr = response.sendErr,
 	sendSuccess = response.sendSuccess;
 
+var collectQuestionsByLanguages = (languages, callback) => {
+	var facet = {};
+	languages.forEach(language => {
+
+		language.categories.forEach(category => {
+			facet[language.name + '-' + category.title] = [
+				{
+					$match: {
+						'language': language.name,
+						'category': category.title,
+						'deleted': false
+					}
+				},
+				{ $sample: { size: category.quantity } }
+			]
+		})
+	});
+	// console.log(facet);
+	// callback(null, facet);return;
+	Question.aggregate().facet(facet).exec((err, results) => {
+		if (err) {
+			callback(err, results)
+		} else {
+			// callback(null, results[0])
+			var values = Object.keys(results[0]).map(key => results[0][key]);
+			var questions = [];
+			if (values.length > 0) {
+				values.forEach(val => {
+					questions = questions.concat(val)
+				})
+			}
+			// console.log(questions);
+			callback(null, questions)
+		}
+	})
+}
+
 module.exports = {
 	create: (req, res) => {
 		var test = new Test();
@@ -29,6 +66,11 @@ module.exports = {
 				sendErr(res, err);
 			} else {
 				var languages = data[0].languages;
+				collectQuestionsByLanguages(languages, (err, questions) => {
+					sendSuccess(res, {
+						data: questions
+					});
+					return;
 				// pick questions follow requirement of the position
 				Question.where('deleted').ne('true').where('language').equals(languages[0].name).select('id title language typeQ category time pickAnswers').exec((err, questions) => {
 					if (err) {
@@ -57,6 +99,8 @@ module.exports = {
 					}
 				});
 				// then save the test with questions got from 
+
+				})
 			}
 		});
 	},

@@ -110,7 +110,7 @@ class PositionsComponent extends Component {
     }
 
     isValid = (position) => {
-        return position.title.length && 
+        return position.name.length && 
             position.languages.length;
     }
 
@@ -125,33 +125,16 @@ class PositionsComponent extends Component {
         });
     }
 
-    handleChangeLang = (event, index, value) => {
-        // console.log(value);
+    handleChangeLang = (event, index, values) => {
+        console.log(values);
         let position = extend({}, this.state.position);
-        position.language = value;
+        position.languages = values;
         const isValidSubmit = this.isValid(position);
         this.setState({ 
             position: position, 
-            isReadySubmit: isValidSubmit,
-            language: '', 
-            category: '' 
+            isReadySubmit: isValidSubmit
         });
     }
-
-    handleChangeCategory = (event, index, value) => {
-        // console.log(value);
-        const { originalQuestions, language } = this.state;
-        let filteredQuestions = originalQuestions.filter(question => {
-            return language.length ? 
-                question.language.toLowerCase() === language.toLowerCase() && question.category.toLowerCase() === value.toLowerCase() :
-                question.category.toLowerCase() === value.toLowerCase();
-        });
-        // console.log(filteredQuestions);
-        this.setState({
-            category: value,
-            questions: filteredQuestions
-        });
-    };
 
     handleRequestClose = () => {
         let message = extend({}, this.state.message);
@@ -194,42 +177,11 @@ class PositionsComponent extends Component {
     // Update the data when the component mounts
     componentDidMount() {
         console.log('componentDidMoun');
-        // this.getQuestionData();
-        // this.getPositionData();
-        // this.setState({ loading: true }, this.updateData);
     }
 
-    // Call out to server data and refresh directory
-    updateData = () => {
-        TestsApi.getAll(res => {
-            // console.log(res);
-            this.setState({
-                loading: false,
-                tests: res.data,
-                originalTests: res.data,
-            }, this.props.onComponentRefresh);
-        })
-    }
-
-    // Call out to server data and refresh directory
-    getQuestionData = () => {
-        QuestionsApi.getAll(res => {
-            // console.log(res);
-            this.setState({
-                loading: false,
-                questions: res.data,
-                originalQuestions: res.data,
-            }, this.props.onComponentRefresh);
-        })
-    }
-
-    getPositionData = () => {
-        PositionsApi.getAll(res => {
-            // console.log(res);
-            this.setState({
-                loading: false,
-                positions: res.data
-            });
+    menuItems(values) {
+        return this.props.languages.map((item, i) => {
+            return <MenuItem key={i} checked={values && values.indexOf(item.name) > -1} value={item.name} primaryText={item.name} />
         })
     }
 
@@ -263,14 +215,13 @@ class PositionsComponent extends Component {
         let LangSelectField = languages ? 
         (
             <SelectField id='language'
-                value={language}
+                value={position.languages}
+                multiple={true}
                 onChange={this.handleChangeLang}
                 floatingLabelText="Language"
                 style={{ marginRight: '20px' }}
                 >
-                {languages.map((item, i) => {
-                    return <MenuItem key={i} value={item.name} primaryText={item.name} />
-                })}
+                {this.menuItems(position.languages)}
             </SelectField>
         ) : '';
         
