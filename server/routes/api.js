@@ -56,6 +56,7 @@ module.exports = function (app, passport, auth) {
      */
     app.get('/api/positions', positions.getAll);
     app.get('/api/positions/:id', positions.getOne);
+    app.post('/api/positions', positions.create);
     /**
      * Assignment apis
      */

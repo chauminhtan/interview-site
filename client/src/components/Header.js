@@ -16,6 +16,7 @@ import SocialPeople from 'material-ui/svg-icons/social/people';
 import ActionHome from 'material-ui/svg-icons/action/home';
 import ContentInbox from 'material-ui/svg-icons/content/inbox';
 import EventNote from 'material-ui/svg-icons/notification/event-note';
+import ContentFilter from 'material-ui/svg-icons/content/filter-list';
 
 class Login extends Component {
     static muiName = "FlatButton";
@@ -131,6 +132,7 @@ class Header extends Component {
             {title: 'Users', link: '/users', value: pathname === '/users' ? 1 : 0, icon: <SocialPeople />},
             {title: 'Questions', link: '/questions', value: pathname === '/questions' ? 1 : 0, icon: <ContentInbox />},
             {title: 'Tests', link: '/tests', value: pathname === '/tests' ? 1 : 0, icon: <EventNote />},
+            {title: 'Positions', link: '/positions', value: pathname === '/positions' ? 1 : 0, icon: <ContentFilter />},
         ]
 
         if (!logged) {

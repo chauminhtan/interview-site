@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 import { Redirect } from 'react-router-dom';
-import QuestionsApi from '../api/Questions';
-import TestsApi from '../api/Tests';
 import PositionsApi from '../api/Positions';
 
 import extend from 'extend';
@@ -26,6 +24,7 @@ import moment from 'moment';
 import { Input } from "semantic-ui-react";
 
 import TableQuestionComponent from '../components/TableQuestionComponent';
+import InputQtyPerCategory from '../components/InputQtyPerCategoryComponent';
 
 // const ClickableRow = (props) => {
 //   // Destructure props to keep the expected MUI TableRow props
@@ -95,18 +94,21 @@ class PositionsComponent extends Component {
         // call to api server
         let data = this.state.position;
         console.log(data);
-        // PositionsApi.create(data, res => {
+        PositionsApi.create(data, res => {
 
-        //     let message = extend({}, this.state.message);
-        //     message.content = res.message;
-        //     message.isShow = true;
-        //     if(res.status === 1) {
-        //         //
-        //         // return;
-        //     }
+            let message = extend({}, this.state.message);
+            message.content = res.message;
+            message.isShow = true;
+            if(res.status === 1) {
+                //
+                // return;
+            }
 
-        //     this.setState({ message: message, modalOpen: false, loading: true }, this.updateData);
-        // });
+            this.setState({ 
+                message: message, 
+                modalOpen: false
+            }, this.props.onComponentRefresh());
+        });
     }
 
     isValid = (position) => {
@@ -115,12 +117,12 @@ class PositionsComponent extends Component {
     }
 
     onChange = (e) => {
-        let test = extend({}, this.state.position);
-        test[e.target.id] = e.target.value;
-        // console.log(test);
-        const isValidSubmit = this.isValid(test);
+        let position = extend({}, this.state.position);
+        position[e.target.id] = e.target.value;
+        // console.log(position);
+        const isValidSubmit = this.isValid(position);
         this.setState({ 
-            test: test, 
+            position: position, 
             isReadySubmit: isValidSubmit
         });
     }
@@ -181,15 +183,47 @@ class PositionsComponent extends Component {
 
     menuItems(values) {
         return this.props.languages.map((item, i) => {
-            return <MenuItem key={i} checked={values && values.indexOf(item.name) > -1} value={item.name} primaryText={item.name} />
+            return <MenuItem key={i} checked={values && values.findIndex(val => val.name === item.name) > -1} value={item} primaryText={item.name} />
         })
+    }
+
+    onCategoryChange = (data) => {
+        console.log(data);
+        let position = extend({}, this.state.position);
+        position.languages.forEach( (lang, i) => {
+            if (lang.name === data.language) {
+                lang.categories.forEach(category => {
+                    if (category.title === data.category) {
+                        category.quantity = data.value;
+                    }
+                })
+            }
+        })
+        console.log(position.languages);
+        const isValidSubmit = this.isValid(position);
+        this.setState({ 
+            position: position, 
+            isReadySubmit: isValidSubmit
+        });
+    }
+
+    getCategories(selectedLangs) {
+        let categories = [];
+        selectedLangs.forEach( (lang, i) => {
+            lang.categories.forEach(category => {
+                const inputName = lang.name + '-' + category.title;
+                categories.push(<InputQtyPerCategory key={inputName} category={category.title} language={lang.name} name={inputName} value={category.quantity} onChange={this.onCategoryChange} />);
+            })
+        });
+        
+        return categories;
     }
 
     render() {
         const { message, isReadySubmit, position, redirectToReferer, search, language, category } =  this.state;
         const { positions, languages } = this.props;
         const filteredPositions = this.state.filteredPositions.length > 0 ? this.state.filteredPositions : positions;
-        // console.log(positions);
+        // console.log(position.languages);
         if (redirectToReferer.length) {
             return (
                 <Redirect to={{ pathname: redirectToReferer }} />
@@ -224,6 +258,9 @@ class PositionsComponent extends Component {
                 {this.menuItems(position.languages)}
             </SelectField>
         ) : '';
+
+        let categoriesField = position.languages.length ? 
+        this.getCategories(position.languages) : '';
         
         return (
             <div>
@@ -248,7 +285,8 @@ class PositionsComponent extends Component {
                         onChange={this.onChange}
                         value={position.name}
                         /><br />
-                    { LangSelectField } 
+                    { LangSelectField }<br />
+                    { categoriesField }
                 </Dialog>
                 <h5>
                     <Input icon='search' value={search} onChange={this.handleSearch} placeholder='Search...' />

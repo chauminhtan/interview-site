@@ -66,25 +66,21 @@ module.exports = {
 				sendErr(res, err);
 			} else {
 				var languages = data[0].languages;
-				collectQuestionsByLanguages(languages, (err, questions) => {
-					sendSuccess(res, {
-						data: questions
-					});
-					return;
 				// pick questions follow requirement of the position
-				Question.where('deleted').ne('true').where('language').equals(languages[0].name).select('id title language typeQ category time pickAnswers').exec((err, questions) => {
+				collectQuestionsByLanguages(languages, (err, questions) => {
 					if (err) {
 						sendErr(res, err);
 					} else {
 						test.time = 0;
 						questions = questions.map((row,index) => {
 							test.time += row.time;
-							row = row.toObject();
+							// row = row.toObject();
 							row.id = row._id;
 							delete row._id;
 							return row;
 						});
 						// console.log(questions);
+						// then save the test with questions got from 
 						test.questions = questions;
 						test.save((err, result) => {
 							if (err) {
@@ -97,8 +93,6 @@ module.exports = {
 							}
 						});
 					}
-				});
-				// then save the test with questions got from 
 
 				})
 			}
