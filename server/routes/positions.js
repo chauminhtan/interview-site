@@ -21,7 +21,7 @@ module.exports = {
 		});
 	}, //end create
 	getAll: (req, res) => {
-		Position.where('deleted').ne('true').select('id name language dateModified').exec((err, positions) => {
+		Position.where('deleted').ne('true').select('id name languages dateModified').exec((err, positions) => {
 			if (err) {
 				sendErr(res, err);
 			} else {
@@ -32,12 +32,12 @@ module.exports = {
 		});
 	}, //end getAll
 	getOne: (req, res) => {
-		Position.where('_id').equals(req.params.id).select('id name language dateModified').exec((err, position) => {
+		Position.where('_id').equals(req.params.id).select('id name languages dateModified').exec((err, positions) => {
 			if (err) {
 				sendErr(res, err);
 			} else {
 				sendSuccess(res, {
-					data: position
+					data: positions[0]
 				});
 			}
 		});

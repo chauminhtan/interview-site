@@ -13,6 +13,7 @@ import AuthApi from '../api/Auth';
 import QuestionDetail from './QuestionDetail';
 import TestDetail from './TestDetail';
 import TestPage from './TestPage';
+import PositionDetail from './PositionDetail';
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
     <Route {...rest} render={ props => (
@@ -42,6 +43,7 @@ class App extends Component {
                     <PrivateRoute exact path="/questions" component={Questions} />
                     <PrivateRoute exact path="/questions/:id" component={QuestionDetail} />
                     <PrivateRoute exact path="/positions" component={Positions} />
+                    <PrivateRoute exact path="/positions/:id" component={PositionDetail} />
                     <PrivateRoute exact path="/tests" component={Tests} />
                     <PrivateRoute exact path="/tests/:id" component={TestDetail} />
                     <PrivateRoute exact path="/testpage/:id" component={TestPage} />

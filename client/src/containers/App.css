@@ -41,3 +41,8 @@
     clear: both; }
   .MainLayout .disabled {
     color: rgba(0, 0, 0, 0.54); }
+  .MainLayout .loader {
+    position: absolute !important;
+    top: 50%;
+    left: 50%;
+    z-index: 1000; }

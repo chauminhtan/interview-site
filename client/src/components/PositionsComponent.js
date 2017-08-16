@@ -17,27 +17,12 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import Snackbar from 'material-ui/Snackbar';
 import Dialog from 'material-ui/Dialog';
 import Paper from 'material-ui/Paper';
-import MenuItem from "material-ui/MenuItem";
-import SelectField from "material-ui/SelectField";
 import TextField from 'material-ui/TextField';
 import moment from 'moment';
 import { Input } from "semantic-ui-react";
 
-import TableQuestionComponent from '../components/TableQuestionComponent';
 import InputQtyPerCategory from '../components/InputQtyPerCategoryComponent';
-
-// const ClickableRow = (props) => {
-//   // Destructure props to keep the expected MUI TableRow props
-//   // while having access to the rowData prop
-//   const {rowData, ...restProps} = props;
-//   return (
-//     <TableRow
-//       {...restProps}
-//       onMouseDown={()=> console.log('clicked', props.rowData)}>
-//       {props.children}
-//     </TableRow>
-//   )
-// };
+import SelectFieldLangComponent from '../components/SelectFieldLangComponent';
 
 class ClickableRow extends Component {
     state = {
@@ -46,7 +31,7 @@ class ClickableRow extends Component {
 
     onClick = (path) => {
         // console.log('clicked', path);
-        path = '/tests/' + path; 
+        path = '/positions/' + path; 
         this.setState({ redirectToReferer: path });
     }
 
@@ -72,8 +57,6 @@ class PositionsComponent extends Component {
         super(props);
         this.state = {
             search: '',
-            language: '',
-            category: '',
             message: {
                 isShow: false,
                 content: ''
@@ -127,8 +110,8 @@ class PositionsComponent extends Component {
         });
     }
 
-    handleChangeLang = (event, index, values) => {
-        console.log(values);
+    handleChangeLang = (values) => {
+        // console.log(values);
         let position = extend({}, this.state.position);
         position.languages = values;
         const isValidSubmit = this.isValid(position);
@@ -154,14 +137,6 @@ class PositionsComponent extends Component {
 
     handleRowSelection = (selectedRows) => {
         console.log(selectedRows);
-        // const rows = this.state.positions;
-        // for (var key in rows) {
-        //     if (key === selectedRows[0].toString()) {
-        //         // redirect to user detail page
-        //         this.setState({ redirectToReferer: '/tests/' + rows[key].id })
-        //         break;
-        //     }
-        // }
     }
 
     handleSearch = (event) => {
@@ -179,12 +154,6 @@ class PositionsComponent extends Component {
     // Update the data when the component mounts
     componentDidMount() {
         console.log('componentDidMoun');
-    }
-
-    menuItems(values) {
-        return this.props.languages.map((item, i) => {
-            return <MenuItem key={i} checked={values && values.findIndex(val => val.name === item.name) > -1} value={item} primaryText={item.name} />
-        })
     }
 
     onCategoryChange = (data) => {
@@ -220,7 +189,7 @@ class PositionsComponent extends Component {
     }
 
     render() {
-        const { message, isReadySubmit, position, redirectToReferer, search, language, category } =  this.state;
+        const { message, isReadySubmit, position, redirectToReferer, search } =  this.state;
         const { positions, languages } = this.props;
         const filteredPositions = this.state.filteredPositions.length > 0 ? this.state.filteredPositions : positions;
         // console.log(position.languages);
@@ -245,22 +214,11 @@ class PositionsComponent extends Component {
                 />,
         ];
 
-        
+        const langNames = position.languages.map(lang => lang.name);
         let LangSelectField = languages ? 
-        (
-            <SelectField id='language'
-                value={position.languages}
-                multiple={true}
-                onChange={this.handleChangeLang}
-                floatingLabelText="Language"
-                style={{ marginRight: '20px' }}
-                >
-                {this.menuItems(position.languages)}
-            </SelectField>
-        ) : '';
+            (<SelectFieldLangComponent value={langNames} languages={languages} onChange={this.handleChangeLang} />) : '';
 
-        let categoriesField = position.languages.length ? 
-        this.getCategories(position.languages) : '';
+        let categoriesField = position.languages.length ? this.getCategories(position.languages) : '';
         
         return (
             <div>
@@ -308,7 +266,7 @@ class PositionsComponent extends Component {
                             {filteredPositions.map( (row, index) => (
                             <ClickableRow key={index} rowData={row.id}>
                                 <TableRowColumn>{row.name}</TableRowColumn>
-                                <TableRowColumn>{row.languages}</TableRowColumn>
+                                <TableRowColumn>{row.languages.map(lang => lang.name).join(', ')}</TableRowColumn>
                                 <TableRowColumn>{moment(row.dateModified).fromNow()}</TableRowColumn>
                             </ClickableRow>
                             ))}

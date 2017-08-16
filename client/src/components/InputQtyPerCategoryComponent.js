@@ -6,7 +6,8 @@ class InputQtyPerCategory extends Component {
     onChange = (e) => {
         const { category, language, name, value } = this.props;
         let data = { category, language, name, value };
-        data.value = parseInt(e.target.value) ? parseInt(e.target.value) : 0;
+        const qty = parseInt(e.target.value, 10);
+        data.value = qty ? qty : 0;
         // console.log(data);
         this.props.onChange(data);
     }
