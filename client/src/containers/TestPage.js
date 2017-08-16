@@ -1,10 +1,9 @@
-import React, { Component } from "react";
-import { Loader } from "semantic-ui-react";
+import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 import TestsApi from '../api/Tests';
 import UsersApi from '../api/Users';
 import ResultsApi from '../api/Results';
-import { Store } from "../api/index";
+import { Store } from '../api/index';
 // import TestDetailComponent from '../components/TestDetailComponent';
 import Header from '../components/Header';
 import CircularProgress from 'material-ui/CircularProgress';
@@ -95,7 +94,7 @@ class TestPage extends Component {
                 <div className='MainContent'>
                     <h2>{!loading && test ? test.title : ""}</h2>
                     <p>under building...</p>
-                    <CircularProgress />
+                    <CircularProgress className='loader' />
                 </div>
             </div>
         );

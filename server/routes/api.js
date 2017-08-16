@@ -10,8 +10,7 @@ module.exports = function (app, passport, auth) {
         languages = require(path.join(__dirname, 'languages')),
         positions = require(path.join(__dirname, 'positions')),
         tests = require(path.join(__dirname, 'tests')),
-        results = require(path.join(__dirname, 'results')),
-        sendmail = require(path.join(__dirname, 'sendmail'));
+        results = require(path.join(__dirname, 'results'));
 
     /* REST API */
     /**
@@ -66,10 +65,7 @@ module.exports = function (app, passport, auth) {
     app.get('/api/resultsByTestId/:id', results.getByTestId);
     app.get('/api/results/:id', results.getOne);
     app.get('/api/results', results.getAll);
-    /**
-     * Sendmail apis
-     */
-    app.get('/api/sendmail', sendmail.test);
+    
     // ping api
     app.get('/api/ping', (req, res) => {
         console.log('pong..');

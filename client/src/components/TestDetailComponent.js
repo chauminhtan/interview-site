@@ -3,11 +3,10 @@ import { Redirect } from 'react-router-dom';
 // import moment from 'moment';
 import TestsApi from '../api/Tests';
 import ResultsApi from '../api/Results';
-import { RIETextArea, RIENumber, RIESelect } from 'riek';
+import { RIETextArea, RIENumber } from 'riek';
 import extend from 'extend';
 import { Card, CardActions, CardTitle } from 'material-ui/Card';
 import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
 import Divider from 'material-ui/Divider';
 import Paper from 'material-ui/Paper';
 import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
@@ -188,8 +187,6 @@ class TestDetailComponent extends Component {
         const from = { pathname: '/tests' };
         const { redirectToReferer, message, modififed, selectedQuestions, selectedUsers, isAssignment, tabsValue } =  this.state;
         const selectedQ = selectedQuestions.length > 0 ? selectedQuestions : test.questions.map( question => question.id );
-        const listUsers = users.map( user => user.name );
-        // console.log(this.props.test);
         console.log(assignments);
         // const email = {
         //     subject: test.title,

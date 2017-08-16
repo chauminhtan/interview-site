@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Loader } from "semantic-ui-react";
 import { Helmet } from 'react-helmet';
 import QuestionsApi from '../api/Questions';
-import LangsApi from '../api/Languages';
 import QuestionDetailComponent from '../components/QuestionDetailComponent';
 import Header from '../components/Header';
 
