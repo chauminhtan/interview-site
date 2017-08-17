@@ -11,7 +11,19 @@ import moment from 'moment';
 
 class TableAssignmentComponent extends Component {
 
+    state = {
+        fixedHeader: true,
+        stripedRows: false,
+        showRowHover: false,
+        selectable: false,
+        multiSelectable: false,
+        enableSelectAll: false,
+        deselectOnClickaway: false,
+        showCheckboxes: false,
+    };
+
     render() {
+        const { fixedHeader, stripedRows, showRowHover, selectable, multiSelectable, enableSelectAll, deselectOnClickaway, showCheckboxes  } = this.state;
         const { assignments } = this.props;
         
         console.log(assignments);
@@ -20,15 +32,25 @@ class TableAssignmentComponent extends Component {
         // }
 
         return (
-            <Table fixedHeader={true}>
-                <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+            <Table 
+                fixedHeader={fixedHeader}
+                selectable={selectable}
+                multiSelectable={multiSelectable}>
+                <TableHeader 
+                    displaySelectAll={showCheckboxes}
+                    adjustForCheckbox={showCheckboxes}
+                    enableSelectAll={enableSelectAll}>
                     <TableRow>
                         <TableHeaderColumn>Test Title</TableHeaderColumn>
                         <TableHeaderColumn>User</TableHeaderColumn>
                         <TableHeaderColumn>Created</TableHeaderColumn>
                     </TableRow>
                 </TableHeader>
-                <TableBody displayRowCheckbox={false} showRowHover={true} stripedRows={true}>
+                <TableBody 
+                    displayRowCheckbox={showCheckboxes}
+                    deselectOnClickaway={deselectOnClickaway}
+                    showRowHover={showRowHover}
+                    stripedRows={stripedRows}>
                     {!assignments && (
                     <TableRow>
                         <TableRowColumn colSpan="3" style={{textAlign: 'center'}}>

@@ -4,7 +4,7 @@ import TestsApi from '../api/Tests';
 import UsersApi from '../api/Users';
 import ResultsApi from '../api/Results';
 import { Store } from '../api/index';
-// import TestDetailComponent from '../components/TestDetailComponent';
+import TestPageComponent from '../components/TestPageComponent';
 import Header from '../components/Header';
 import CircularProgress from 'material-ui/CircularProgress';
 
@@ -92,9 +92,7 @@ class TestPage extends Component {
                     <title>Interview System: Test Page</title>
                 </Helmet>
                 <div className='MainContent'>
-                    <h2>{!loading && test ? test.title : ""}</h2>
-                    <p>under building...</p>
-                    <CircularProgress className='loader' />
+                    {!loading && test ? <TestPageComponent onComponentRefresh={this.onComponentRefresh} {...props} /> : <CircularProgress className='loader' />}
                 </div>
             </div>
         );

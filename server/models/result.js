@@ -14,6 +14,7 @@ var ResultSchema = new Schema({
             pickAnswers: [{}],
             language: String,
             category: String,
+            made: { type: String, default: '' },
         }],
     },
     user: {

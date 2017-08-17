@@ -46,3 +46,16 @@
     top: 50%;
     left: 50%;
     z-index: 1000; }
+  .MainLayout .clock {
+    position: relative;
+    border-radius: 0.5em;
+    margin: 10px auto;
+    text-align: center;
+    font-size: 60px;
+    color: #fff;
+    line-height: 2.0em;
+    background-color: #00bcd4; }
+    .MainLayout .clock .title {
+      font-size: 0.2em; }
+  .MainLayout .radioButton {
+    margin-bottom: 16px; }

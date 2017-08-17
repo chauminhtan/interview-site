@@ -10,6 +10,17 @@ import {
 
 class TableQuestionComponent extends Component {
 
+    state = {
+        fixedHeader: true,
+        stripedRows: false,
+        showRowHover: false,
+        selectable: true,
+        multiSelectable: true,
+        enableSelectAll: false,
+        deselectOnClickaway: true,
+        showCheckboxes: true,
+    };
+
     _unSelectedQuestions(questions, selectedQuestions){
         // remove all current questions
         questions.map((row,index) => {
@@ -67,6 +78,7 @@ class TableQuestionComponent extends Component {
     };
 
     render() {
+        const { fixedHeader, stripedRows, showRowHover, selectable, multiSelectable, enableSelectAll, deselectOnClickaway, showCheckboxes  } = this.state;
         const { questions, selectedQuestions } = this.props;
         
         // console.log(selectedQuestions);
@@ -75,23 +87,35 @@ class TableQuestionComponent extends Component {
         }
 
         return (
-            <Table fixedHeader={true} multiSelectable={true} onRowSelection={this.handleQuestionSelection}>
-                <TableHeader displaySelectAll={true}>
+            <Table 
+                fixedHeader={fixedHeader}
+                selectable={selectable}
+                multiSelectable={multiSelectable}
+                onRowSelection={this.handleQuestionSelection}>
+                <TableHeader 
+                    displaySelectAll={showCheckboxes}
+                    adjustForCheckbox={showCheckboxes}
+                    enableSelectAll={enableSelectAll}
+                    >
                     <TableRow>
                         <TableHeaderColumn>Title</TableHeaderColumn>
                         <TableHeaderColumn>Language</TableHeaderColumn>
                         <TableHeaderColumn>Category</TableHeaderColumn>
-                        {/* <TableHeaderColumn>Time</TableHeaderColumn> */}
+                        <TableHeaderColumn>Type</TableHeaderColumn>
                         {/* <TableHeaderColumn>Created</TableHeaderColumn> */}
                     </TableRow>
                 </TableHeader>
-                <TableBody displayRowCheckbox={true} deselectOnClickaway={false} showRowHover={true} stripedRows={true}>
+                <TableBody 
+                    displayRowCheckbox={showCheckboxes}
+                    deselectOnClickaway={deselectOnClickaway}
+                    showRowHover={showRowHover}
+                    stripedRows={stripedRows}>
                     {questions.map( (row, index) => (
                     <TableRow key={index} selected={this.isSelected(selectedQuestions, row)}>
                         <TableRowColumn>{row.title}</TableRowColumn>
                         <TableRowColumn>{row.language}</TableRowColumn>
                         <TableRowColumn>{row.category}</TableRowColumn>
-                        {/* <TableRowColumn>{row.time}</TableRowColumn> */}
+                        <TableRowColumn>{row.typeQ}</TableRowColumn>
                         {/* <TableRowColumn>{moment(row.dateModified).fromNow()}</TableRowColumn> */}
                     </TableRow>
                     ))}

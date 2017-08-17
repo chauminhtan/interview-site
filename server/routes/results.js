@@ -67,6 +67,17 @@ module.exports = {
 			}
 		});
 	},
+	getOneByTestId: (req, res) => {
+		Result.where('test.id').equals(req.params.id).where('deleted').ne('true').select('id test user point time dateModified').exec((err, results) => {
+			if (err) {
+				sendErr(res, err);
+			} else {
+				sendSuccess(res, {
+					data: results
+				});
+			}
+		});
+	},
 	getOne: (req, res) => {
 		Result.where('_id').equals(req.params.id).select('id test point time dateModified').exec((err, results) => {
 			if (err) {

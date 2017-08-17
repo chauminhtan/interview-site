@@ -71,4 +71,23 @@
         left: 50%; 
         z-index: 1000;
     }
+
+    .clock {
+        position: relative;
+        border-radius: 0.5em;
+        margin: 10px auto;
+        text-align: center;
+        font-size: 60px;
+        color: #fff;
+        line-height: 2.0em;
+        background-color: rgb(0, 188, 212);
+      
+        .title {
+            font-size: 0.2em;
+        }
+    }
+
+    .radioButton {
+        margin-bottom: 16px;
+    }
 }
