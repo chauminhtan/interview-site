@@ -62,7 +62,9 @@ module.exports = function (app, passport, auth) {
      * Assignment apis
      */
     app.post('/api/results', results.create);
+    app.put('/api/results/:id', results.update);
     app.get('/api/resultsByTestId/:id', results.getByTestId);
+    app.post('/api/resultsByUserAndTest/:id', results.getByUserAndTest);
     app.get('/api/results/:id', results.getOne);
     app.get('/api/results', results.getAll);
     

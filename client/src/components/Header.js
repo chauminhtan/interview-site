@@ -28,8 +28,12 @@ class Login extends Component {
 
 class Logged extends Component {
     static muiName = "IconMenu";
-    state = {
-        redirectToReferer: false
+    
+    constructor(props) {
+        super(props);
+        this.state = {
+            redirectToReferer: false
+        }
     }
 
     signOut = (event, logged) => {
@@ -103,9 +107,14 @@ function wrapState(ComposedComponent) {
 SelectableList = wrapState(SelectableList);
 
 class Header extends Component {
-    state = {
-        openSideBar: false
-    };
+    
+    constructor(props) {
+        super(props);
+        
+        this.state = {
+            openSideBar: false
+        }
+    }
 
     // static propTypes = {
     //     match: PropTypes.object.isRequired,

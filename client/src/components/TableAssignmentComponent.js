@@ -11,16 +11,20 @@ import moment from 'moment';
 
 class TableAssignmentComponent extends Component {
 
-    state = {
-        fixedHeader: true,
-        stripedRows: false,
-        showRowHover: false,
-        selectable: false,
-        multiSelectable: false,
-        enableSelectAll: false,
-        deselectOnClickaway: false,
-        showCheckboxes: false,
-    };
+    constructor (props) {
+        super(props);
+        
+        this.state = {
+            fixedHeader: true,
+            stripedRows: false,
+            showRowHover: false,
+            selectable: false,
+            multiSelectable: false,
+            enableSelectAll: false,
+            deselectOnClickaway: false,
+            showCheckboxes: false,
+        }
+    }
 
     render() {
         const { fixedHeader, stripedRows, showRowHover, selectable, multiSelectable, enableSelectAll, deselectOnClickaway, showCheckboxes  } = this.state;

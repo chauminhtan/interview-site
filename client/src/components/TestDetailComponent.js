@@ -19,25 +19,29 @@ import MenuItem from 'material-ui/MenuItem';
 
 class TestDetailComponent extends Component {
 
-    state = {
-        redirectToReferer: false,
-        message: {
-            isShow: false,
-            content: ''
-        },
-        test: {
-            time: 0,
-            questions: []
-        },
-        selectedQuestions: [],
-        selectedUsers: [],
-        email: {
-            subject: '',
-            content: ''
-        },
-        modififed: false,
-        isAssignment: false,
-        tabsValue: 'g'
+    constructor(props) {
+        super(props);
+        
+        this.state = {
+            redirectToReferer: false,
+            message: {
+                isShow: false,
+                content: ''
+            },
+            test: {
+                time: 0,
+                questions: []
+            },
+            selectedQuestions: [],
+            selectedUsers: [],
+            email: {
+                subject: '',
+                content: ''
+            },
+            modififed: false,
+            isAssignment: false,
+            tabsValue: 'g'
+        }
     }
 
     goBack = () => {

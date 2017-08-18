@@ -46,7 +46,7 @@ module.exports = {
 		
 	}, //end create
 	getAll: (req, res) => {
-		Result.where('deleted').ne('true').select('id test user point time dateModified').exec((err, results) => {
+		Result.where('deleted').ne('true').select('id test user point time done dateModified').exec((err, results) => {
 			if (err) {
 				sendErr(res, err);
 			} else {
@@ -57,7 +57,7 @@ module.exports = {
 		});
 	}, //end getAll
 	getByTestId: (req, res) => {
-		Result.where('test.id').equals(req.params.id).where('deleted').ne('true').select('id test user point time dateModified').exec((err, results) => {
+		Result.where('test.id').equals(req.params.id).where('deleted').ne('true').select('id test user point time done dateModified').exec((err, results) => {
 			if (err) {
 				sendErr(res, err);
 			} else {
@@ -67,19 +67,20 @@ module.exports = {
 			}
 		});
 	},
-	getOneByTestId: (req, res) => {
-		Result.where('test.id').equals(req.params.id).where('deleted').ne('true').select('id test user point time dateModified').exec((err, results) => {
+	getByUserAndTest: (req, res) => {
+		// console.log(req.body);
+		Result.where('user.id').equals(req.body.userId).where('test.id').equals(req.body.testId).where('deleted').ne('true').select('id test user point time done dateModified').exec((err, results) => {
 			if (err) {
 				sendErr(res, err);
 			} else {
 				sendSuccess(res, {
-					data: results
+					data: results[0]
 				});
 			}
 		});
 	},
 	getOne: (req, res) => {
-		Result.where('_id').equals(req.params.id).select('id test point time dateModified').exec((err, results) => {
+		Result.where('_id').equals(req.params.id).select('id test point time done dateModified').exec((err, results) => {
 			if (err) {
 				sendErr(res, err);
 			} else {
@@ -96,7 +97,7 @@ module.exports = {
 			}
 
 			extend(result, req.body);
-			console.log(result);
+			// console.log(result);
 			result.save((err) => {
 				sendSuccess(res);
 			});

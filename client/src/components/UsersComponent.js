@@ -22,8 +22,10 @@ import TextField from 'material-ui/TextField';
 import moment from 'moment';
 
 class UsersComponent extends Component {
+
     constructor (props) {
         super(props);
+        
         this.state = {
             search: '',
             message: {

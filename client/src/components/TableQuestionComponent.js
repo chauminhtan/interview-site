@@ -10,16 +10,20 @@ import {
 
 class TableQuestionComponent extends Component {
 
-    state = {
-        fixedHeader: true,
-        stripedRows: false,
-        showRowHover: false,
-        selectable: true,
-        multiSelectable: true,
-        enableSelectAll: false,
-        deselectOnClickaway: true,
-        showCheckboxes: true,
-    };
+    constructor (props) {
+        super(props);
+        
+        this.state = {
+            fixedHeader: true,
+            stripedRows: false,
+            showRowHover: false,
+            selectable: true,
+            multiSelectable: true,
+            enableSelectAll: false,
+            deselectOnClickaway: true,
+            showCheckboxes: true,
+        }
+    }
 
     _unSelectedQuestions(questions, selectedQuestions){
         // remove all current questions

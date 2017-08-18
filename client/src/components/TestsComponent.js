@@ -41,8 +41,13 @@ import TableQuestionComponent from '../components/TableQuestionComponent';
 // };
 
 class ClickableRow extends Component {
-    state = {
-        redirectToReferer: ''
+    
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            redirectToReferer: ''
+        }
     }
 
     onClick = (path) => {
@@ -69,8 +74,10 @@ class ClickableRow extends Component {
 }
 
 class TestsComponent extends Component {
+    
     constructor (props) {
         super(props);
+        
         this.state = {
             search: '',
             language: '',

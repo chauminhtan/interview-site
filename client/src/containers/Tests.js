@@ -4,6 +4,7 @@ import TestsComponent from '../components/TestsComponent';
 import CircularProgress from 'material-ui/CircularProgress';
 
 class Tests extends Component {
+    
     constructor (props) {
         super(props);
 

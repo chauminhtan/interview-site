@@ -13,17 +13,21 @@ import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
 
 class UserDetailComponent extends Component {
 
-    state = {
-        redirectToReferer: false,
-        message: {
-            isShow: false,
-            content: ''
-        },
-        user: {
-            name: '',
-            email: ''
-        },
-        modififed: false
+    constructor(props) {
+        super(props);
+        
+        this.state = {
+            redirectToReferer: false,
+            message: {
+                isShow: false,
+                content: ''
+            },
+            user: {
+                name: '',
+                email: ''
+            },
+            modififed: false
+        }
     }
 
     goBack = () => {

@@ -6,6 +6,7 @@ import PositionsApi from '../api/Positions';
 import LangsApi from '../api/Languages';
 
 class Tests extends Component {
+    
     constructor (props) {
         super(props);
 

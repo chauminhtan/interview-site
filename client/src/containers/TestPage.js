@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
-import TestsApi from '../api/Tests';
-import UsersApi from '../api/Users';
 import ResultsApi from '../api/Results';
 import { Store } from '../api/index';
 import TestPageComponent from '../components/TestPageComponent';
 import Header from '../components/Header';
 import CircularProgress from 'material-ui/CircularProgress';
+
+const userInfo = Store.getUserInfo() ? JSON.parse(Store.getUserInfo()) : null;
 
 class TestPage extends Component {
 
@@ -16,72 +16,43 @@ class TestPage extends Component {
         this.state = {
             loading: false,
             test: null,
-            users: null,
-            assignments: null
+            result: null
         }
     }
     
     // Update the data when the component mounts
     componentDidMount() {
-        console.log('componentDidMoun');
-        // this.getUserData();
+        // console.log('componentDidMoun');
         this.setState({loading: true}, this.updateData);
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log('componentWillReceiveProps');
+        // console.log('componentWillReceiveProps');
         // Check to see if the requestRefresh prop has changed
     }
 
     // Callback from the `UsersComponent` component
     onComponentRefresh = () => {
-        console.log('refreshing data..');
-        // this.setState({ loading: true }, this.updateData);
+        // console.log('refreshing data..');
+        this.setState({ loading: true }, this.updateData);
     }
 
     updateData = () => {
-        TestsApi.getOne(this.props.match.params.id, res => {
-            // console.log(res);
-            // this.setState({
-            //     loading: false,
-            //     test: res.data
-            // });
-            if (res.data) {
-                this.getAssignmentData(res.data);
-            } else {
-
-            }
-        })
-    }
-
-    // Call out to server data and refresh directory
-    getUserData = () => {
-        UsersApi.getAll(res => {
+        let data = { testId: this.props.match.params.id, userId: userInfo.userId};
+        ResultsApi.getByUserAndTest(data, res => {
             // console.log(res);
             this.setState({
                 loading: false,
-                users: res.data
-            });
-        })
-    }
-
-    // Call out to server data and refresh directory
-    getAssignmentData = (test) => {
-        ResultsApi.getByTestId(test.id, res => {
-            // console.log(res);
-            this.setState({
-                loading: false,
-                test: test,
-                assignments: res.data
+                result: res.data
             });
         })
     }
 
     render() {
-        const { loading, test, users, assignments } = this.state;
-        const props = { test, users, assignments };
+        const { loading, result } = this.state;
+        const props = { result };
         const { location } = this.props;
-        const userInfo = Store.getUserInfo() ? JSON.parse(Store.getUserInfo()) : null;
+        
         console.log(props);
         console.log(userInfo);
 
@@ -92,7 +63,7 @@ class TestPage extends Component {
                     <title>Interview System: Test Page</title>
                 </Helmet>
                 <div className='MainContent'>
-                    {!loading && test ? <TestPageComponent onComponentRefresh={this.onComponentRefresh} {...props} /> : <CircularProgress className='loader' />}
+                    {!loading && result ? <TestPageComponent onComponentRefresh={this.onComponentRefresh} {...props} /> : <CircularProgress className='loader' />}
                 </div>
             </div>
         );

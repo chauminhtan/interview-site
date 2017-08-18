@@ -16,32 +16,36 @@ import PickAnswerComponent from '../components/PickAnswerComponent';
 
 class QuestionDetailComponent extends Component {
 
-    state = {
-        redirectToReferer: false,
-        message: {
-            isShow: false,
-            content: ''
-        },
-        typeOptions : [
-            { id: "Text", text: "Text" },
-            { id: "Pick", text: "Pick" },
-            { id: "Multiple", text: "Multiple" }
-        ],
-        categoryOptions : [
-            {id: "Coding", text: "Coding"},
-            {id: "Other", text: "Other"}
-        ],
-        question: {
-            answer: '',
-            category: '',
-            language: '',
-            title: '',
-            time: '',
-            type: '',
-            pickAnswers: [],
-            dateModified: ''
-        },
-        modififed: false
+    constructor(props) {
+        super(props);
+        
+        this.state = {
+            redirectToReferer: false,
+            message: {
+                isShow: false,
+                content: ''
+            },
+            typeOptions : [
+                { id: "Text", text: "Text" },
+                { id: "Pick", text: "Pick" },
+                { id: "Multiple", text: "Multiple" }
+            ],
+            categoryOptions : [
+                {id: "Coding", text: "Coding"},
+                {id: "Other", text: "Other"}
+            ],
+            question: {
+                answer: '',
+                category: '',
+                language: '',
+                title: '',
+                time: '',
+                type: '',
+                pickAnswers: [],
+                dateModified: ''
+            },
+            modififed: false
+        }
     }
 
     goBack = () => {

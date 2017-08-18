@@ -30,17 +30,14 @@ const QuestionTypes = [
   <MenuItem key={2} value='Pick' primaryText="Pick" />,
   <MenuItem key={3} value='Multiple' primaryText="Multiple" />,
 ];
-// const CategoryTypes = [
-//   <MenuItem key={1} value='Coding' primaryText="Coding" />,
-//   <MenuItem key={2} value='Other' primaryText="Other" />,
-// ];
-// const LanguageTypes = ['General','Java','C#','Python','Javascript', 'QA'];
 
 const PickAnswers = ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4'];
 
 class QuestionsComponent extends Component {
+
     constructor (props) {
         super(props);
+
         this.state = {
             search: '',
             langText: '',

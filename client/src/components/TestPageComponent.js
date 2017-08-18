@@ -1,62 +1,52 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-// import moment from 'moment';
-import TestsApi from '../api/Tests';
 import ResultsApi from '../api/Results';
 import extend from 'extend';
+import moment from 'moment';
 import { Card, CardActions, CardTitle } from 'material-ui/Card';
 import RaisedButton from 'material-ui/RaisedButton';
 import Divider from 'material-ui/Divider';
 import Paper from 'material-ui/Paper';
-import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
 import Snackbar from 'material-ui/Snackbar';
-import { Tabs, Tab } from 'material-ui/Tabs';
 import DisplayQuestionComponent from '../components/DisplayQuestionComponent';
-import SelectField from "material-ui/SelectField";
-import MenuItem from 'material-ui/MenuItem';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
-import ContentEdit from 'material-ui/svg-icons/content/create';
 
 class TestPageComponent extends Component {
+
     constructor(props) {
         super(props);
-        const state = {
+        
+        this.state = {
             redirectToReferer: false,
             message: {
                 isShow: false,
                 content: ''
             },
-            test: {
-                time: 0,
-                questions: []
-            },
             isStarted: false,
             duration: 0,
             modififed: false
         }
-        this.state = extend(state, this.getTime())
     }
 
     goBack = () => {
         this.setState({ redirectToReferer: true })
     }
 
-    onChange = (newState) => {
-        extend(this.props.test, newState);
+    onChange = (data) => {
+        // console.log(data)
+        this.props.result.test.questions = data;
 
         this.setState({
-            modififed: true
+            modififed: true && !this.props.result.done
         });
     }
 
-    edit = () => {
-        // console.log(this.props.test);
-        let data = this.props.test;
-        if (this.state.test.questions.length) {
-            data = extend(data, this.state.test);
-            console.log(data)
-        }
-        TestsApi.update(data, res => {
+    save = () => {
+        let { duration } = this.state;
+        let data = this.props.result;
+        data.done = true;
+        data.time = duration;
+        // console.log(data);
+        ResultsApi.update(data, res => {
             // console.log(res);
             let message = extend({}, this.state.message);
             message.content = res.message;
@@ -67,7 +57,8 @@ class TestPageComponent extends Component {
                 // return;
             }
             this.setState({
-                 message: message
+                 message: message,
+                 modififed: false
             }, this.props.onComponentRefresh());
         })
     }
@@ -75,6 +66,7 @@ class TestPageComponent extends Component {
     handleStart = (e) => { 
         this.setState({
             isStarted: true,
+            modififed: true
         })
     }
 
@@ -84,23 +76,14 @@ class TestPageComponent extends Component {
 
     updateTime() {
         let { duration, isStarted } = this.state;
-        let time = this.getTime();
 
         if (isStarted) {
             duration++;
-            time.duration = duration;
         }
-        this.setState(time, this.setTimer);
-    }
 
-    getTime() {
-        const currentTime = new Date();
-        return {
-            hours: currentTime.getHours(),
-            minutes: currentTime.getMinutes(),
-            seconds: currentTime.getSeconds(),
-            ampm: currentTime.getHours() >= 12 ? 'pm' : 'am'
-        }
+        this.setState({
+            duration: duration
+        }, this.setTimer);
     }
 
     componentDidMount() {
@@ -109,9 +92,9 @@ class TestPageComponent extends Component {
 
     componentWillUnmount() {
         if (this.timeout) {
-          clearTimeout(this.timeout);
+            clearTimeout(this.timeout);
         }
-      }
+    }
 
     handleRequestClose = () => {
         let message = extend({}, this.state.message);
@@ -120,40 +103,48 @@ class TestPageComponent extends Component {
     }
     
     render() {
-        const { test, users, assignments } = this.props;
+        const { result } = this.props;
+        const test = result.test;
         const from = { pathname: '/home' };
-        const { redirectToReferer, message, modififed, hours, minutes, seconds, ampm, duration, isStarted } =  this.state;
+        const { redirectToReferer, message, modififed, duration, isStarted } =  this.state;
         // console.log(duration);
+        // test.time = 10;
+        const rest = test.time > duration ? test.time - duration : 0; 
+        const timeForAnswer = moment.unix(test.time).utcOffset(0).format('HH:mm:ss');
+        const timeDone = moment.unix(result.time).utcOffset(0).format('HH:mm:ss');
+        const currentTime = moment.unix(rest).utcOffset(0).format('HH:mm:ss');
+
+        if(rest === 0) {
+            if (!result.done) {
+                result.done = true;
+                this.save();
+            }
+        }
+        
         if (redirectToReferer) {
             return (
                 <Redirect to={from} />
             )
         }
         // console.log(selectedUsers);
-        let listQuestions = test.questions && isStarted ? 
+        let listQuestions = test.questions && (isStarted || result.done) ? 
             (
-                <DisplayQuestionComponent questions={test.questions} disabled={false} />
+                <DisplayQuestionComponent questions={test.questions} disabled={result.done} onChange={this.onChange} />
             )
             : '';
 
-        let clockRender = hours ? 
-            (
-                <div className="clock">
-                    {
-                    hours === 0 ? 12 :
-                        (hours > 12) ?
-                        hours - 12 : hours
-                    }:{
-                    minutes > 9 ? minutes : `0${minutes}`
-                    }:{
-                    seconds > 9 ? seconds : `0${seconds}`
-                    } {ampm}
-                </div>
-            ) : '';
+        let clockRender = test.time && !result.done ? 
+        (
+            <div className="clock">
+                { currentTime }
+            </div>
+        ) : '';
+
+        const startBtn = isStarted || result.done ? '' : <RaisedButton secondary disabled={result.done} onClick={this.handleStart} label="Start" />;
+        const submitBtn = !isStarted ? '' : <RaisedButton secondary disabled={!modififed} onClick={this.save} label="Submit" />;
 
         return (
             <div>
-                {/* <h2>Test Information</h2> */}
                 <Snackbar
                     open={message.isShow}
                     message={message.content}
@@ -162,14 +153,10 @@ class TestPageComponent extends Component {
                 />
                 <h5>
                     {clockRender}
-                    <FloatingActionButton mini={true} secondary={true} style={{float: 'right'}} onTouchTap={this.handleStart}>
-                        <ContentEdit />
-                    </FloatingActionButton>
-                    <div className='clear' />
                 </h5>
                 <Paper zDepth={2}>
                     <Card className='defaultForm'>
-                        <CardTitle className='title' subtitle='Title'>
+                        <CardTitle className='title' subtitle=''>
                             {test.title}
                         </CardTitle>
                         <Divider />
@@ -177,15 +164,18 @@ class TestPageComponent extends Component {
                             {test.position.name}
                         </CardTitle>
                         <Divider />
-                        <CardTitle subtitle='Time for answer (second)'>
-                            {test.time}
+                        <CardTitle subtitle='Time for answer'>
+                            {result.done ? timeDone + ' / ' + timeForAnswer : timeForAnswer}
                         </CardTitle> 
                         <Divider />
                         <CardTitle subtitle='Questions'>
+                            <div style={ {marginTop: 10} }>
+                            {startBtn}
                             {listQuestions}
+                            </div>
                         </CardTitle>
                         <CardActions>
-                            <RaisedButton primary disabled={!modififed} onClick={this.edit} label="Submit" />
+                            {submitBtn}
                         </CardActions>
                     </Card>
                 </Paper>

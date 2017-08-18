@@ -25,8 +25,13 @@ import InputQtyPerCategory from '../components/InputQtyPerCategoryComponent';
 import SelectFieldLangComponent from '../components/SelectFieldLangComponent';
 
 class ClickableRow extends Component {
-    state = {
-        redirectToReferer: ''
+    
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            redirectToReferer: ''
+        }
     }
 
     onClick = (path) => {
@@ -53,8 +58,10 @@ class ClickableRow extends Component {
 }
 
 class PositionsComponent extends Component {
+    
     constructor (props) {
         super(props);
+
         this.state = {
             search: '',
             message: {

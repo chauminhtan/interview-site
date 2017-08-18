@@ -16,6 +16,10 @@ var ResultSchema = new Schema({
             category: String,
             made: { type: String, default: '' },
         }],
+        position: { 
+            id: { type: String, require: true, default: '' },
+            name: { type: String, require: true, default: '' }
+        },
     },
     user: {
         id: String,
@@ -26,6 +30,7 @@ var ResultSchema = new Schema({
 	time: { type: Number, default: 0 },
     dateModified: { type: Date, default: Date.now },
     status: String,
+    done: { type: Boolean, default: false },
     deleted: { type: Boolean, default: false }
 }, {
     strict: true,

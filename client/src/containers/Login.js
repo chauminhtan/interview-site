@@ -7,8 +7,12 @@ import Header from '../components/Header';
 
 class Login extends Component {
 
-    state = {
-        redirectToReferer: false
+    constructor(props) {
+        super(props);
+        
+        this.state = {
+            redirectToReferer: false
+        }
     }
 
     login = (e) => {

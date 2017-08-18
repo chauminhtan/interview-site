@@ -17,18 +17,21 @@ import SelectFieldLangComponent from '../components/SelectFieldLangComponent';
 
 class positionDetailComponent extends Component {
 
-    state = {
-        redirectToReferer: false,
-        message: {
-            isShow: false,
-            content: ''
-        },
-        position: {
-            name: '',
-            languages: []
-        },
-        modififed: false,
-        tabsValue: 'g'
+    constructor(props) {
+        super(props);
+        this.state = {
+            redirectToReferer: false,
+            message: {
+                isShow: false,
+                content: ''
+            },
+            position: {
+                name: '',
+                languages: []
+            },
+            modififed: false,
+            tabsValue: 'g'
+        }
     }
 
     goBack = () => {

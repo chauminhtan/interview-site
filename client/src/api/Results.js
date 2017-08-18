@@ -37,6 +37,17 @@ const ApiCollection = {
             setTimeout(cb(res), 100);
         })
     },
+    getByUserAndTest(data, cb) {
+        axios.post(Config.serverURL + '/api/resultsByUserAndTest/' + data.testId, data)
+        .then(res => {
+            // handle error here
+            if (res.status === 1) {
+                
+            }
+
+            setTimeout(cb(res), 100);
+        })
+    },
     create(data, cb) {
         axios.post(Config.serverURL + '/api/' + model, data)
         .then(res => {
@@ -61,17 +72,6 @@ const ApiCollection = {
     },
     delete(id, cb) {
         axios.delete(Config.serverURL + '/api/' + model + '/' + id)
-        .then(res => {
-            // handle error here
-            if (res.status === 1) {
-                
-            }
-
-            setTimeout(cb(res), 100);
-        })
-    },
-    sendmail(cb) {
-        axios.get(Config.serverURL + '/api/sendmail')
         .then(res => {
             // handle error here
             if (res.status === 1) {
