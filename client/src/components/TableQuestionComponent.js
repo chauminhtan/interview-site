@@ -20,7 +20,7 @@ class TableQuestionComponent extends Component {
             selectable: true,
             multiSelectable: true,
             enableSelectAll: false,
-            deselectOnClickaway: true,
+            deselectOnClickaway: false,
             showCheckboxes: true,
         }
     }
@@ -85,7 +85,7 @@ class TableQuestionComponent extends Component {
         const { fixedHeader, stripedRows, showRowHover, selectable, multiSelectable, enableSelectAll, deselectOnClickaway, showCheckboxes  } = this.state;
         const { questions, selectedQuestions } = this.props;
         
-        // console.log(selectedQuestions);
+        // console.log(questions);
         if (questions.length === 0) {
             return (<p>Questions is empty</p>);
         }
@@ -106,7 +106,6 @@ class TableQuestionComponent extends Component {
                         <TableHeaderColumn>Language</TableHeaderColumn>
                         <TableHeaderColumn>Category</TableHeaderColumn>
                         <TableHeaderColumn>Type</TableHeaderColumn>
-                        {/* <TableHeaderColumn>Created</TableHeaderColumn> */}
                     </TableRow>
                 </TableHeader>
                 <TableBody 
@@ -120,7 +119,6 @@ class TableQuestionComponent extends Component {
                         <TableRowColumn>{row.language}</TableRowColumn>
                         <TableRowColumn>{row.category}</TableRowColumn>
                         <TableRowColumn>{row.typeQ}</TableRowColumn>
-                        {/* <TableRowColumn>{moment(row.dateModified).fromNow()}</TableRowColumn> */}
                     </TableRow>
                     ))}
                 </TableBody>

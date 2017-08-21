@@ -3,7 +3,9 @@ import { Loader } from "semantic-ui-react";
 import { Helmet } from 'react-helmet';
 import TestsApi from '../api/Tests';
 import UsersApi from '../api/Users';
+import QuestionsApi from '../api/Questions';
 import ResultsApi from '../api/Results';
+import PositionsApi from '../api/Positions';
 import TestDetailComponent from '../components/TestDetailComponent';
 import Header from '../components/Header';
 
@@ -16,19 +18,17 @@ class TestDetail extends Component {
             loading: false,
             test: null,
             users: null,
-            assignments: null
+            questions: null,
+            assignments: null,
+            position: null
         }
     }
     
     // Update the data when the component mounts
     componentDidMount() {
-        // TestsApi.getOne(this.props.match.params.id, res => {
-        //     // console.log(res);
-        //     this.updateData(res.data);
-        // })
-        // this.setState({loading: true});
         console.log('componentDidMoun');
         this.getUserData();
+        this.getQuestionData();
         this.setState({loading: true}, this.updateData);
     }
 
@@ -36,15 +36,6 @@ class TestDetail extends Component {
         console.log('componentWillReceiveProps');
         // Check to see if the requestRefresh prop has changed
     }
-
-    // Call out to server data and refresh directory
-    // updateData(data) {
-    //     // console.log(data);
-    //     this.setState({
-    //         loading: false,
-    //         test: data
-    //     });
-    // }
 
     // Callback from the `UsersComponent` component
     onComponentRefresh = () => {
@@ -60,6 +51,7 @@ class TestDetail extends Component {
             //     test: res.data
             // });
             this.getAssignmentData(res.data);
+            this.getPositionData(res.data);
         })
     }
 
@@ -75,9 +67,20 @@ class TestDetail extends Component {
     }
 
     // Call out to server data and refresh directory
+    getPositionData = (test) => {
+        PositionsApi.getOne(test.position.id, res => {
+            // console.log(res);
+            this.setState({
+                loading: false,
+                position: res.data
+            });
+        })
+    }
+
+    // Call out to server data and refresh directory
     getAssignmentData = (test) => {
         ResultsApi.getByTestId(test.id, res => {
-            console.log(res);
+            // console.log(res);
             this.setState({
                 loading: false,
                 test: test,
@@ -86,9 +89,20 @@ class TestDetail extends Component {
         })
     }
 
+    // Call out to server data and refresh directory
+    getQuestionData = () => {
+        QuestionsApi.getAll(res => {
+            // console.log(res);
+            this.setState({
+                loading: false,
+                questions: res.data
+            });
+        })
+    }
+
     render() {
-        const { loading, test, users, assignments } = this.state;
-        const props = { test, users, assignments };
+        const { loading, test, users, assignments, questions, position } = this.state;
+        const props = { test, users, assignments, questions, position };
         const { location } = this.props;
 
         return (

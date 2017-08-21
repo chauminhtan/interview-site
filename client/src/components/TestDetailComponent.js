@@ -3,7 +3,6 @@ import { Redirect } from 'react-router-dom';
 // import moment from 'moment';
 import TestsApi from '../api/Tests';
 import ResultsApi from '../api/Results';
-import { RIETextArea, RIENumber } from 'riek';
 import extend from 'extend';
 import { Card, CardActions, CardTitle } from 'material-ui/Card';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -15,6 +14,7 @@ import { Tabs, Tab } from 'material-ui/Tabs';
 import TableQuestionComponent from '../components/TableQuestionComponent';
 import TableAssignmentComponent from '../components/TableAssignmentComponent';
 import SelectField from "material-ui/SelectField";
+import TextField from 'material-ui/TextField';
 import MenuItem from 'material-ui/MenuItem';
 
 class TestDetailComponent extends Component {
@@ -40,7 +40,9 @@ class TestDetailComponent extends Component {
             },
             modififed: false,
             isAssignment: false,
-            tabsValue: 'g'
+            language: '',
+            category: '',
+            questions: []
         }
     }
 
@@ -51,8 +53,18 @@ class TestDetailComponent extends Component {
     onChange = (newState) => {
         // console.log(newState);
         extend(this.props.test, newState);
-        // let test = extend(data, this.state.test);
 
+        this.setState({
+            modififed: true
+        });
+    }
+
+    onChangeTextField = (e) => {
+        // console.log(e.target.value);
+        let test = this.props.test;
+        test[e.target.id] = e.target.value;
+        extend(this.props.test, test);
+        
         this.setState({
             modififed: true
         });
@@ -136,7 +148,7 @@ class TestDetailComponent extends Component {
 
     updateSelectedQuestions = (selectedQuestions) => {
         console.log(selectedQuestions);
-        const originalQuestions = this.props.test.questions;
+        const originalQuestions = this.props.questions;
         let test = extend({}, this.props.test);
         test.questions = [];
         test.time = 0;
@@ -152,7 +164,7 @@ class TestDetailComponent extends Component {
         });
 
         console.log(selectedQuestions);
-        console.log(test);
+        // console.log(test);
         this.setState({ 
             test: test, 
             selectedQuestions: selectedQuestions,
@@ -168,11 +180,43 @@ class TestDetailComponent extends Component {
         });
     }
 
-    handleChangeTab = (value) => {
+    handleChangeLang = (event, index, value) => {
+        // console.log(value)
+        const { questions, position } = this.props;
+        let filteredQuestions = [];
+        
+        if (value === 'both') {
+            const languages = position.languages.map(lang => lang.name);
+            filteredQuestions = questions.filter(question => {
+                return languages.indexOf(question.language) > -1;
+            });
+        } else {
+            filteredQuestions = questions.filter(question => {
+                return question.language === value;
+            });
+        }
+        
         this.setState({
-            tabsValue: value
+            language: value,
+            questions: filteredQuestions
         });
     }
+
+    handleChangeCategory = (event, index, value) => {
+        // console.log(value);
+        const { language } = this.state;
+        const { questions } = this.props;
+        let filteredQuestions = questions.filter(question => {
+            return language.length ? 
+                question.language.toLowerCase() === language.toLowerCase() && question.category.toLowerCase() === value.toLowerCase() :
+                question.category.toLowerCase() === value.toLowerCase();
+        });
+        // console.log(filteredQuestions);
+        this.setState({
+            category: value,
+            questions: filteredQuestions
+        });
+    };
 
     menuItems(data, value) {
         return data.map((item, i) => (
@@ -187,11 +231,11 @@ class TestDetailComponent extends Component {
     }
     
     render() {
-        const { test, users, assignments } = this.props;
+        const { test, users, assignments, position } = this.props;
         const from = { pathname: '/tests' };
-        const { redirectToReferer, message, modififed, selectedQuestions, selectedUsers, isAssignment, tabsValue } =  this.state;
+        const { redirectToReferer, message, modififed, selectedQuestions, selectedUsers, isAssignment, language, category, questions } =  this.state;
         const selectedQ = selectedQuestions.length > 0 ? selectedQuestions : test.questions.map( question => question.id );
-        console.log(assignments);
+        // console.log(assignments);
         // const email = {
         //     subject: test.title,
         //     content: 'this is contnent'
@@ -202,12 +246,6 @@ class TestDetailComponent extends Component {
                 <Redirect to={from} />
             )
         }
-        console.log(selectedUsers);
-        let listQuestions = test.questions ? 
-            (
-                <TableQuestionComponent questions={test.questions} selectedQuestions={selectedQ} updateSelectedQuestions={this.updateSelectedQuestions} />
-            )
-            : '';
 
         let UserSelectField = users ? 
             (
@@ -220,6 +258,46 @@ class TestDetailComponent extends Component {
                     {this.menuItems(users, selectedUsers)}
                 </SelectField>
             ) : '';
+        
+        //
+        let LangSelectField = test.position && position ? 
+        (
+            <SelectField id='language'
+                value={language}
+                onChange={this.handleChangeLang}
+                floatingLabelText="Language"
+                style={{ marginRight: '20px' }}
+                >
+                <MenuItem key={'both'} value='both' primaryText='Both' />
+                {position.languages.map((item, i) => {
+                    return <MenuItem key={i} value={item.name} primaryText={item.name} />
+                })}
+            </SelectField>
+        ) : '';
+    
+        let categories = language && language !== 'both' && position ? position.languages.filter(item => item.name === language)[0].categories : [];
+        // console.log(categories);
+        let CategorySelectField = LangSelectField && categories ? 
+            (
+                <SelectField id='category'
+                    value={category}
+                    onChange={this.handleChangeCategory}
+                    floatingLabelText="Category"
+                    >
+                    {categories.map((item, i) => {
+                        return <MenuItem key={i} value={item.title} primaryText={item.title} />
+                    })}
+                </SelectField>
+            ) : '';
+        
+        // console.log(selectedQ);
+        let listAvailableQuestions = language ? questions : test.questions;
+
+        let listQuestions = listAvailableQuestions && listAvailableQuestions.length ? 
+            (
+                <TableQuestionComponent questions={listAvailableQuestions} selectedQuestions={selectedQ} updateSelectedQuestions={this.updateSelectedQuestions} />
+            )
+            : '';
 
         return (
             <div>
@@ -231,11 +309,17 @@ class TestDetailComponent extends Component {
                     onRequestClose={this.handleRequestClose}
                 />
                 <Paper zDepth={2}>
-                    <Tabs value={tabsValue} onChange={this.handleChangeTab}>
-                        <Tab label="General" value='g'>
+                    <Tabs>
+                        <Tab label="General">
                             <Card className='defaultForm'>
                                 <CardTitle className='title' subtitle='Title'>
-                                    <RIETextArea propName='title' value={test.title} change={this.onChange} />
+                                    <TextField id="title"
+                                        fullWidth={true}
+                                        hintText="Title Field"
+                                        floatingLabelText=""
+                                        onChange={this.onChangeTextField}
+                                        value={test.title}
+                                        />
                                 </CardTitle>
                                 <Divider />
                                 <CardTitle subtitle='Position'>
@@ -243,7 +327,13 @@ class TestDetailComponent extends Component {
                                 </CardTitle>
                                 <Divider />
                                 <CardTitle subtitle='Time for answer (second)'>
-                                    <RIENumber propName='time' value={test.time} change={this.onChange} />
+                                    <TextField id="time"
+                                        fullWidth={true}
+                                        hintText="Number Field"
+                                        floatingLabelText=""
+                                        onChange={this.onChangeTextField}
+                                        value={test.time}
+                                        />
                                 </CardTitle> 
                                 <CardActions>
                                     <RaisedButton primary disabled={!modififed} onClick={this.edit} label="Save" />
@@ -251,13 +341,16 @@ class TestDetailComponent extends Component {
                                 </CardActions>
                             </Card>
                         </Tab>
-                        <Tab label="Questions" value='q'>
+                        <Tab label="Questions">
                             <Card>
-                                <CardTitle subtitle='Title'>
-                                    <RIETextArea className='fullWidth' propName='title' value={test.title} change={this.onChange} />
+                                <CardTitle subtitle='Filters'>
+                                { LangSelectField } 
+                                { CategorySelectField }
                                 </CardTitle>
                                 <Divider />
+                                <CardTitle>
                                 { listQuestions }
+                                </CardTitle>
                                 <Divider />
                                 <CardActions>
                                     <RaisedButton primary disabled={!modififed} onClick={this.edit} label="Save" />
@@ -265,7 +358,7 @@ class TestDetailComponent extends Component {
                                 </CardActions>
                             </Card>
                         </Tab>
-                        <Tab label="Assignment" value='a'>
+                        <Tab label="Assignment">
                             <Card>
                                 {/* <CardTitle subtitle='Subject'>
                                     <RIETextArea className='fullWidth' propName='subject' value={email.subject} change={this.onChangeEmail} />
