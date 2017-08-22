@@ -112,7 +112,7 @@ class TestDetail extends Component {
                     <title>Interview System: Test Detail</title>
                 </Helmet>
                 <div className='MainContent'>
-                    {!loading && test && users ? <TestDetailComponent onComponentRefresh={this.onComponentRefresh} {...props} /> : <Loader active>Loading...</Loader>}
+                    {!loading && test && users && position ? <TestDetailComponent onComponentRefresh={this.onComponentRefresh} {...props} /> : <Loader active>Loading...</Loader>}
                 </div>
             </div>
         );

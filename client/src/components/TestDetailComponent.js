@@ -16,6 +16,7 @@ import TableAssignmentComponent from '../components/TableAssignmentComponent';
 import SelectField from "material-ui/SelectField";
 import TextField from 'material-ui/TextField';
 import MenuItem from 'material-ui/MenuItem';
+import RichEditorComponent from '../components/RichEditorComponent';
 
 class TestDetailComponent extends Component {
 
@@ -33,10 +34,11 @@ class TestDetailComponent extends Component {
                 questions: []
             },
             selectedQuestions: [],
-            selectedUsers: [],
+            selectedUser: [],
             email: {
+                to: '',
                 subject: '',
-                content: ''
+                content: ''             
             },
             modififed: false,
             isAssignment: false,
@@ -50,12 +52,28 @@ class TestDetailComponent extends Component {
         this.setState({ redirectToReferer: true })
     }
 
-    onChange = (newState) => {
-        // console.log(newState);
-        extend(this.props.test, newState);
+    _isValidAssignment = () => {
+        return this.state.selectedUser.length > 0;
+    }
 
+    onChangeEmailContent = (content) => {
+        console.log(content);
+        let email = extend({}, this.state.email);
+        email.content = content;
+        this.setState({ 
+            email: email,
+            isAssignment: this._isValidAssignment()
+        })
+    }
+
+    onChangeEmailTextField = (e) => {
+        // console.log(e.target.value);
+        let email = extend({}, this.state.email);
+        email[e.target.id] = e.target.value;
+        
         this.setState({
-            modififed: true
+            email: email,
+            isAssignment: this._isValidAssignment()
         });
     }
 
@@ -67,15 +85,6 @@ class TestDetailComponent extends Component {
         
         this.setState({
             modififed: true
-        });
-    }
-
-    onChangeEmail = (newState) => {
-        // console.log(newState);
-        let email = extend(this.state.email, newState);
-
-        this.setState({
-            email: email
         });
     }
 
@@ -119,10 +128,10 @@ class TestDetailComponent extends Component {
     }
 
     assignment = () => {
-        console.log(this.state.selectedUsers);
+        console.log(this.state.selectedUser);
         let assignmentInfo = {
             test: this.props.test,
-            user: this.state.selectedUsers
+            user: this.state.selectedUser
         }
         console.log(assignmentInfo);
         ResultsApi.create(assignmentInfo, res => {
@@ -172,11 +181,15 @@ class TestDetailComponent extends Component {
         });
     }
 
-    handleChange = (event, index, values) => {
-        console.log(values);
+    handleChange = (event, index, value) => {
+        console.log(value);
+        let email = extend({}, this.state.email);
+        email.to += value.email;
+
         this.setState({
-            selectedUsers: values,
-            isAssignment: Object.keys(values).length > 0
+            email: email,
+            selectedUser: value,
+            isAssignment: Object.keys(value).length > 0
         });
     }
 
@@ -233,9 +246,9 @@ class TestDetailComponent extends Component {
     render() {
         const { test, users, assignments, position } = this.props;
         const from = { pathname: '/tests' };
-        const { redirectToReferer, message, modififed, selectedQuestions, selectedUsers, isAssignment, language, category, questions } =  this.state;
+        const { redirectToReferer, message, modififed, selectedQuestions, selectedUser, isAssignment, language, category, questions, email } =  this.state;
         const selectedQ = selectedQuestions.length > 0 ? selectedQuestions : test.questions.map( question => question.id );
-        // console.log(assignments);
+        console.log(email);
         // const email = {
         //     subject: test.title,
         //     content: 'this is contnent'
@@ -252,10 +265,10 @@ class TestDetailComponent extends Component {
                 <SelectField
                     fullWidth={true}
                     hintText="Select a name"
-                    value={selectedUsers}
+                    value={selectedUser}
                     onChange={this.handleChange}
                 >
-                    {this.menuItems(users, selectedUsers)}
+                    {this.menuItems(users, selectedUser)}
                 </SelectField>
             ) : '';
         
@@ -302,6 +315,7 @@ class TestDetailComponent extends Component {
         return (
             <div>
                 <h2>Test Information</h2>
+                
                 <Snackbar
                     open={message.isShow}
                     message={message.content}
@@ -360,15 +374,31 @@ class TestDetailComponent extends Component {
                         </Tab>
                         <Tab label="Assignment">
                             <Card>
-                                {/* <CardTitle subtitle='Subject'>
-                                    <RIETextArea className='fullWidth' propName='subject' value={email.subject} change={this.onChangeEmail} />
-                                </CardTitle>
-                                <CardTitle subtitle='Content'>
-                                    <RIETextArea className='fullWidth' propName='content' value={email.content} change={this.onChangeEmail} />
-                                </CardTitle>
-                                <Divider /> */}
                                 <CardTitle subtitle='Select Users'>
                                     { UserSelectField }
+                                </CardTitle>
+                                <Divider />
+                                <CardTitle subtitle='Email To'>
+                                    <TextField id="to"
+                                        fullWidth={true}
+                                        hintText='Emails separate by ";"'
+                                        floatingLabelText=""
+                                        onChange={this.onChangeEmailTextField}
+                                        value={email.to}
+                                        />
+                                </CardTitle>
+                                <Divider />
+                                <CardTitle subtitle='Subject'>
+                                    <TextField id="subject"
+                                        fullWidth={true}
+                                        hintText="Text Field"
+                                        floatingLabelText=""
+                                        onChange={this.onChangeEmailTextField}
+                                        value={email.subject}
+                                        />
+                                </CardTitle>
+                                <CardTitle subtitle='Content'>
+                                    <RichEditorComponent placeholder='Content...' onChange={this.onChangeEmailContent} />
                                 </CardTitle>
                                 <Divider />
                                 <TableAssignmentComponent assignments={assignments} />
