@@ -7,11 +7,19 @@ var path = require('path'),
 	config = require(path.join(__dirname, "..",'/config/config')),
 	sendmail = require('../include/sendmail');
 
+var replaceAll = (text, search, replacement) => {
+	return text.split(search).join(replacement);
+}
+
 module.exports = {
 	create: (req, res) => {
 		// console.log(req.body);
-		Result.where('test.id').equals(req.body.test.id)
-			.where('user.id').equals(req.body.user.id)
+		var email = req.body.email,
+			test = req.body.test,
+			user = req.body.user;
+
+		Result.where('test.id').equals(test.id)
+			.where('user.id').equals(user.id)
 			.where('deleted').ne('true')
 			.select('id test user point time dateModified').exec((err, results) => {
 			if (err) {
@@ -30,12 +38,16 @@ module.exports = {
 						sendErr(res, err);
 					} else {
 						// todo: send email if it is first assignment
-						var email = {
-							to: req.body.user.email + ', tan.chau@waverleysoftware.com',
-							subject: 'Test Assignment from Interview System',
-							html: '<h2>hi ' + req.body.user.name + ',</h2><br /><p>This is your <a href="' + config.url + 'testpage/' + req.body.test.id + '">test</a></p>'
+						var emailInfo = {
+							to: email.to,
+							subject: email.subject,
+							html: replaceAll(email.content, '{{name}}', user.name)
 						}
-						sendmail.send(email);
+						var link = '<a href="' + config.url + 'testpage/' + req.body.test.id + '">here</a>';
+						// fill link URL to email template
+						emailInfo.html = replaceAll(emailInfo.html, '{{link}}', link);
+
+						sendmail.send(emailInfo);
 						sendSuccess(res, {
 							data: result
 						});

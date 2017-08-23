@@ -6,6 +6,8 @@
   "dependencies": {
     "axios": "^0.16.2",
     "draft-js": "^0.10.1",
+    "draft-js-export-html": "^0.6.0",
+    "draft-js-import-html": "^0.4.0",
     "es6-shim": "^0.35.3",
     "extend": "^3.0.1",
     "lodash": "^4.17.4",

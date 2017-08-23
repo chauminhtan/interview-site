@@ -18,6 +18,9 @@ import TextField from 'material-ui/TextField';
 import MenuItem from 'material-ui/MenuItem';
 import RichEditorComponent from '../components/RichEditorComponent';
 
+const subject = 'Test Assignment from Interview System';
+const valueHtml = '<h3>hi {{name}},</h3><p>Please click {{link}} to do your test.</p';
+
 class TestDetailComponent extends Component {
 
     constructor(props) {
@@ -34,11 +37,11 @@ class TestDetailComponent extends Component {
                 questions: []
             },
             selectedQuestions: [],
-            selectedUser: [],
+            selectedUser: {},
             email: {
                 to: '',
-                subject: '',
-                content: ''             
+                subject: subject,
+                content: valueHtml             
             },
             modififed: false,
             isAssignment: false,
@@ -53,7 +56,7 @@ class TestDetailComponent extends Component {
     }
 
     _isValidAssignment = () => {
-        return this.state.selectedUser.length > 0;
+        return this.state.selectedUser.name;
     }
 
     onChangeEmailContent = (content) => {
@@ -128,10 +131,12 @@ class TestDetailComponent extends Component {
     }
 
     assignment = () => {
-        console.log(this.state.selectedUser);
+        const { selectedUser, email } = this.state;
+
         let assignmentInfo = {
             test: this.props.test,
-            user: this.state.selectedUser
+            user: selectedUser,
+            email: email
         }
         console.log(assignmentInfo);
         ResultsApi.create(assignmentInfo, res => {
@@ -189,7 +194,7 @@ class TestDetailComponent extends Component {
         this.setState({
             email: email,
             selectedUser: value,
-            isAssignment: Object.keys(value).length > 0
+            isAssignment: this._isValidAssignment()
         });
     }
 
@@ -248,11 +253,7 @@ class TestDetailComponent extends Component {
         const from = { pathname: '/tests' };
         const { redirectToReferer, message, modififed, selectedQuestions, selectedUser, isAssignment, language, category, questions, email } =  this.state;
         const selectedQ = selectedQuestions.length > 0 ? selectedQuestions : test.questions.map( question => question.id );
-        console.log(email);
-        // const email = {
-        //     subject: test.title,
-        //     content: 'this is contnent'
-        // }
+        // console.log(email.content);
         
         if (redirectToReferer) {
             return (
@@ -381,7 +382,7 @@ class TestDetailComponent extends Component {
                                 <CardTitle subtitle='Email To'>
                                     <TextField id="to"
                                         fullWidth={true}
-                                        hintText='Emails separate by ";"'
+                                        hintText='Emails separate by ","'
                                         floatingLabelText=""
                                         onChange={this.onChangeEmailTextField}
                                         value={email.to}
@@ -398,7 +399,7 @@ class TestDetailComponent extends Component {
                                         />
                                 </CardTitle>
                                 <CardTitle subtitle='Content'>
-                                    <RichEditorComponent placeholder='Content...' onChange={this.onChangeEmailContent} />
+                                    <RichEditorComponent valueHtml={email.content} onChange={this.onChangeEmailContent} />
                                 </CardTitle>
                                 <Divider />
                                 <TableAssignmentComponent assignments={assignments} />

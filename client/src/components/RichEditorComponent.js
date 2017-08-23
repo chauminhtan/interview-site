@@ -1,19 +1,20 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { Editor, EditorState, RichUtils, convertToRaw } from 'draft-js';
+import '../containers/Draft.css';
+import '../containers/RichEditor.css';
+import { Editor, EditorState, RichUtils } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
+import { stateFromHTML } from 'draft-js-import-html';
 import 'es6-shim';
 
 // Custom overrides for "code" style.
 const styleMap = {
     CODE: {
-      backgroundColor: 'rgba(0, 0, 0, 0.05)',
-      fontFamily: '"Inconsolata", "Menlo", "Consolas", monospace',
-      fontSize: 16,
-      padding: 2,
+        backgroundColor: 'rgba(0, 0, 0, 0.05)',
+        fontFamily: '"Inconsolata", "Menlo", "Consolas", monospace',
+        fontSize: 16,
+        padding: 2,
     },
-  };
+};
   
 function getBlockStyle(block) {
     switch (block.getType()) {
@@ -23,25 +24,26 @@ function getBlockStyle(block) {
 }
 
 class StyleButton extends Component {
+
     constructor() {
-      super();
-      this.onToggle = (e) => {
-        e.preventDefault();
-        this.props.onToggle(this.props.style);
-      };
+        super();
+        this.onToggle = (e) => {
+            e.preventDefault();
+            this.props.onToggle(this.props.style);
+        };
     }
   
     render() {
-      let className = 'RichEditor-styleButton';
-      if (this.props.active) {
-        className += ' RichEditor-activeButton';
-      }
-  
-      return (
-        <span className={className} onMouseDown={this.onToggle}>
-          {this.props.label}
-        </span>
-      );
+        let className = 'RichEditor-styleButton';
+        if (this.props.active) {
+            className += ' RichEditor-activeButton';
+        }
+    
+        return (
+            <span className={className} onMouseDown={this.onToggle}>
+            {this.props.label}
+            </span>
+        );
     }
 }
 
@@ -52,11 +54,11 @@ const BLOCK_TYPES = [
     {label: 'H4', style: 'header-four'},
     {label: 'H5', style: 'header-five'},
     {label: 'H6', style: 'header-six'},
-    {label: 'Blockquote', style: 'blockquote'},
-    {label: 'UL', style: 'unordered-list-item'},
-    {label: 'OL', style: 'ordered-list-item'},
-    {label: 'Code Block', style: 'code-block'},
-  ];
+    // {label: 'Blockquote', style: 'blockquote'},
+    {label: 'Bulleted List', style: 'unordered-list-item'},
+    {label: 'Numberred List', style: 'ordered-list-item'},
+    // {label: 'Code Block', style: 'code-block'},
+];
   
 const BlockStyleControls = (props) => {
     const {editorState} = props;
@@ -85,8 +87,8 @@ var INLINE_STYLES = [
     {label: 'Bold', style: 'BOLD'},
     {label: 'Italic', style: 'ITALIC'},
     {label: 'Underline', style: 'UNDERLINE'},
-    {label: 'Monospace', style: 'CODE'},
-  ];
+    // {label: 'Monospace', style: 'CODE'},
+];
   
 const InlineStyleControls = (props) => {
     var currentStyle = props.editorState.getCurrentInlineStyle();
@@ -109,7 +111,9 @@ class RichEditorComponent extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {editorState: EditorState.createEmpty()};
+        // console.log(this.props);
+        const contentState = this.props.valueHtml ? stateFromHTML(this.props.valueHtml) : null;
+        this.state = { editorState: contentState ? EditorState.createWithContent(contentState) : EditorState.createEmpty(contentState) };
     
         this.focus = () => this.refs.editor.focus();
         // this.onChange = (editorState) => this.setState({editorState});
@@ -124,7 +128,7 @@ class RichEditorComponent extends Component {
         const content = editorState.getCurrentContent();
         // console.log(stateToHTML(content));
         this.setState(
-            {editorState},
+            { editorState },
             this.props.onChange(stateToHTML(content))
         );
     }
@@ -163,7 +167,7 @@ class RichEditorComponent extends Component {
     }
     
     render() {
-        const { placeholder } =  this.props;
+        // const { valueHtml } =  this.props;
         const { editorState } =  this.state;
         
         // If the user changes block type before entering any text, we can
@@ -179,25 +183,24 @@ class RichEditorComponent extends Component {
         return (
             <div className='RichEditor-root'>
                 <BlockStyleControls
-                editorState={editorState}
-                onToggle={this.toggleBlockType}
-                />
-                <InlineStyleControls
-                editorState={editorState}
-                onToggle={this.toggleInlineStyle}
-                />
-                <div className={className} onClick={this.focus}>
-                <Editor
-                    blockStyleFn={getBlockStyle}
-                    customStyleMap={styleMap}
                     editorState={editorState}
-                    handleKeyCommand={this.handleKeyCommand}
-                    onChange={this.onChange}
-                    onTab={this.onTab}
-                    placeholder={placeholder}
-                    ref='editor'
-                    spellCheck={true}
-                />
+                    onToggle={this.toggleBlockType}
+                    />
+                <InlineStyleControls
+                    editorState={editorState}
+                    onToggle={this.toggleInlineStyle}
+                    />
+                <div className={className} onClick={this.focus}>
+                    <Editor
+                        blockStyleFn={getBlockStyle}
+                        customStyleMap={styleMap}
+                        editorState={editorState}
+                        handleKeyCommand={this.handleKeyCommand}
+                        onChange={this.onChange}
+                        onTab={this.onTab}
+                        ref='editor'
+                        spellCheck={true}
+                    />
                 </div>
             </div>
         );
