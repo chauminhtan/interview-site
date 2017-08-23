@@ -100,7 +100,8 @@ UserSchema.statics.authenticateToken = function(email, tokenKey, callback) {
 			callback(false, {
 				id: user._id,
 				name: user.name,
-				token: tokenKey
+				token: tokenKey,
+				permission: user.isAdmin
 			});
 		}
 	});

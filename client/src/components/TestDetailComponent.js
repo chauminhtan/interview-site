@@ -60,7 +60,7 @@ class TestDetailComponent extends Component {
     }
 
     onChangeEmailContent = (content) => {
-        console.log(content);
+        // console.log(content);
         let email = extend({}, this.state.email);
         email.content = content;
         this.setState({ 
@@ -187,7 +187,7 @@ class TestDetailComponent extends Component {
     }
 
     handleChange = (event, index, value) => {
-        console.log(value);
+        // console.log(value);
         let email = extend({}, this.state.email);
         email.to += value.email;
 

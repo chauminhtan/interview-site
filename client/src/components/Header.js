@@ -44,7 +44,7 @@ class Logged extends Component {
         const { props } = this.props;
         const { from } = { from: { pathname: '/home' } };
         const { redirectToReferer } =  this.state;
-        const name = Store.getUserInfo() ? JSON.parse(Store.getUserInfo()).name : ""
+        const name = Store.getUserInfo() ? JSON.parse(Store.getUserInfo()).name : "";
 
         if (redirectToReferer) {
             return (
@@ -116,12 +116,6 @@ class Header extends Component {
         }
     }
 
-    // static propTypes = {
-    //     match: PropTypes.object.isRequired,
-    //     location: PropTypes.object.isRequired,
-    //     history: PropTypes.object.isRequired
-    // } 
-
     handleToggle = () => this.setState({openSideBar: !this.state.openSideBar});
 
     handleClose = () => this.setState({openSideBar: false});
@@ -131,17 +125,23 @@ class Header extends Component {
         this.handleClose();
     }
 
+    checkPermission(menu) {
+        const userInfo = Store.getUserInfo() ? JSON.parse(Store.getUserInfo()) : null;
+        return userInfo && (userInfo.isAdmin || userInfo.isAdmin === menu.isAdmin);
+    }
+
     render() {
         const { openSideBar } = this.state;
         const { title, location } = this.props;
         const pathname = location.pathname === '/' ? '/home' : location.pathname;
         const logged = Auth.isAuthenticated();
+
         let menus = [
-            {title: 'Home', link: '/home', value: pathname === '/home' ? 1 : 0, icon: <ActionHome />},
-            {title: 'Users', link: '/users', value: pathname === '/users' ? 1 : 0, icon: <SocialPeople />},
-            {title: 'Questions', link: '/questions', value: pathname === '/questions' ? 1 : 0, icon: <ContentInbox />},
-            {title: 'Tests', link: '/tests', value: pathname === '/tests' ? 1 : 0, icon: <EventNote />},
-            {title: 'Positions', link: '/positions', value: pathname === '/positions' ? 1 : 0, icon: <ContentFilter />},
+            {title: 'Home', isAdmin: false, link: '/home', value: pathname === '/home' ? 1 : 0, icon: <ActionHome />},
+            {title: 'Users', isAdmin: true, link: '/users', value: pathname === '/users' ? 1 : 0, icon: <SocialPeople />},
+            {title: 'Questions', isAdmin: true, link: '/questions', value: pathname === '/questions' ? 1 : 0, icon: <ContentInbox />},
+            {title: 'Tests', isAdmin: true, link: '/tests', value: pathname === '/tests' ? 1 : 0, icon: <EventNote />},
+            {title: 'Positions', isAdmin: true, link: '/positions', value: pathname === '/positions' ? 1 : 0, icon: <ContentFilter />},
         ]
 
         if (!logged) {
@@ -160,9 +160,10 @@ class Header extends Component {
                     >
                     <SelectableList defaultValue={1}>
                     {menus.map((menu, i) => {
-                        return <ListItem containerElement={<Link to={menu.link} />} 
-                                    primaryText={menu.title} onTouchTap={this.handleClose} 
-                                    value={menu.value} leftIcon={menu.icon} key={i} />
+                        return this.checkPermission(menu) && 
+                            <ListItem containerElement={<Link to={menu.link} />} 
+                                primaryText={menu.title} onTouchTap={this.handleClose} 
+                                value={menu.value} leftIcon={menu.icon} key={i} />
                     })}
                     </SelectableList>
                 </Drawer>

@@ -4,16 +4,26 @@ var extend = require('extend'),
 
 module.exports = {
     send: (obj) => {
+        // var transporter = nodemailer.createTransport({
+        //     service: 'gmail',
+        //     auth: {
+        //         user: 'tanc.dev@gmail.com',
+        //         pass: '******'
+        //     }
+        // });
+
         var transporter = nodemailer.createTransport({
-            service: 'gmail',
+            host: 'mail.waverleysoftware.com',
+            port: 465,
+            secure: true,
             auth: {
-                user: 'tanc.dev@gmail.com',
-                pass: '1q2w3e4r*'
+                user: 'tan.chau@waverleysoftware.com',
+                pass: 'minhtan84'
             }
         });
 
         var mailOptions = {
-            from: 'noreply@gmail.com',
+            from: 'noreply@waverleysoftware.com',
             to: 'tan.chau@waverleysoftware.com',
             subject: 'Sending Email using Node.js',
             html: 'That was easy!'
