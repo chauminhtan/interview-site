@@ -9,8 +9,9 @@ import Divider from 'material-ui/Divider';
 import Paper from 'material-ui/Paper';
 import Snackbar from 'material-ui/Snackbar';
 import DisplayQuestionComponent from '../components/DisplayQuestionComponent';
+import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
 
-class TestPageComponent extends Component {
+class TestReviewComponent extends Component {
 
     constructor(props) {
         super(props);
@@ -21,14 +22,13 @@ class TestPageComponent extends Component {
                 isShow: false,
                 content: ''
             },
-            isStarted: false,
-            duration: 0,
             modififed: false
         }
     }
 
     goBack = () => {
-        this.setState({ redirectToReferer: true })
+        // this.setState({ redirectToReferer: true })
+        this.props.goBack();
     }
 
     onChange = (data) => {
@@ -63,37 +63,12 @@ class TestPageComponent extends Component {
         })
     }
 
-    handleStart = (e) => { 
-        this.setState({
-            isStarted: true,
-            modififed: true
-        })
-    }
-
-    setTimer() {
-        this.timeout = setTimeout(this.updateTime.bind(this), 1000);
-    }
-
-    updateTime() {
-        let { duration, isStarted } = this.state;
-
-        if (isStarted) {
-            duration++;
-        }
-
-        this.setState({
-            duration: duration
-        }, this.setTimer);
-    }
-
     componentDidMount() {
-        this.setTimer();
+        
     }
 
     componentWillUnmount() {
-        if (this.timeout) {
-            clearTimeout(this.timeout);
-        }
+        
     }
 
     handleRequestClose = () => {
@@ -103,23 +78,13 @@ class TestPageComponent extends Component {
     }
     
     render() {
-        const { result } = this.props;
+        const { result, questions, location } = this.props;
         const test = result.test;
-        const from = { pathname: '/home' };
-        const { redirectToReferer, message, modififed, duration, isStarted } =  this.state;
-        // console.log(duration);
-        // test.time = 10;
-        const rest = test.time > duration ? test.time - duration : 0; 
+        const from = { pathname: '/tests' };
+        const { redirectToReferer, message, modififed } =  this.state;
+        
         const timeForAnswer = moment.unix(test.time).utcOffset(0).format('HH:mm:ss');
         const timeDone = moment.unix(result.time).utcOffset(0).format('HH:mm:ss');
-        const currentTime = moment.unix(rest).utcOffset(0).format('HH:mm:ss');
-
-        if(rest === 0) {
-            if (!result.done) {
-                result.done = true;
-                this.save();
-            }
-        }
         
         if (redirectToReferer) {
             return (
@@ -127,21 +92,13 @@ class TestPageComponent extends Component {
             )
         }
         // console.log(selectedUsers);
-        let listQuestions = test.questions && (isStarted || result.done) ? 
+        let listQuestions = test.questions ? 
             (
-                <DisplayQuestionComponent questions={test.questions} disabled={result.done} onChange={this.onChange} />
+                <DisplayQuestionComponent questions={test.questions} disabled={true} onChange={this.onChange} />
             )
             : '';
 
-        let clockRender = test.time && !result.done ? 
-        (
-            <div className="clock">
-                { currentTime }
-            </div>
-        ) : '';
-
-        const startBtn = isStarted || result.done ? '' : <RaisedButton secondary disabled={result.done} onClick={this.handleStart} label="Start" />;
-        const submitBtn = !isStarted ? '' : <RaisedButton secondary disabled={!modififed} onClick={this.save} label="Submit" />;
+        const submitBtn = <RaisedButton secondary disabled={!modififed} onClick={this.save} label="Submit" />;
 
         return (
             <div>
@@ -151,9 +108,6 @@ class TestPageComponent extends Component {
                     autoHideDuration={3000}
                     onRequestClose={this.handleRequestClose}
                 />
-                <h5>
-                    {clockRender}
-                </h5>
                 <Paper zDepth={2}>
                     <Card className='defaultForm'>
                         <CardTitle className='title' subtitle=''>
@@ -170,7 +124,6 @@ class TestPageComponent extends Component {
                         <Divider />
                         <CardTitle subtitle='Questions'>
                             <div className='marginTop10'>
-                                {startBtn}
                                 {listQuestions}
                             </div>
                         </CardTitle>
@@ -179,9 +132,12 @@ class TestPageComponent extends Component {
                         </CardActions>
                     </Card>
                 </Paper>
+                <h4>
+                    <RaisedButton primary={false} label='back' icon={<ArrowBack />} onTouchTap={this.goBack} />
+                </h4>
             </div>
         );
     }
 }
 
-export default TestPageComponent;
+export default TestReviewComponent;

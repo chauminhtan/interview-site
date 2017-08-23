@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import TextField from 'material-ui/TextField';
-import { Card, CardTitle } from 'material-ui/Card';
+import { Card, CardTitle, CardText } from 'material-ui/Card';
 
 class TextQuestionComponent extends Component {
 
@@ -15,10 +15,15 @@ class TextQuestionComponent extends Component {
         const { question, index, disabled } = this.props;
         // console.log(this.props);
         const subtitle = '' + (index + 1);
+        const answer = question.answer ? <CardTitle className='title answer' subtitle='correct'>{question.answer}</CardTitle> : '';
+
         return (
             <Card className='defaultForm'>
                 <CardTitle className='title' subtitle={subtitle + '.'}>
                     <span>{question.title}</span>
+                </CardTitle>
+                {answer}
+                <CardText>
                     <TextField id={question.id}
                         fullWidth={true}
                         multiLine={true}
@@ -27,7 +32,7 @@ class TextQuestionComponent extends Component {
                         value={question.made}
                         disabled={disabled}
                     />
-                </CardTitle>
+                </CardText>
             </Card>
         );
     }

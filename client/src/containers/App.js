@@ -14,6 +14,7 @@ import QuestionDetail from './QuestionDetail';
 import TestDetail from './TestDetail';
 import TestPage from './TestPage';
 import PositionDetail from './PositionDetail';
+import TestReview from './TestReview';
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
     <Route {...rest} render={ props => (
@@ -47,6 +48,7 @@ class App extends Component {
                     <PrivateRoute exact path="/tests" component={Tests} />
                     <PrivateRoute exact path="/tests/:id" component={TestDetail} />
                     <PrivateRoute exact path="/testpage/:id" component={TestPage} />
+                    <PrivateRoute exact path="/results/:id" component={TestReview} />
                 </div>
             </Router>
         );

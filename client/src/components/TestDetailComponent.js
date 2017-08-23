@@ -402,7 +402,7 @@ class TestDetailComponent extends Component {
                                     <RichEditorComponent valueHtml={email.content} onChange={this.onChangeEmailContent} />
                                 </CardTitle>
                                 <Divider />
-                                <TableAssignmentComponent assignments={assignments} />
+                                <TableAssignmentComponent assignments={assignments} clickable={true} path={'/results/'} />
                                 <Divider />
                                 <CardActions>
                                     <RaisedButton primary disabled={!isAssignment} onClick={this.assignment} label="Save" />

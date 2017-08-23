@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Redirect } from 'react-router-dom';
 import {
   Table,
   TableBody,
@@ -9,6 +10,39 @@ import {
 } from 'material-ui/Table';
 import moment from 'moment';
 
+class ClickableRow extends Component {
+    
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            redirectToReferer: ''
+        }
+    }
+
+    onClick = (path) => {
+        // console.log('clicked', path);
+        // path = '/tests/' + path; 
+        this.setState({ redirectToReferer: path });
+    }
+
+    render() {
+        const { redirectToReferer } = this.state;
+        const { rowData, ...restProps } = this.props;
+        if (redirectToReferer.length) {
+            return (
+                <Redirect push={true} to={{pathname: redirectToReferer}} />
+            )
+        }
+        
+        return (
+            <TableRow {...restProps} onMouseDown={()=> this.onClick(rowData)}>
+                {this.props.children}
+            </TableRow>
+        )
+    }
+}
+
 class TableAssignmentComponent extends Component {
 
     constructor (props) {
@@ -17,8 +51,8 @@ class TableAssignmentComponent extends Component {
         this.state = {
             fixedHeader: true,
             stripedRows: false,
-            showRowHover: false,
-            selectable: false,
+            showRowHover: true,
+            selectable: true,
             multiSelectable: false,
             enableSelectAll: false,
             deselectOnClickaway: false,
@@ -28,13 +62,13 @@ class TableAssignmentComponent extends Component {
 
     render() {
         const { fixedHeader, stripedRows, showRowHover, selectable, multiSelectable, enableSelectAll, deselectOnClickaway, showCheckboxes  } = this.state;
-        const { assignments } = this.props;
+        const { assignments, clickable, path } = this.props;
         
-        console.log(assignments);
+        // console.log(assignments);
         // if (!assignments || assignments.length === 0) {
         //     return (<p>Data is empty</p>);
         // }
-
+        
         return (
             <Table 
                 fixedHeader={fixedHeader}
@@ -62,7 +96,14 @@ class TableAssignmentComponent extends Component {
                         </TableRowColumn>
                     </TableRow>
                     )}
-                    {assignments && assignments.map( (row, index) => (
+                    {clickable && assignments && assignments.map( (row, index) => (
+                    <ClickableRow key={index} rowData={path + row.id}>
+                        <TableRowColumn>{row.test.title}</TableRowColumn>
+                        <TableRowColumn>{row.user.name}</TableRowColumn>
+                        <TableRowColumn>{moment(row.dateModified).fromNow()}</TableRowColumn>
+                    </ClickableRow>
+                    ))}
+                    {!clickable && assignments && assignments.map( (row, index) => (
                     <TableRow key={index}>
                         <TableRowColumn>{row.test.title}</TableRowColumn>
                         <TableRowColumn>{row.user.name}</TableRowColumn>

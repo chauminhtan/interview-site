@@ -92,7 +92,7 @@ module.exports = {
 		});
 	},
 	getOne: (req, res) => {
-		Result.where('_id').equals(req.params.id).select('id test point time done dateModified').exec((err, results) => {
+		Result.where('_id').equals(req.params.id).select('id test user point time done dateModified').exec((err, results) => {
 			if (err) {
 				sendErr(res, err);
 			} else {

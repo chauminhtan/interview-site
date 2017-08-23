@@ -31,6 +31,21 @@ module.exports = {
 			}
 		});
 	}, //end getAll
+	getByIds: (req, res) => {
+		// console.log(req.body);
+		var arrIds = req.body.arrIds;
+		Question.where('deleted').ne('true').
+			where('_id').in(arrIds).
+			select('id title language category answer typeQ time pickAnswers dateModified').exec((err, questions) => {
+			if (err) {
+				sendErr(res, err);
+			} else {
+				sendSuccess(res, {
+					data: questions
+				});
+			}
+		});
+	}, //end getAll
 	getOne: (req, res) => {
 		Question.where('_id').equals(req.params.id).select('id title language category answer typeQ time pickAnswers dateModified').exec((err, question) => {
 			if (err) {

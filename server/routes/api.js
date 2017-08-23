@@ -30,6 +30,7 @@ module.exports = function (app, passport, auth) {
      * Question apis
      */
     app.get('/api/questions', checkPermission, questions.getAll);
+    app.post('/api/questionsByIds', checkPermission, questions.getByIds);
     app.get('/api/questions/:id', checkPermission, questions.getOne);
     app.post('/api/questions', checkPermission, questions.create);
     app.put('/api/questions/:id', checkPermission, questions.update);

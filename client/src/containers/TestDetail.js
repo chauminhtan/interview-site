@@ -102,8 +102,8 @@ class TestDetail extends Component {
 
     render() {
         const { loading, test, users, assignments, questions, position } = this.state;
-        const props = { test, users, assignments, questions, position };
         const { location } = this.props;
+        const props = { test, users, assignments, questions, position };
 
         return (
             <div>

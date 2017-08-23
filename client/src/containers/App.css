@@ -59,3 +59,7 @@
       font-size: 0.2em; }
   .MainLayout .radioButton, .MainLayout .checkBox {
     margin-bottom: 16px; }
+  .MainLayout .marginTop10 {
+    margin-top: 10px; }
+  .MainLayout .answer {
+    color: #03A9F4; }

@@ -17,11 +17,14 @@ class PickQuestionComponent extends Component {
         // console.log(this.props);
         const subtitle = '' + (index + 1) + '.';
         const defaultSelected = parseInt(question.made, 10);
+        const answer = question.answer ? <CardTitle className='title answer' subtitle='correct'>{question.answer}</CardTitle> : '';
+
         return (
             <Card className='defaultForm'>
                 <CardTitle className='title' subtitle={subtitle}>
                     <span>{question.title}</span>
                 </CardTitle>
+                {answer}
                 <CardText>
                     <RadioButtonGroup name={question.id} defaultSelected={defaultSelected} onChange={this.onChange}>
                         {question.pickAnswers.map((item, i) => 
