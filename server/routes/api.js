@@ -64,6 +64,7 @@ module.exports = function (app, passport, auth) {
      * Assignment apis
      */
     app.post('/api/results', checkPermission, results.create);
+    app.post('/api/results/:id', authenticate, results.done);
     app.put('/api/results/:id', checkPermission, results.update);
     app.get('/api/resultsByTestId/:id', checkPermission, results.getByTestId);
     app.post('/api/resultsByUserAndTest/:id', authenticate, results.getByUserAndTest);

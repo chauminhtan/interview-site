@@ -70,6 +70,17 @@ const ApiCollection = {
             setTimeout(cb(res), 100);
         })
     },
+    done(data, cb) {
+        axios.post(Config.serverURL + '/api/' + model + '/' + data.id, data)
+        .then(res => {
+            // handle error here
+            if (res.status === 1) {
+                
+            }
+
+            setTimeout(cb(res), 100);
+        })
+    },
     delete(id, cb) {
         axios.delete(Config.serverURL + '/api/' + model + '/' + id)
         .then(res => {

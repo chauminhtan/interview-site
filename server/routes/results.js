@@ -1,5 +1,6 @@
 var path = require('path'),
 	Result = require(path.join(__dirname, "..", "/models/result")),
+	Question = require(path.join(__dirname, "..", "/models/question")),
 	extend = require('extend'),
 	response = require('../include/response'),
 	sendErr = response.sendErr,
@@ -9,6 +10,43 @@ var path = require('path'),
 
 var replaceAll = (text, search, replacement) => {
 	return text.split(search).join(replacement);
+}
+
+var isPickQuestion = (ques) => {
+	return ques.typeQ.toLowerCase() === 'pick' || ques.typeQ.toLowerCase() === 'multiple';
+}
+
+var checkAnswer = (result, cb) => {
+	var arrIds = result.test.questions.map(ques => ques.id);
+	Question.where('deleted').ne('true').
+		where('_id').in(arrIds).
+		select('id title language category answer typeQ time pickAnswers dateModified').exec((err, questions) => {
+		if (err) {
+			cb(err, result);
+		} else {
+			result.point = 0;
+			result.test.questions.map(ques => {
+                for (let question of questions) {
+					if (ques.id === question.id) {
+						// extend(ques, question);
+						ques.answer = question.answer;
+						if (isPickQuestion(ques)) {
+							ques.isCorrect = ques.made === ques.answer;
+							if (ques.isCorrect) {
+								result.point ++;
+							}
+							// console.log(ques);
+							break;
+						}
+					}
+                }
+                return ques;
+			})
+			result.done = true;
+			// console.log(result);
+			cb(null, result);
+		}
+	});
 }
 
 module.exports = {
@@ -58,7 +96,7 @@ module.exports = {
 		
 	}, //end create
 	getAll: (req, res) => {
-		Result.where('deleted').ne('true').select('id test user point time done dateModified').exec((err, results) => {
+		Result.where('deleted').ne('true').select('id test user point time done isChecked dateModified').exec((err, results) => {
 			if (err) {
 				sendErr(res, err);
 			} else {
@@ -69,7 +107,7 @@ module.exports = {
 		});
 	}, //end getAll
 	getByTestId: (req, res) => {
-		Result.where('test.id').equals(req.params.id).where('deleted').ne('true').select('id test user point time done dateModified').exec((err, results) => {
+		Result.where('test.id').equals(req.params.id).where('deleted').ne('true').select('id test user point time done isChecked dateModified').exec((err, results) => {
 			if (err) {
 				sendErr(res, err);
 			} else {
@@ -81,7 +119,7 @@ module.exports = {
 	},
 	getByUserAndTest: (req, res) => {
 		// console.log(req.body);
-		Result.where('user.id').equals(req.body.userId).where('test.id').equals(req.body.testId).where('deleted').ne('true').select('id test user point time done dateModified').exec((err, results) => {
+		Result.where('user.id').equals(req.body.userId).where('test.id').equals(req.body.testId).where('deleted').ne('true').select('id test user point time done isChecked dateModified').exec((err, results) => {
 			if (err) {
 				sendErr(res, err);
 			} else {
@@ -92,7 +130,7 @@ module.exports = {
 		});
 	},
 	getOne: (req, res) => {
-		Result.where('_id').equals(req.params.id).select('id test user point time done dateModified').exec((err, results) => {
+		Result.where('_id').equals(req.params.id).select('id test user point time done isChecked dateModified').exec((err, results) => {
 			if (err) {
 				sendErr(res, err);
 			} else {
@@ -109,10 +147,32 @@ module.exports = {
 			}
 
 			extend(result, req.body);
+			result.isChecked = true;
 			// console.log(result);
 			result.save((err) => {
 				sendSuccess(res);
 			});
+		})
+	},
+	done: (req, res) => {
+		Result.findById(req.params.id, (err, result) => {
+			if (err) {
+				sendErr(res, err);
+			}
+
+			extend(result, req.body);
+			if (!result.done) {
+				// console.log(result);
+				checkAnswer(result, (err, result) => {
+					result.save((err) => {
+						sendSuccess(res);
+					});
+				})
+			} else {
+				sendErr(res, {
+					message: 'it was done'
+				});
+			}
 		})
 	},
 	delete: function(req, res) {

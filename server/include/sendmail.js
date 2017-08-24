@@ -36,9 +36,6 @@ module.exports = {
                 sendErr(res, error);
             } else {
                 console.log('Email sent: ', info.response);
-                // sendSuccess(res, {
-				// 	data: 'Email sent: ' + info.response
-				// });
             }
         }); 
     }

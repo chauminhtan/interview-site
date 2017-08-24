@@ -9,6 +9,8 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 import moment from 'moment';
+import RemoveRedEye from 'material-ui/svg-icons/image/remove-red-eye';
+import ContentCreate from 'material-ui/svg-icons/content/create';
 
 class ClickableRow extends Component {
     
@@ -50,7 +52,7 @@ class TableAssignmentComponent extends Component {
         
         this.state = {
             fixedHeader: true,
-            stripedRows: false,
+            stripedRows: true,
             showRowHover: true,
             selectable: true,
             multiSelectable: false,
@@ -58,6 +60,25 @@ class TableAssignmentComponent extends Component {
             deselectOnClickaway: false,
             showCheckboxes: false,
         }
+    }
+
+    getStatus(result) {
+        // let status = '';
+        // if (result.done) {
+        //     status += <ContentCreate />;
+        // }
+        // if (result.isChecked) {
+        //     status += <RemoveRedEye />;
+        // }
+        const done = result.done ? <ContentCreate key={result.id + 'done'} /> : '';
+        const checked = result.isChecked ? <RemoveRedEye key={result.id + 'checked'} /> : '';
+        // console.log(status)
+        return [done, checked];
+    }
+
+    isReviewed(result) {
+        console.log(result)
+        return result.isChecked ? <RemoveRedEye /> : '';
     }
 
     render() {
@@ -82,6 +103,7 @@ class TableAssignmentComponent extends Component {
                         <TableHeaderColumn>Test Title</TableHeaderColumn>
                         <TableHeaderColumn>User</TableHeaderColumn>
                         <TableHeaderColumn>Created</TableHeaderColumn>
+                        <TableHeaderColumn>Status</TableHeaderColumn>
                     </TableRow>
                 </TableHeader>
                 <TableBody 
@@ -91,7 +113,7 @@ class TableAssignmentComponent extends Component {
                     stripedRows={stripedRows}>
                     {!assignments && (
                     <TableRow>
-                        <TableRowColumn colSpan="3" style={{textAlign: 'center'}}>
+                        <TableRowColumn colSpan="4" style={{textAlign: 'center'}}>
                             Data is empty
                         </TableRowColumn>
                     </TableRow>
@@ -101,6 +123,7 @@ class TableAssignmentComponent extends Component {
                         <TableRowColumn>{row.test.title}</TableRowColumn>
                         <TableRowColumn>{row.user.name}</TableRowColumn>
                         <TableRowColumn>{moment(row.dateModified).fromNow()}</TableRowColumn>
+                        <TableRowColumn>{this.getStatus(row)}</TableRowColumn>
                     </ClickableRow>
                     ))}
                     {!clickable && assignments && assignments.map( (row, index) => (
@@ -108,6 +131,7 @@ class TableAssignmentComponent extends Component {
                         <TableRowColumn>{row.test.title}</TableRowColumn>
                         <TableRowColumn>{row.user.name}</TableRowColumn>
                         <TableRowColumn>{moment(row.dateModified).fromNow()}</TableRowColumn>
+                        <TableRowColumn>{this.getStatus(row)}</TableRowColumn>
                     </TableRow>
                     ))}
                 </TableBody>

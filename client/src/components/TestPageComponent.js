@@ -43,10 +43,9 @@ class TestPageComponent extends Component {
     save = () => {
         let { duration } = this.state;
         let data = this.props.result;
-        data.done = true;
         data.time = duration;
         // console.log(data);
-        ResultsApi.update(data, res => {
+        ResultsApi.done(data, res => {
             // console.log(res);
             let message = extend({}, this.state.message);
             message.content = res.message;
@@ -116,7 +115,6 @@ class TestPageComponent extends Component {
 
         if(rest === 0) {
             if (!result.done) {
-                result.done = true;
                 this.save();
             }
         }

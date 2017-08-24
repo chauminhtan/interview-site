@@ -2,13 +2,10 @@ import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 import ResultsApi from '../api/Results';
 import QuestionsApi from '../api/Questions';
-import { Store } from '../api/index';
 import TestReviewComponent from '../components/TestReviewComponent';
 import Header from '../components/Header';
 import CircularProgress from 'material-ui/CircularProgress';
 import extend from 'extend';
-
-const userInfo = Store.getUserInfo() ? JSON.parse(Store.getUserInfo()) : null;
 
 class TestReview extends Component {
 
@@ -41,11 +38,11 @@ class TestReview extends Component {
     updateData = () => {
         ResultsApi.getOne(this.props.match.params.id, res => {
             // console.log(res);
-            // this.setState({
-            //     loading: false,
-            //     result: res.data
-            // });
-            this.getQuestionData(res.data);
+            this.setState({
+                loading: false,
+                result: res.data
+            });
+            // this.getQuestionData(res.data);
         })
     }
 
@@ -67,7 +64,6 @@ class TestReview extends Component {
             })
             this.setState({
                 loading: false,
-                questions: questions,
                 result: result
             });
         })
@@ -79,11 +75,11 @@ class TestReview extends Component {
     }
 
     render() {
-        const { loading, result, questions } = this.state;
+        const { loading, result } = this.state;
         const props = { result };
         const { location } = this.props;
         
-        console.log(result);
+        // console.log(result);
 
         return (
             <div>

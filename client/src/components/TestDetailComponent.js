@@ -44,7 +44,6 @@ class TestDetailComponent extends Component {
                 content: valueHtml             
             },
             modififed: false,
-            isAssignment: false,
             language: '',
             category: '',
             questions: []
@@ -55,8 +54,11 @@ class TestDetailComponent extends Component {
         this.setState({ redirectToReferer: true })
     }
 
-    _isValidAssignment = () => {
-        return this.state.selectedUser.name;
+    isValidAssignment = () => {
+        const { selectedUser, email } = this.state;
+        // console.log(email);
+        return selectedUser.name && selectedUser.name.length && 
+            email.to.length && email.subject.length && email.content.length;
     }
 
     onChangeEmailContent = (content) => {
@@ -65,7 +67,6 @@ class TestDetailComponent extends Component {
         email.content = content;
         this.setState({ 
             email: email,
-            isAssignment: this._isValidAssignment()
         })
     }
 
@@ -76,7 +77,6 @@ class TestDetailComponent extends Component {
         
         this.setState({
             email: email,
-            isAssignment: this._isValidAssignment()
         });
     }
 
@@ -189,12 +189,14 @@ class TestDetailComponent extends Component {
     handleChange = (event, index, value) => {
         // console.log(value);
         let email = extend({}, this.state.email);
-        email.to += value.email;
+        // let to = email.to.length ? [email.to] : [];
+        // to.push(value.email);
+        // email.to = to.join(',');
+        email.to = value.email;
 
         this.setState({
             email: email,
             selectedUser: value,
-            isAssignment: this._isValidAssignment()
         });
     }
 
@@ -251,9 +253,9 @@ class TestDetailComponent extends Component {
     render() {
         const { test, users, assignments, position } = this.props;
         const from = { pathname: '/tests' };
-        const { redirectToReferer, message, modififed, selectedQuestions, selectedUser, isAssignment, language, category, questions, email } =  this.state;
+        const { redirectToReferer, message, modififed, selectedQuestions, selectedUser, language, category, questions, email } =  this.state;
         const selectedQ = selectedQuestions.length > 0 ? selectedQuestions : test.questions.map( question => question.id );
-        // console.log(email.content);
+        // console.log(selectedUser);
         
         if (redirectToReferer) {
             return (
@@ -401,12 +403,12 @@ class TestDetailComponent extends Component {
                                 <CardTitle subtitle='Content'>
                                     <RichEditorComponent valueHtml={email.content} onChange={this.onChangeEmailContent} />
                                 </CardTitle>
+                                {/* <Divider /> */}
+                                <CardActions>
+                                    <RaisedButton secondary disabled={!this.isValidAssignment()} onClick={this.assignment} label="Save" />
+                                </CardActions>
                                 <Divider />
                                 <TableAssignmentComponent assignments={assignments} clickable={true} path={'/results/'} />
-                                <Divider />
-                                <CardActions>
-                                    <RaisedButton primary disabled={!isAssignment} onClick={this.assignment} label="Save" />
-                                </CardActions>
                             </Card>
                         </Tab>
                     </Tabs>

@@ -14,7 +14,9 @@ var ResultSchema = new Schema({
             pickAnswers: [{}],
             language: String,
             category: String,
+            answer: { type: String, default: '' },
             made: { type: String, default: '' },
+            isCorrect: { type: Boolean, default: false },
         }],
         position: { 
             id: { type: String, require: true, default: '' },
@@ -31,6 +33,7 @@ var ResultSchema = new Schema({
     dateModified: { type: Date, default: Date.now },
     status: String,
     done: { type: Boolean, default: false },
+    isChecked: { type: Boolean, default: false },
     deleted: { type: Boolean, default: false }
 }, {
     strict: true,

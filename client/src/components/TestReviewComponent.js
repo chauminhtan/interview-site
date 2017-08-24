@@ -8,7 +8,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Divider from 'material-ui/Divider';
 import Paper from 'material-ui/Paper';
 import Snackbar from 'material-ui/Snackbar';
-import DisplayQuestionComponent from '../components/DisplayQuestionComponent';
+import DisplayReviewQuestionComponent from '../components/DisplayReviewQuestionComponent';
 import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
 
 class TestReviewComponent extends Component {
@@ -22,7 +22,8 @@ class TestReviewComponent extends Component {
                 isShow: false,
                 content: ''
             },
-            modififed: false
+            modififed: false,
+            point: this.props.result.point
         }
     }
 
@@ -33,10 +34,19 @@ class TestReviewComponent extends Component {
 
     onChange = (data) => {
         // console.log(data)
+        let point = 0;
         this.props.result.test.questions = data;
+        this.props.result.test.questions.map(ques => {
+            if (ques.isCorrect) {
+                point++;
+            }
+            return true;
+        })
+        this.props.result.point = point;
 
         this.setState({
-            modififed: true && !this.props.result.done
+            modififed: true,
+            point: point
         });
     }
 
@@ -78,10 +88,10 @@ class TestReviewComponent extends Component {
     }
     
     render() {
-        const { result, questions, location } = this.props;
+        const { result } = this.props;
         const test = result.test;
         const from = { pathname: '/tests' };
-        const { redirectToReferer, message, modififed } =  this.state;
+        const { redirectToReferer, message, modififed, point } =  this.state;
         
         const timeForAnswer = moment.unix(test.time).utcOffset(0).format('HH:mm:ss');
         const timeDone = moment.unix(result.time).utcOffset(0).format('HH:mm:ss');
@@ -94,11 +104,11 @@ class TestReviewComponent extends Component {
         // console.log(selectedUsers);
         let listQuestions = test.questions ? 
             (
-                <DisplayQuestionComponent questions={test.questions} disabled={true} onChange={this.onChange} />
+                <DisplayReviewQuestionComponent questions={test.questions} disabled={true} onChange={this.onChange} />
             )
             : '';
 
-        const submitBtn = <RaisedButton secondary disabled={!modififed} onClick={this.save} label="Submit" />;
+        const submitBtn = !result.done ? '' : <RaisedButton secondary disabled={!modififed} onClick={this.save} label="Submit" />;
 
         return (
             <div>
@@ -118,6 +128,9 @@ class TestReviewComponent extends Component {
                             {test.position.name}
                         </CardTitle>
                         <Divider />
+                        <CardTitle subtitle='Point'>
+                            {result.done ? point + ' / ' + result.test.questions.length : '-'}
+                        </CardTitle>
                         <CardTitle subtitle='Time for answer'>
                             {result.done ? timeDone + ' / ' + timeForAnswer : timeForAnswer}
                         </CardTitle> 

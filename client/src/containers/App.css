@@ -62,4 +62,6 @@
   .MainLayout .marginTop10 {
     margin-top: 10px; }
   .MainLayout .answer {
-    color: #03A9F4; }
+    color: #00A8F4; }
+  .MainLayout .correctQuestion {
+    border: 1px solid #00A8F4; }

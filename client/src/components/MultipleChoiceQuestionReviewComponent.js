@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Checkbox from 'material-ui/Checkbox';
+import Toggle from 'material-ui/Toggle';
 import { Card, CardTitle, CardText } from 'material-ui/Card';
 
 class MultipleChoiceQuestion extends Component {
@@ -7,7 +8,8 @@ class MultipleChoiceQuestion extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            separator: ','
+            separator: ',',
+            isCorrect: false
         }
     }
 
@@ -36,6 +38,15 @@ class MultipleChoiceQuestion extends Component {
         return arr;
     }
 
+    handleToggle = (e, toggle) => {
+        let { question } = this.props;
+
+        question.isCorrect = toggle;
+        this.setState({
+            isCorrect: toggle
+        }, this.props.onChange(question));
+    }
+
     isChecked(values, index) {
         const { separator } = this.state;
         const arAnswer = values.length ? values.split(separator) : [];
@@ -44,14 +55,28 @@ class MultipleChoiceQuestion extends Component {
 
     render() {
         const { question, index, disabled } = this.props;
+        const { isCorrect } = this.state;
         // console.log(this.props);
         const subtitle = (index + 1) + '.';
-        
+        const answer = question.answer ? <CardTitle className='title answer' subtitle='correct'>{question.answer}</CardTitle> : '';
+        const className = question.isCorrect ? 'correctQuestion' : '';
+        const review = !question.answer.length > 0 ? '' :
+            <CardText>
+                <Toggle
+                    toggled={question.isCorrect || isCorrect}
+                    onToggle={this.handleToggle}
+                    labelPosition='right'
+                    label='is correct'
+                    />
+            </CardText>;
+
         return (
-            <Card className='defaultForm'>
+            <Card className={className}>
                 <CardTitle className='title' subtitle={subtitle}>
                     <span>{question.title}</span>
                 </CardTitle>
+                {answer}
+                {review}
                 <CardText>
                     {question.pickAnswers.map((item, i) => 
                         <Checkbox

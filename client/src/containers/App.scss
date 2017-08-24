@@ -96,6 +96,11 @@
     }
 
     .answer {
-        color: #03A9F4;
+        color: #00A8F4;
+    }
+
+    .correctQuestion {
+        // color: #00A8F4 !important;
+        border: 1px solid #00A8F4;
     }
 }
